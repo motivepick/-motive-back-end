@@ -1,4 +1,4 @@
-package com.yaskovdev.staymotivatedbackend;
+package com.yaskovdev.motivated.stay;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,5 +12,4 @@ public class StayMotivatedBackEndApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
-
 }
