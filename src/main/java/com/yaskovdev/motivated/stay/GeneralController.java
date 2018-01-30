@@ -15,7 +15,7 @@ public class GeneralController {
     List<Task> tasks() {
         return Arrays.asList(new Task("Move to California", "You need this to earn much money."),
                 new Task("Learn Eckhart Tolle", "He has a new book, you can buy it via Amazon."),
-                new Task("Become the Oracle Certified Enterprise Arthitect", "You need to pass 3 exams for this, goog luck."),
+                new Task("Become the Oracle Certified Enterprise Architect", "You need to pass 3 exams for this, good luck."),
                 new Task("Create the application for the motivation", "Here is is, basically."),
                 new Task("Join the AI guild", "You need to write an email to the guild boss."));
     }
