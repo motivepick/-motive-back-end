@@ -26,7 +26,7 @@ The service that is going to defeat the laziness. Coming soon...
 #### Steps to configure
 
 1. `cd ${APPLICATIONS} && git clone https://github.com/${GITHUB_USER_NAME}/${GITHUB_REPO_NAME}.git`
-2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/stay-motivated-back-end`
+2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/${GITHUB_REPO_NAME}`
 3. Replace settings of Git-Auto-Deploy with the settings file provided in the current repository
 4. `service git-auto-deploy restart`
 
