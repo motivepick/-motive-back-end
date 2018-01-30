@@ -4,6 +4,14 @@ The service that is going to defeat the laziness. Coming soon...
 
 ## How to configure the development instance
 
+### Variables
+
+| Name                | Possible Value               | Description  |
+| -------------       |:-------------:               | -----:|
+| ${APPLICATIONS}     | /app                         | The folder where the application will be cloned. |
+| ${GITHUB_USER_NAME} | yaskovdev                    |       |
+| ${GITHUB_REPO_NAME} | stay-motivated-back-end      |       |
+
 ### Configure the repository
 
 ### Configure Git-Auto-Deploy
@@ -17,7 +25,7 @@ The service that is going to defeat the laziness. Coming soon...
 
 #### Steps to configure
 
-1. `cd ${APPLICATIONS} && git clone https://github.com/yaskovdev/stay-motivated-back-end.git`
+1. `cd ${APPLICATIONS} && git clone https://github.com/${GITHUB_USER_NAME}/${GITHUB_REPO_NAME}.git`
 2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/stay-motivated-back-end`
 3. Replace settings of Git-Auto-Deploy with the settings file provided in the current repository
 4. `service git-auto-deploy restart`
