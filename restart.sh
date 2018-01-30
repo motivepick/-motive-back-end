@@ -7,4 +7,4 @@ then
     kill $(cat ${PID_FILE})
 fi
 
-nohup ./mvnw spring-boot:run &
+nohup ./mvnw spring-boot:run >/dev/null 2>&1 &
