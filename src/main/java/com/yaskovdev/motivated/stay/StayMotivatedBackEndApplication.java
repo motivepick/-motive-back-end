@@ -20,7 +20,7 @@ public class StayMotivatedBackEndApplication {
 
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://yaskovdev.github.io");
+                registry.addMapping("/**").allowedOrigins("*");
             }
         };
     }
