@@ -4,7 +4,7 @@ The service that is going to defeat the laziness. Coming soon...
 
 ## How to configure the development instance
 
-### Configure Git Auto Deploy
+### Configure Git-Auto-Deploy
 
 https://github.com/olipo186/Git-Auto-Deploy
 
