@@ -6,11 +6,11 @@ The service that is going to defeat the laziness. Coming soon...
 
 ### Variables
 
-| Name                | Possible Value               | Description                                      |
-| ------------------- | ---------------------------- | ------------------------------------------------ |
-| ${APPLICATIONS}     | /app                         | The folder where the application will be cloned. |
-| ${GITHUB_USER_NAME} | yaskovdev                    |                                                  |
-| ${GITHUB_REPO_NAME} | stay-motivated-back-end      |                                                  |
+```bash
+export APPLICATIONS=/app
+export GITHUB_USER_NAME=yaskovdev
+export GITHUB_REPO_NAME=stay-motivated-back-end
+```
 
 ### Configure the GitHub repository
 
@@ -27,5 +27,5 @@ The service that is going to defeat the laziness. Coming soon...
 
 1. `cd ${APPLICATIONS} && git clone https://github.com/${GITHUB_USER_NAME}/${GITHUB_REPO_NAME}.git`
 2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/${GITHUB_REPO_NAME}`
-3. Replace settings of Git-Auto-Deploy with the `git-auto-deploy.conf.json` file provided in the current repository
+3. Replace settings of Git-Auto-Deploy with the `git-auto-deploy.conf.json` file provided in the current repository by executing: `rm -rf /etc/git-auto-deploy.conf.json && cp ${APPLICATIONS}/${GITHUB_REPO_NAME}/git-auto-deploy.conf.json /etc && chown git-auto-deploy:git-auto-deploy /etc/git-auto-deploy.conf.json`
 4. `service git-auto-deploy restart`
