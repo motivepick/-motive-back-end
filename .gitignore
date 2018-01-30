@@ -25,3 +25,5 @@ nbdist/
 
 ### Other ###
 run.pid
+application.pid
+nohup.out
