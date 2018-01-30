@@ -1,0 +1,21 @@
+{
+  "ssl-cert": "/etc/git-auto-deploy/cert.pem",
+  "log-file": "/var/log/git-auto-deploy.log",
+  "repositories": [
+    {
+      "url": "https://github.com/yaskovdev/stay-motivated-back-end.git",
+      "branch": "release",
+      "remote": "origin",
+      "path": "/app/stay-motivated-back-end",
+      "deploy": "chmod +x ./restart.sh && ./restart.sh",
+      "header-filter": {
+        "X-GitHub-Event": "push"
+      },
+      "filters": [
+        {
+          "ref": "refs/heads/release"
+        }
+      ]
+    }
+  ]
+}
