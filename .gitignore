@@ -27,3 +27,4 @@ nbdist/
 run.pid
 application.pid
 nohup.out
+*.log
