@@ -2,6 +2,10 @@
 
 The service that is going to defeat the laziness. Coming soon...
 
+## How to deploy the application
+
+Just merge your branch to `release` branch and push your changes.
+
 ## How to configure the development instance
 
 ### Variables
