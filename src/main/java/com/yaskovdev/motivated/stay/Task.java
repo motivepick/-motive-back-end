@@ -2,12 +2,20 @@ package com.yaskovdev.motivated.stay;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
 
+@Document
 class Task {
 
+    @Id
+    @JsonProperty
+    private String id;
+
     private final String name;
+
     private final String description;
 
     @JsonCreator
