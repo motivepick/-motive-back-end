@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SpringBootApplication
 public class StayMotivatedBackEndApplication {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(StayMotivatedBackEndApplication.class, args);
     }
 
@@ -19,7 +19,7 @@ public class StayMotivatedBackEndApplication {
         return new WebMvcConfigurerAdapter() {
 
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(final CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("*");
             }
         };
