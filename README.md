@@ -2,6 +2,21 @@
 
 The service that is going to defeat the laziness. Coming soon...
 
+## How to run with external DB
+
+Edit `~/.bash_profile` to set the config of external DB:
+
+```bash
+export SPRING_DATA_MONGODB_HOST=<MONGO_DB_HOST>
+export SPRING_DATA_MONGODB_PORT=<MONGO_DB_PORT>
+```
+
+Then persist the settings:
+
+```bash
+source ~/.bash_profile
+```
+
 ## How to deploy the application
 
 Just merge your branch to `release` branch and push your changes.
