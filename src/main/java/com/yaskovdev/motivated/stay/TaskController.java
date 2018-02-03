@@ -34,7 +34,7 @@ public class TaskController {
         // TODO: add validation
         repo.insert(task);
 
-        return new ResponseEntity(task, HttpStatus.OK);
+        return new ResponseEntity(task, HttpStatus.CREATED);
     }
 
     @PutMapping("/tasks/{id}")
