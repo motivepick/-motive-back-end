@@ -38,12 +38,17 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    ResponseEntity updateTask(@PathVariable("id") final String taskId, @RequestBody final Task task) {
+    ResponseEntity updateTask(@PathVariable("id") final String taskId, @RequestBody final Task newTask) {
         // TODO: add validation
 
-        if (!repo.exists(taskId)) {
+        Task task = repo.findOne(taskId);
+
+        if (task == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        task.setName(newTask.getName());
+        task.setDescription(newTask.getDescription());
 
         repo.save(task);
 

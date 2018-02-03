@@ -14,9 +14,9 @@ class Task {
     @JsonProperty
     private String id;
 
-    private final String name;
+    private String name;
 
-    private final String description;
+    private String description;
 
     @JsonCreator
     public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description) {
@@ -28,8 +28,16 @@ class Task {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
