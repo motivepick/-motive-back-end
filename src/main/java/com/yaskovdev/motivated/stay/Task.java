@@ -2,13 +2,21 @@ package com.yaskovdev.motivated.stay;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
 
+@Document
 class Task {
 
-    private final String name;
-    private final String description;
+    @Id
+    @JsonProperty
+    private String id;
+
+    private String name;
+
+    private String description;
 
     @JsonCreator
     public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description) {
@@ -20,8 +28,16 @@ class Task {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

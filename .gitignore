@@ -28,3 +28,4 @@ run.pid
 application.pid
 nohup.out
 *.log
+data/db
