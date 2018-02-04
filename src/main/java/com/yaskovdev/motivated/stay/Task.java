@@ -18,10 +18,22 @@ class Task {
 
     private String description;
 
+    private boolean closed;
+
+    public Task() {
+    }
+
     @JsonCreator
     public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description) {
+        this(name, description, false);
+    }
+
+    @JsonCreator
+    public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description,
+            @JsonProperty("closed") final boolean closed) {
         this.name = name;
         this.description = description;
+        this.closed = closed;
     }
 
     public String getName() {
@@ -40,25 +52,37 @@ class Task {
         this.description = description;
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(name, task.name) &&
+        return closed == task.closed &&
+                Objects.equals(id, task.id) &&
+                Objects.equals(name, task.name) &&
                 Objects.equals(description, task.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description);
+        return Objects.hash(id, name, description, closed);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", closed=" + closed +
                 '}';
     }
 }
