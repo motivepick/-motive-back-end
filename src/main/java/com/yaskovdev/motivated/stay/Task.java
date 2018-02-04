@@ -24,11 +24,6 @@ class Task {
     }
 
     @JsonCreator
-    public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description) {
-        this(name, description, false);
-    }
-
-    @JsonCreator
     public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description,
             @JsonProperty("closed") final boolean closed) {
         this.name = name;
