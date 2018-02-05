@@ -1,34 +1,31 @@
 package com.yaskovdev.motivated.stay;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.util.Objects;
 
 @Document
 class Task {
 
     @Id
-    @JsonProperty
     private String id;
 
     private String name;
 
     private String description;
 
+    private Instant instantOfCreation;
+
     private boolean closed;
 
-    public Task() {
+    public String getId() {
+        return id;
     }
 
-    @JsonCreator
-    public Task(@JsonProperty("name") final String name, @JsonProperty("description") final String description,
-            @JsonProperty("closed") final boolean closed) {
-        this.name = name;
-        this.description = description;
-        this.closed = closed;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -55,6 +52,14 @@ class Task {
         this.closed = closed;
     }
 
+    public Instant getInstantOfCreation() {
+        return instantOfCreation;
+    }
+
+    public void setInstantOfCreation(Instant instantOfCreation) {
+        this.instantOfCreation = instantOfCreation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,12 +68,13 @@ class Task {
         return closed == task.closed &&
                 Objects.equals(id, task.id) &&
                 Objects.equals(name, task.name) &&
-                Objects.equals(description, task.description);
+                Objects.equals(description, task.description) &&
+                Objects.equals(instantOfCreation, task.instantOfCreation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, closed);
+        return Objects.hash(id, name, description, instantOfCreation, closed);
     }
 
     @Override
@@ -77,6 +83,7 @@ class Task {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", instantOfCreation=" + instantOfCreation +
                 ", closed=" + closed +
                 '}';
     }
