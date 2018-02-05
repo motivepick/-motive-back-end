@@ -2,7 +2,8 @@ package com.yaskovdev.motivated.stay;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static java.time.Instant.now;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,18 +28,19 @@ public class TaskController {
     private final TaskRepository repo;
 
     @Autowired
-    public TaskController(TaskRepository repo) {
+    public TaskController(final TaskRepository repo) {
         this.repo = repo;
     }
 
     @GetMapping("/tasks")
     ResponseEntity<List<Task>> listTasks(@RequestParam(name = "onlyOpen", defaultValue = "true") final boolean onlyOpen) {
+        final Sort newestFirst = new Sort(new Order(DESC, "instantOfCreation"));
         if (onlyOpen) {
             final Task probe = new Task();
             probe.setClosed(false);
-            return new ResponseEntity<>(repo.findAll(Example.of(probe)), OK);
+            return new ResponseEntity<>(repo.findAll(Example.of(probe), newestFirst), OK);
         } else {
-            return new ResponseEntity<>(repo.findAll(), OK);
+            return new ResponseEntity<>(repo.findAll(newestFirst), OK);
         }
     }
 
@@ -51,9 +56,10 @@ public class TaskController {
     @PostMapping("/tasks")
     ResponseEntity<Task> createTask(@RequestBody final Task task) {
         // TODO: add validation
+        task.setInstantOfCreation(now());
         repo.insert(task);
 
-        return new ResponseEntity<>(task, HttpStatus.CREATED);
+        return new ResponseEntity<>(task, CREATED);
     }
 
     @PutMapping("/tasks/{id}")
@@ -88,12 +94,11 @@ public class TaskController {
 
     @DeleteMapping("/tasks/{id}")
     ResponseEntity deleteTask(@PathVariable("id") final String taskId) {
-        if (!repo.exists(taskId)) {
+        if (repo.exists(taskId)) {
+            repo.delete(taskId);
+            return new ResponseEntity(OK);
+        } else {
             return new ResponseEntity(NOT_FOUND);
         }
-
-        repo.delete(taskId);
-
-        return new ResponseEntity(OK);
     }
 }
