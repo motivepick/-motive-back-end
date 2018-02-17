@@ -7,7 +7,7 @@
       "branch": "release",
       "remote": "origin",
       "path": "/app/stay-motivated-back-end",
-      "deploy": "chmod +x ./restart.sh && ./restart.sh",
+      "deploy": "chmod +x ./setenv.sh && chmod +x ./restart.sh && ./setenv.sh && ./restart.sh",
       "header-filter": {
         "X-GitHub-Event": "push"
       },
