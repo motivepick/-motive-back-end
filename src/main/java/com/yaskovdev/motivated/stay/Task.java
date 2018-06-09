@@ -1,5 +1,6 @@
 package com.yaskovdev.motivated.stay;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +12,9 @@ class Task {
 
     @Id
     private String id;
+
+    @NotBlank
+    private String userId;
 
     private String name;
 
@@ -26,6 +30,14 @@ class Task {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -67,6 +79,7 @@ class Task {
         Task task = (Task) o;
         return closed == task.closed &&
                 Objects.equals(id, task.id) &&
+                Objects.equals(userId, task.userId) &&
                 Objects.equals(name, task.name) &&
                 Objects.equals(description, task.description) &&
                 Objects.equals(instantOfCreation, task.instantOfCreation);
@@ -74,13 +87,14 @@ class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, instantOfCreation, closed);
+        return Objects.hash(id, userId, name, description, instantOfCreation, closed);
     }
 
     @Override
     public String toString() {
         return "Task{" +
                 "id='" + id + '\'' +
+                ", userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", instantOfCreation=" + instantOfCreation +

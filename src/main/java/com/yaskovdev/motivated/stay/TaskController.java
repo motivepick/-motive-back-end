@@ -18,9 +18,12 @@ import java.util.List;
 
 import static java.time.Instant.now;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
 public class TaskController {
@@ -32,34 +35,32 @@ public class TaskController {
         this.repo = repo;
     }
 
-    @GetMapping("/tasks")
-    ResponseEntity<List<Task>> listTasks(@RequestParam(name = "onlyOpen", defaultValue = "true") final boolean onlyOpen) {
+    @GetMapping("/{userId}/tasks")
+    ResponseEntity<List<Task>> listTasks(@PathVariable("userId") final String userId,
+            @RequestParam(name = "onlyOpen", defaultValue = "true") final boolean onlyOpen) {
         final Sort newestFirst = new Sort(new Order(DESC, "instantOfCreation"));
         if (onlyOpen) {
             final Task probe = new Task();
+            probe.setUserId(userId);
             probe.setClosed(false);
-            return new ResponseEntity<>(repo.findAll(Example.of(probe), newestFirst), OK);
+            return ok(repo.findAll(Example.of(probe), newestFirst));
         } else {
-            return new ResponseEntity<>(repo.findAll(newestFirst), OK);
+            final Task probe = new Task();
+            probe.setUserId(userId);
+            return ok(repo.findAll(Example.of(probe), newestFirst));
         }
     }
 
     @GetMapping("/tasks/{id}")
     ResponseEntity<Task> getTask(@PathVariable("id") final String taskId) {
-        if (!repo.exists(taskId)) {
-            return new ResponseEntity<>(NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(repo.findOne(taskId), OK);
+        return repo.exists(taskId) ? ok(repo.findOne(taskId)) : notFound().build();
     }
 
     @PostMapping("/tasks")
     ResponseEntity<Task> createTask(@RequestBody final Task task) {
-        // TODO: add validation
         task.setInstantOfCreation(now());
         repo.insert(task);
-
-        return new ResponseEntity<>(task, CREATED);
+        return created(fromCurrentRequest().queryParam("id", task.getId()).build().toUri()).build();
     }
 
     @PutMapping("/tasks/{id}")
