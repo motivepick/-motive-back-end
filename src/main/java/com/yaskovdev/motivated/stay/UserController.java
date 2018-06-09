@@ -20,8 +20,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}") // TODO: can I use PUT
-    public ResponseEntity<User> create(@PathVariable("id") final String id, @RequestBody final User user) {
-        user.setId(id);
+    public ResponseEntity<User> create(@RequestBody final User user) {
         return ok(repository.insert(user));
     }
 
