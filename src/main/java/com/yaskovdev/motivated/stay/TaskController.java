@@ -18,12 +18,11 @@ import java.util.List;
 
 import static java.time.Instant.now;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
 public class TaskController {
@@ -60,7 +59,7 @@ public class TaskController {
     ResponseEntity<Task> createTask(@RequestBody final Task task) {
         task.setInstantOfCreation(now());
         repo.insert(task);
-        return created(fromCurrentRequest().queryParam("id", task.getId()).build().toUri()).build();
+        return new ResponseEntity<>(task, CREATED);
     }
 
     @PutMapping("/tasks/{id}")
