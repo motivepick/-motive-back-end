@@ -1,7 +1,6 @@
 package com.yaskovdev.motivated.stay;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +37,7 @@ public class UserController {
         return ok(repository.findAll());
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/deletion")
     public ResponseEntity<User> delete(@PathVariable("id") final String id) {
         repository.delete(id);
         return ok().build();
