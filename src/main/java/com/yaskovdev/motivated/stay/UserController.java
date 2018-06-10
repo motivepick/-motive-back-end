@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController("/users")
@@ -27,6 +29,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> read(@PathVariable("id") final String id) {
         return ok(repository.findOne(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> readAll() {
+        return ok(repository.findAll());
     }
 
     @DeleteMapping("/{id}")
