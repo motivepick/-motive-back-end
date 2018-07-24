@@ -2,6 +2,7 @@ logging:
   level:
     com: DEBUG
     root: INFO
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 
 spring.data.mongodb.database: tasks
 
