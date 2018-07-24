@@ -4,3 +4,5 @@ logging:
     root: INFO
 
 spring.data.mongodb.database: tasks
+
+management.endpoints.web.exposure.include: info,health,httptrace

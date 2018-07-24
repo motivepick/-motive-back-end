@@ -52,7 +52,7 @@ public class TaskController {
 
     @GetMapping("/tasks/{id}")
     ResponseEntity<Task> getTask(@PathVariable("id") final String taskId) {
-        return repo.exists(taskId) ? ok(repo.findOne(taskId)) : notFound().build();
+        return repo.findById(taskId).map(ResponseEntity::ok).orElse(notFound().build());
     }
 
     @PostMapping("/tasks")
@@ -64,41 +64,32 @@ public class TaskController {
 
     @PutMapping("/tasks/{id}")
     ResponseEntity<Task> updateTask(@PathVariable("id") final String taskId, @RequestBody final Task newTask) {
-        // TODO: add validation
-
-        Task task = repo.findOne(taskId);
-
-        if (task == null) {
-            return new ResponseEntity<>(NOT_FOUND);
-        }
-
-        task.setName(newTask.getName());
-        task.setDescription(newTask.getDescription());
-
-        repo.save(task);
-
-        return new ResponseEntity<>(task, OK);
+        return repo.findById(taskId).map(t -> ok(save(t, newTask))).orElse(notFound().build());
     }
 
     @PostMapping("/closed-tasks/{id}")
     ResponseEntity<Task> closeTask(@PathVariable("id") final String taskId) {
-        final Task task = repo.findOne(taskId);
-        if (task == null) {
-            return new ResponseEntity<>(NOT_FOUND);
-        } else {
-            task.setClosed(true);
-            repo.save(task);
-            return new ResponseEntity<>(task, OK);
-        }
+        return repo.findById(taskId).map(t -> ok(close(t))).orElse(notFound().build());
     }
 
     @DeleteMapping("/tasks/{id}")
     ResponseEntity deleteTask(@PathVariable("id") final String taskId) {
-        if (repo.exists(taskId)) {
-            repo.delete(taskId);
+        if (repo.existsById(taskId)) {
+            repo.deleteById(taskId);
             return new ResponseEntity(OK);
         } else {
             return new ResponseEntity(NOT_FOUND);
         }
+    }
+
+    private Task save(final Task task, final Task newTask) {
+        task.setName(newTask.getName());
+        task.setDescription(newTask.getDescription());
+        return repo.save(task);
+    }
+
+    private Task close(final Task task) {
+        task.setClosed(true);
+        return repo.save(task);
     }
 }

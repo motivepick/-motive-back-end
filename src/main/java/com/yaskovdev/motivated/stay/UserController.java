@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -24,12 +25,12 @@ public class UserController {
 
     @PostMapping // TODO: can I use PUT
     public ResponseEntity<User> create(@RequestBody final User user) {
-        return repository.exists(user.getId()) ? ok(user) : ok(repository.insert(user));
+        return repository.existsById(user.getId()) ? ok(user) : ok(repository.insert(user));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> read(@PathVariable("id") final String id) {
-        return ok(repository.findOne(id));
+        return repository.findById(id).map(ResponseEntity::ok).orElse(notFound().build());
     }
 
     @GetMapping
@@ -39,7 +40,7 @@ public class UserController {
 
     @PostMapping("/{id}/deletion")
     public ResponseEntity<User> delete(@PathVariable("id") final String id) {
-        repository.delete(id);
+        repository.deleteById(id);
         return ok().build();
     }
 }
