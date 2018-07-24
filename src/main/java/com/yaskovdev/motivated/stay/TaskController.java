@@ -34,7 +34,7 @@ public class TaskController {
         this.repo = repo;
     }
 
-    @GetMapping("/{userId}/tasks")
+    @GetMapping("/users/{userId}/tasks")
     ResponseEntity<List<Task>> listTasks(@PathVariable("userId") final String userId,
             @RequestParam(name = "onlyOpen", defaultValue = "true") final boolean onlyOpen) {
         final Sort newestFirst = new Sort(new Order(DESC, "instantOfCreation"));
