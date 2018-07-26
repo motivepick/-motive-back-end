@@ -1,6 +1,8 @@
 # Stay Motivated Back End
 
-The service that is going to defeat the laziness. Coming soon...
+The service that is going to defeat the laziness.
+
+Try it out on https://motiv.yaskovdev.com.
 
 ## How to run with external DB
 
