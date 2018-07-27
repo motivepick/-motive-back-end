@@ -1,5 +1,6 @@
 package com.yaskovdev.motivated.stay;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,31 +16,28 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+@RequiredArgsConstructor
+class UserController {
 
     private final UserRepository repository;
 
-    public UserController(final UserRepository repository) {
-        this.repository = repository;
-    }
-
     @PostMapping // TODO: can I use PUT
-    public ResponseEntity<User> create(@RequestBody final User user) {
+    ResponseEntity<User> create(@RequestBody final User user) {
         return repository.existsById(user.getId()) ? ok(user) : ok(repository.insert(user));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> read(@PathVariable("id") final String id) {
+    ResponseEntity<User> read(@PathVariable("id") final String id) {
         return repository.findById(id).map(ResponseEntity::ok).orElse(notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> readAll() {
+    ResponseEntity<List<User>> readAll() {
         return ok(repository.findAll());
     }
 
     @PostMapping("/{id}/deletion")
-    public ResponseEntity<User> delete(@PathVariable("id") final String id) {
+    ResponseEntity<User> delete(@PathVariable("id") final String id) {
         repository.deleteById(id);
         return ok().build();
     }

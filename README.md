@@ -48,3 +48,5 @@ export GITHUB_REPO_NAME=stay-motivated-back-end
 2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/${GITHUB_REPO_NAME}`
 3. Replace settings of Git-Auto-Deploy with the `git-auto-deploy.conf.json` file provided in the current repository by executing: `rm -rf /etc/git-auto-deploy.conf.json && cp ${APPLICATIONS}/${GITHUB_REPO_NAME}/git-auto-deploy.conf.json /etc && chown git-auto-deploy:git-auto-deploy /etc/git-auto-deploy.conf.json`
 4. `service git-auto-deploy restart`
+
+1. Add a record to `/etc/hosts` file: `127.0.0.1 local-motiv.yaskovdev.com`
