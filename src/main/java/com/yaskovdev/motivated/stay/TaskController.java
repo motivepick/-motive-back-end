@@ -18,6 +18,7 @@ import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Optional.ofNullable;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -77,8 +78,8 @@ class TaskController {
     }
 
     private Task save(final Task task, final Task newTask) {
-        task.setName(newTask.getName());
-        task.setDescription(newTask.getDescription());
+        ofNullable(newTask.getName()).ifPresent(task::setName);
+        ofNullable(newTask.getDescription()).ifPresent(task::setDescription);
         return repo.save(task);
     }
 

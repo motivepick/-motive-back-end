@@ -21,7 +21,7 @@ class UserController {
 
     private final UserRepository repository;
 
-    @PostMapping // TODO: can I use PUT
+    @PostMapping // TODO: use PUT
     ResponseEntity<User> create(@RequestBody final User user) {
         return repository.existsById(user.getId()) ? ok(user) : ok(repository.insert(user));
     }
