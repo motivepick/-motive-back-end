@@ -80,6 +80,7 @@ class TaskController {
     private Task save(final Task task, final Task newTask) {
         ofNullable(newTask.getName()).ifPresent(task::setName);
         ofNullable(newTask.getDescription()).ifPresent(task::setDescription);
+        ofNullable(newTask.getDueDate()).ifPresent(task::setDueDate);
         return repo.save(task);
     }
 
