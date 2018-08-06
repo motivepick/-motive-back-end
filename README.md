@@ -1,4 +1,4 @@
-# Stay Motivated Back End
+# Motive Back End [![Build Status](https://travis-ci.com/motivepick/motive-back-end.svg?branch=master)](https://travis-ci.com/motivepick/motive-back-end)
 
 The service that is going to defeat the laziness.
 
