@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/users")
 internal class UserController(private val repository: UserRepository) {
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     fun create(@PathVariable("id") id: String, @RequestBody user: User): ResponseEntity<User> {
         user.id = id
         return if (repository.existsById(id)) ok(user) else ok(repository.insert(user))
@@ -29,7 +29,7 @@ internal class UserController(private val repository: UserRepository) {
         return ok(repository.findAll())
     }
 
-    @PostMapping("/{id}/deletion")
+    @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") id: String): ResponseEntity<User> {
         repository.deleteById(id)
         return ok().build()
