@@ -20,5 +20,5 @@ class Task {
     var closed: Boolean = false
 
     @DBRef(lazy = true)
-    var subtasks: MutableList<Task> = ArrayList()
+    var subtasks: MutableList<Task>? = null
 }
