@@ -1,6 +1,6 @@
 package org.motivepick.web
 
-import org.motivepick.domain.User
+import org.motivepick.domain.document.User
 import org.motivepick.repository.UserRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound

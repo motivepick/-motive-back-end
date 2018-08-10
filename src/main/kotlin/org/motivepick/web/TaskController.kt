@@ -1,6 +1,6 @@
 package org.motivepick.web
 
-import org.motivepick.domain.Task
+import org.motivepick.domain.document.Task
 import org.motivepick.repository.TaskRepository
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Sort

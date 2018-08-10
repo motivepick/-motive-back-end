@@ -1,4 +1,4 @@
-package org.motivepick.domain
+package org.motivepick.domain.document
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.DBRef
@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
 
 @Document
-class Task {
+open class Task {
 
     @Id
     var id: String? = null
@@ -19,6 +19,6 @@ class Task {
     var dueDate: LocalDateTime? = null
     var closed: Boolean = false
 
-    @DBRef(lazy = true)
-    var subtasks: MutableList<Task>? = null
+    @DBRef
+    var goal: Goal? = null
 }
