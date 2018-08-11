@@ -4,6 +4,10 @@ logging:
     root: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 
-spring.data.mongodb.database: tasks
-
 management.endpoints.web.exposure.include: info,health,httptrace
+
+# Fixes Caused by: java.sql.SQLFeatureNotSupportedException:
+# Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
+
+spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml

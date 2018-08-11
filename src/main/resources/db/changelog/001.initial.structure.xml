@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet author="Evgenii MIronenko" id="INITIAL_STRUCTURE_0">
+		<createTable tableName="USER_ACCOUNT">
+			<column name="ID" autoIncrement="true" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="PK__ID__USER_ACCOUNT"/>
+			</column>
+
+			<column name="ACCOUNT_ID" type="BIGINT">
+				<constraints unique="true" nullable="false"/>
+			</column>
+
+			<column name="NAME" type="VARCHAR2(400)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="TOKEN" type="VARCHAR2(400)">
+				<constraints nullable="true"/>
+			</column>
+		</createTable>
+
+		<createTable tableName="GOAL">
+			<column name="ID" autoIncrement="true" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="PK__ID__GOAL"/>
+			</column>
+
+			<column name="NAME" type="VARCHAR(500)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="CLOSED" type="BOOLEAN" defaultValue="FALSE">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="CREATED" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="DESCRIPTION" type="VARCHAR(500)"/>
+
+			<column name="DUE_DATE" type="DATETIME"/>
+
+			<column name="USER_ID" type="BIGINT">
+				<constraints nullable="false" foreignKeyName="FK__USER_ID__USER_ACCOUNT__ID" references="USER_ACCOUNT(ID)"/>
+			</column>
+		</createTable>
+		<createTable tableName="TASK">
+			<column name="ID" autoIncrement="true" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="PK__ID__TASK"/>
+			</column>
+
+			<column name="NAME" type="VARCHAR(500)">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="CLOSED" type="BOOLEAN" defaultValue="FALSE">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="CREATED" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+
+			<column name="DESCRIPTION" type="VARCHAR(500)"/>
+
+			<column name="DUE_DATE" type="DATETIME"/>
+
+			<column name="USER_ID" type="BIGINT">
+				<constraints nullable="false" foreignKeyName="FK__USER_ID__USER_ACCOUNT__ID" references="USER_ACCOUNT(ID)"/>
+			</column>
+
+			<column name="GOAL_ID" type="BIGINT">
+				<constraints nullable="true" foreignKeyName="FK__GOAL_ID__GOAL__ID" references="GOAL(ID)"/>
+			</column>
+		</createTable>
+	</changeSet>
+</databaseChangeLog>

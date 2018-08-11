@@ -1,6 +1,9 @@
 package org.motivepick.repository
 
-import org.motivepick.domain.document.Task
-import org.springframework.data.mongodb.repository.MongoRepository
+import org.motivepick.domain.entity.Task
+import org.springframework.data.repository.PagingAndSortingRepository
 
-interface TaskRepository : MongoRepository<Task, String>
+interface TaskRepository : PagingAndSortingRepository<Task, Long> {
+
+    fun findAllByUserAccountIdAndClosedOrderByCreatedDesc(userId: Long, closed: Boolean): List<Task>
+}

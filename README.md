@@ -6,18 +6,17 @@ Try it out on https://motiv.yaskovdev.com.
 
 ## How to run with external DB
 
-Edit `~/.bash_profile` to set the config of external DB:
+Add next parameters to your Spring Boot configuration:
 
-```bash
-export SPRING_DATA_MONGODB_HOST=<MONGO_DB_HOST>
-export SPRING_DATA_MONGODB_PORT=<MONGO_DB_PORT>
+```
+spring.datasource.url
+spring.datasource.name
+spring.datasource.password
 ```
 
-Then persist the settings:
+as on the following screenshot
 
-```bash
-source ~/.bash_profile
-```
+![Spring Boot Config](springboot_local_config.png)
 
 ## How to deploy the application
 

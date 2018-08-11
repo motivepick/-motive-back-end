@@ -7,10 +7,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @SpringBootApplication
-open class MotivePickApplication {
+class MotivePickApplication {
 
     @Bean
-    open fun webMvcConfigurer(): WebMvcConfigurer {
+    fun webMvcConfigurer(): WebMvcConfigurer {
         return object : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry

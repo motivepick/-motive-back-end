@@ -1,85 +1,73 @@
 package org.motivepick.web
 
-import org.motivepick.domain.document.Task
+import org.motivepick.domain.entity.Task
+import org.motivepick.domain.ui.task.CreateTaskRequest
+import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
-import org.springframework.data.domain.Example
-import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Direction.DESC
-import org.springframework.data.domain.Sort.Order
+import org.motivepick.repository.UserRepository
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime.now
-import java.time.ZoneOffset.UTC
 
 @RestController
 @RequestMapping("/tasks")
-internal class TaskController(private val repo: TaskRepository) {
+internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
 
-    companion object {
-        private val NEWEST_FIRST = Sort.by(Order(DESC, "instantOfCreation"))
+    @PostMapping()
+    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
+        return userRepo.findByAccountId(request.accountId)?.let { user ->
+            val task = Task(user, request.name)
+            task.description = request.description
+            task.dueDate = request.dueDate
+
+            return ResponseEntity(taskRepo.save(task), CREATED)
+        } ?: ResponseEntity.notFound().build()
     }
 
     @GetMapping("/list/{userId}")
-    fun read(@PathVariable("userId") userId: String,
-                  @RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
-        val probe = Task()
-        probe.userId = userId
-        if (onlyOpen) {
-            probe.closed = false
-        }
-        return ok(repo.findAll(Example.of(probe), NEWEST_FIRST))
+    fun list(@PathVariable("userId") userId: Long,
+             @RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
+        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(userId, !onlyOpen))
     }
 
     @GetMapping("/{id}")
-    fun read(@PathVariable("id") taskId: String): ResponseEntity<Task> {
-        return repo.findById(taskId)
+    fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> {
+        return taskRepo.findById(taskId)
                 .map { ok(it) }
                 .orElse(notFound().build())
     }
 
-    @PostMapping()
-    fun create(@RequestBody task: Task): ResponseEntity<Task> {
-        task.instantOfCreation = now(UTC)
-        repo.insert(task)
-        return ResponseEntity(task, CREATED)
-    }
-
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") taskId: String, @RequestBody newTask: Task): ResponseEntity<Task> {
-        return repo.findById(taskId)
-                .map { ok(save(it, newTask)) }
-                .orElse(notFound().build())
+    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> {
+        return taskRepo.findById(taskId)
+                .map { task ->
+                    request.name?.let { task.name = it }
+                    request.description?.let { task.description = it }
+                    request.dueDate?.let { task.dueDate = it }
+                    request.closed?.let { task.closed = it }
+                    return@map ResponseEntity.ok(taskRepo.save(task))
+                }.orElse(ResponseEntity.notFound().build())
     }
 
+    // TODO: we don't need this method. use update instead
     @PutMapping("/{id}/close")
-    fun close(@PathVariable("id") taskId: String): ResponseEntity<Task> {
-        return repo.findById(taskId)
-                .map { ok(close(it)) }
-                .orElse(notFound().build())
+    fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> {
+        return taskRepo.findById(taskId)
+                .map { task ->
+                    task.closed = true
+                    return@map ResponseEntity.ok(taskRepo.save(task))
+                }.orElse(ResponseEntity.notFound().build())
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") taskId: String): ResponseEntity<Any> {
-        if (repo.existsById(taskId)) {
-            repo.deleteById(taskId)
+    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> {
+        if (taskRepo.existsById(taskId)) {
+            taskRepo.deleteById(taskId)
             return ResponseEntity(OK)
         } else {
             return ResponseEntity(NOT_FOUND)
         }
-    }
-
-    private fun save(task: Task, newTask: Task): Task {
-        newTask.name?.let { task.name = it }
-        newTask.description?.let { task.description = it }
-        newTask.dueDate?.let { task.dueDate = it }
-        return repo.save(task)
-    }
-
-    private fun close(task: Task): Task {
-        task.closed = true
-        return repo.save(task)
     }
 }

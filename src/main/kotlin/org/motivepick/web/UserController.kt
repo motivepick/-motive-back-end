@@ -1,6 +1,7 @@
 package org.motivepick.web
 
-import org.motivepick.domain.document.User
+import org.motivepick.domain.entity.User
+import org.motivepick.domain.ui.user.CreateUserRequest
 import org.motivepick.repository.UserRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
@@ -11,27 +12,38 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/users")
 internal class UserController(private val repository: UserRepository) {
 
-    @PostMapping("/{id}")
-    fun create(@PathVariable("id") id: String, @RequestBody user: User): ResponseEntity<User> {
-        user.id = id
-        return if (repository.existsById(id)) ok(user) else ok(repository.insert(user))
+    @PostMapping
+    fun create(@RequestBody request: CreateUserRequest): ResponseEntity<User> {
+        return repository.findByAccountId(request.accountId)?.let {
+            it.token = request.token
+
+            return ok(repository.save(it))
+        } ?: run {
+            val user = User(request.accountId, request.name, request.token)
+            return ok(repository.save(user))
+        }
     }
 
-    @GetMapping("/{id}")
-    fun read(@PathVariable("id") id: String): ResponseEntity<User> {
-        return repository.findById(id)
-                .map { ok(it) }
-                .orElse(notFound().build())
+    @GetMapping("/{accountId}")
+    fun read(@PathVariable("accountId") accountId: Long): ResponseEntity<User> {
+        return repository.findByAccountId(accountId)
+                ?.let { ok(it) }
+                ?: notFound().build()
     }
 
     @GetMapping
-    fun readAll(): ResponseEntity<List<User>> {
+    fun readAll(): ResponseEntity<Iterable<User>> {
         return ok(repository.findAll())
     }
 
-    @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") id: String): ResponseEntity<User> {
-        repository.deleteById(id)
-        return ok().build()
+    // TODO: the method doesn't actually delete user, but does reset user's token
+    @DeleteMapping("/{accountId}")
+    fun delete(@PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
+        return repository.findByAccountId(accountId)?.let {
+            it.token = null
+            repository.save(it)
+
+            return ok().build()
+        } ?: notFound().build()
     }
 }

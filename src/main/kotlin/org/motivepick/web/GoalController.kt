@@ -1,38 +1,40 @@
 package org.motivepick.web
 
-import org.motivepick.domain.document.Goal
-import org.motivepick.domain.ui.CreateGoalRequest
-import org.motivepick.domain.ui.UpdateGoalRequest
+import org.motivepick.domain.entity.Goal
+import org.motivepick.domain.ui.goal.CreateGoalRequest
+import org.motivepick.domain.ui.goal.UpdateGoalRequest
 import org.motivepick.repository.GoalRepository
 import org.motivepick.repository.TaskRepository
+import org.motivepick.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/goals")
-internal class GoalController(private val goalRepo: GoalRepository, private val taskRepo: TaskRepository) {
+internal class GoalController
+(private val goalRepo: GoalRepository, private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
 
     @PostMapping()
     fun create(@RequestBody request: CreateGoalRequest): ResponseEntity<Goal> {
-        val goal = Goal()
-        goal.userId = request.userId
-        goal.name = request.name
-        goal.description = request.description
-        goal.dueDate = request.dueDate
-        goalRepo.insert(goal)
-        return ResponseEntity(goal, HttpStatus.CREATED)
+        return userRepo.findByAccountId(request.accountId)?.let { user ->
+            val goal = Goal(user, request.name)
+            goal.description = request.description
+            goal.dueDate = request.dueDate
+
+            return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
+        } ?: ResponseEntity.notFound().build()
     }
 
     @GetMapping("/{id}")
-    fun read(@PathVariable("id") goalId: String): ResponseEntity<Goal> {
+    fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> {
         return goalRepo.findById(goalId)
                 .map { ResponseEntity.ok(it) }
                 .orElse(ResponseEntity.notFound().build())
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") goalId: String, @RequestBody request: UpdateGoalRequest): ResponseEntity<Goal> {
+    fun update(@PathVariable("id") goalId: Long, @RequestBody request: UpdateGoalRequest): ResponseEntity<Goal> {
         return goalRepo.findById(goalId)
                 .map { goal ->
                     request.name?.let { goal.name = it }
@@ -44,7 +46,7 @@ internal class GoalController(private val goalRepo: GoalRepository, private val 
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") goalId: String): ResponseEntity<Any> {
+    fun delete(@PathVariable("id") goalId: Long): ResponseEntity<Any> {
         if (goalRepo.existsById(goalId)) {
             goalRepo.deleteById(goalId)
             return ResponseEntity(HttpStatus.OK)
@@ -54,12 +56,13 @@ internal class GoalController(private val goalRepo: GoalRepository, private val 
     }
 
     @PutMapping("/{id}/assign-task")
-    fun assign(@PathVariable("id") goalId: String, @RequestParam("taskId") taskId: String): ResponseEntity<Any> {
+    fun assign(@PathVariable("id") goalId: Long, @RequestParam("taskId") taskId: Long): ResponseEntity<Any> {
         return goalRepo.findById(goalId).map { goal ->
             taskRepo.findById(taskId).map { task ->
                 goal.tasks.add(task)
                 goalRepo.save(goal)
 
+                // TODO mondo cleanup: do we need it now?
                 task.goal = goal
                 taskRepo.save(task)
 

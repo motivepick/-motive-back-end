@@ -1,6 +1,6 @@
 package org.motivepick.repository
 
-import org.motivepick.domain.document.Goal
-import org.springframework.data.mongodb.repository.MongoRepository
+import org.motivepick.domain.entity.Goal
+import org.springframework.data.repository.PagingAndSortingRepository
 
-interface GoalRepository : MongoRepository<Goal, String>
+interface GoalRepository : PagingAndSortingRepository<Goal, Long>

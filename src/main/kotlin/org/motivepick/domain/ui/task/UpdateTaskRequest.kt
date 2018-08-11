@@ -1,8 +1,8 @@
-package org.motivepick.domain.ui
+package org.motivepick.domain.ui.task
 
 import java.time.LocalDateTime
 
-class UpdateGoalRequest {
+class UpdateTaskRequest {
 
     var name: String? = null
     var description: String? = null
