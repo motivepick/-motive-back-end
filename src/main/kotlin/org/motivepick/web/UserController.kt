@@ -38,7 +38,7 @@ internal class UserController(private val repository: UserRepository) {
 
     // TODO: the method doesn't actually delete user, but does reset user's token
     @DeleteMapping("/{accountId}")
-    fun delete(@PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
+    fun revoke(@PathVariable("accountId") accountId: Long): ResponseEntity<Any> {
         return repository.findByAccountId(accountId)?.let {
             it.token = null
             repository.save(it)
