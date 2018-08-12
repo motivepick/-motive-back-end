@@ -18,6 +18,10 @@ as on the following screenshot
 
 ![Spring Boot Config](springboot_local_config.png)
 
+## How to open Swagger
+
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
 ## How to deploy the application
 
 Just merge your branch to `release` branch and push your changes.
