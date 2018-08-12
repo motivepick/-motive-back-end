@@ -25,4 +25,9 @@ class Goal(
     @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed
     @OneToMany(mappedBy = "goal", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var tasks: MutableList<Task> = ArrayList()
+
+    fun addTask(task: Task) {
+        task.goal = this
+        tasks.add(task)
+    }
 }

@@ -59,12 +59,8 @@ internal class GoalController
     fun assign(@PathVariable("id") goalId: Long, @RequestParam("taskId") taskId: Long): ResponseEntity<Any> {
         return goalRepo.findById(goalId).map { goal ->
             taskRepo.findById(taskId).map { task ->
-                goal.tasks.add(task)
+                goal.addTask(task)
                 goalRepo.save(goal)
-
-                // TODO mondo cleanup: do we need it now?
-                task.goal = goal
-                taskRepo.save(task)
 
                 ResponseEntity<Any>(HttpStatus.OK)
             }.orElse(ResponseEntity(HttpStatus.NOT_FOUND))
