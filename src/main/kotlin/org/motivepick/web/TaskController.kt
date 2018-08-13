@@ -63,11 +63,11 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> {
-        if (taskRepo.existsById(taskId)) {
+        return if (taskRepo.existsById(taskId)) {
             taskRepo.deleteById(taskId)
-            return ResponseEntity(OK)
+            ResponseEntity(OK)
         } else {
-            return ResponseEntity(NOT_FOUND)
+            ResponseEntity(NOT_FOUND)
         }
     }
 }

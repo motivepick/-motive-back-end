@@ -58,16 +58,16 @@
         </dependency>
 
         <!-- Kotlin -->
-	    <dependency>
-		    <groupId>org.jetbrains.kotlin</groupId>
-		    <artifactId>kotlin-stdlib</artifactId>
-		    <version>${kotlin.version}</version>
-	    </dependency>
-	    <dependency>
-		    <groupId>org.jetbrains.kotlin</groupId>
-		    <artifactId>kotlin-reflect</artifactId>
-		    <version>${kotlin.version}</version>
-	    </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
 
         <!-- Other -->
         <dependency>
@@ -75,11 +75,11 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-	    <dependency>
-		    <groupId>org.liquibase</groupId>
-		    <artifactId>liquibase-core</artifactId>
-		    <version>${liquibase.version}</version>
-	    </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>
@@ -118,13 +118,13 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
 
-	            <configuration>
-		            <compilerPlugins>
-			            <plugin>jpa</plugin>
+                <configuration>
+                    <compilerPlugins>
+                        <plugin>jpa</plugin>
                         <plugin>spring</plugin>
-		            </compilerPlugins>
+                    </compilerPlugins>
                     <jvmTarget>1.8</jvmTarget>
-	            </configuration>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
