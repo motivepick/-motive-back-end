@@ -26,10 +26,10 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
         } ?: ResponseEntity.notFound().build()
     }
 
-    @GetMapping("/list/{userId}")
-    fun list(@PathVariable("userId") userId: Long,
+    @GetMapping("/list/{accountId}")
+    fun list(@PathVariable("accountId") accountId: Long,
              @RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
-        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(userId, !onlyOpen))
+        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(accountId, !onlyOpen))
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,8 @@
 package org.motivepick.web
 
+import com.github.springtestdbunit.annotation.DatabaseOperation
 import com.github.springtestdbunit.annotation.DatabaseSetup
+import com.github.springtestdbunit.annotation.DatabaseTearDown
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @IntegrationTest
 @DatabaseSetup("/dbunit/users.xml")
+@DatabaseTearDown("/dbunit/users.xml", type = DatabaseOperation.DELETE_ALL)
 class UserControllerIntegrationTest {
 
     private val ACCOUNT_ID = 1234567890L
