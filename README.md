@@ -4,54 +4,27 @@ The service that is going to defeat the laziness.
 
 Try it out on https://motiv.yaskovdev.com.
 
-## How to run with external DB
+## How to run locally
 
-Add next parameters to your Spring Boot configuration:
+1. Install PostgreSQL
+2. Create the database using `CREATE DATABASE motive ENCODING 'UTF8' TEMPLATE template0;`
+3. Make sure that the database is running on `localhost` on `5432` port, the username is `postgres` and the password is `postgres`. If that's not the case, see the paragraph below.
+3. In the project root run `./mvnw spring-boot:run`.
+
+## How to run with non-default DB
+
+Add the next parameters to your Spring Boot configuration:
 
 ```
 spring.datasource.url
-spring.datasource.name
+spring.datasource.username
 spring.datasource.password
 ```
 
-as on the following screenshot
+as on the following screenshot:
 
 ![Spring Boot Config](springboot_local_config.png)
 
 ## How to open Swagger
 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-
-## How to deploy the application
-
-Just merge your branch to `release` branch and push your changes.
-
-## How to configure the development instance
-
-### Variables
-
-```bash
-export APPLICATIONS=/app
-export GITHUB_USER_NAME=yaskovdev
-export GITHUB_REPO_NAME=stay-motivated-back-end
-```
-
-### Configure the GitHub repository
-
-### Configure Git-Auto-Deploy
-
-[Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy) is a tool that allows to deploy an application automatically on Git push.
-
-#### Prerequisites
-
-1. Git is installed
-2. Git-Auto-Deploy is installed
-
-#### Steps to configure
-
-1. `cd ${APPLICATIONS} && git clone https://github.com/${GITHUB_USER_NAME}/${GITHUB_REPO_NAME}.git`
-2. `chown -R git-auto-deploy:git-auto-deploy ${APPLICATIONS}/${GITHUB_REPO_NAME}`
-3. Replace settings of Git-Auto-Deploy with the `git-auto-deploy.conf.json` file provided in the current repository by executing: `rm -rf /etc/git-auto-deploy.conf.json && cp ${APPLICATIONS}/${GITHUB_REPO_NAME}/git-auto-deploy.conf.json /etc && chown git-auto-deploy:git-auto-deploy /etc/git-auto-deploy.conf.json`
-4. `service git-auto-deploy restart`
-
-1. Add a record to `/etc/hosts` file: `127.0.0.1 local-motiv.yaskovdev.com`

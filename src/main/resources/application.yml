@@ -11,3 +11,8 @@ management.endpoints.web.exposure.include: info,health,httptrace
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
 
 spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
+
+spring.datasource:
+  url: jdbc:postgresql://localhost:5432/motive
+  username: postgres
+  password: postgres
