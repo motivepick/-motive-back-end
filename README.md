@@ -28,3 +28,14 @@ as on the following screenshot:
 ## How to open Swagger
 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+## Short note about deployment to LIVE
+
+When deploy to live make sure at least the next parameters are overridden with LIVE values:
+
+```
+spring.datasource.url
+spring.datasource.username
+spring.datasource.password
+motive.facebook.client-secret
+```

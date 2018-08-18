@@ -16,3 +16,5 @@ spring.datasource:
   url: jdbc:postgresql://localhost:5432/motive
   username: postgres
   password: postgres
+
+motive.facebook.client-secret: 16d922eb48ba0d30f0d9feee7c1acbec

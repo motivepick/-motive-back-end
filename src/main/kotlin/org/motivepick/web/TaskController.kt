@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/tasks")
 internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
 
-    @PostMapping()
+    @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
         return userRepo.findByAccountId(request.accountId)?.let { user ->
             val task = Task(user, request.name)

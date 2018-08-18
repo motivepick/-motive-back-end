@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 internal class GoalController
 (private val goalRepo: GoalRepository, private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
 
-    @PostMapping()
+    @PostMapping
     fun create(@RequestBody request: CreateGoalRequest): ResponseEntity<Goal> {
         return userRepo.findByAccountId(request.accountId)?.let { user ->
             val goal = Goal(user, request.name)
@@ -27,11 +27,10 @@ internal class GoalController
     }
 
     @GetMapping("/{id}")
-    fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> {
-        return goalRepo.findById(goalId)
-                .map { ResponseEntity.ok(it) }
-                .orElse(ResponseEntity.notFound().build())
-    }
+    fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> =
+            goalRepo.findById(goalId)
+                    .map { ResponseEntity.ok(it) }
+                    .orElse(ResponseEntity.notFound().build())
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") goalId: Long, @RequestBody request: UpdateGoalRequest): ResponseEntity<Goal> {
