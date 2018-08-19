@@ -1,6 +1,7 @@
 package org.motivepick.web
 
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import java.time.LocalDateTime
 
 // TODO: temporary ignored
+@Ignore
 //@RunWith(SpringRunner::class)
 //@IntegrationTest
 //@DatabaseSetup("/dbunit/goals.xml")
