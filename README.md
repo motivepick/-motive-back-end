@@ -31,11 +31,11 @@ as on the following screenshot:
 
 ## Short note about deployment to LIVE
 
-When deploy to live make sure at least the next parameters are overridden with LIVE values:
+When deploy to LIVE make sure at least the next parameters are overridden with LIVE values:
 
 ```
+motive.facebook.client-secret
 spring.datasource.url
 spring.datasource.username
 spring.datasource.password
-motive.facebook.client-secret
 ```

@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/users")
-internal class UserController(private val repository: UserRepository,
+internal class UserController(private val repository: UserRepository, private val restTemplate: RestTemplate,
         @Value("\${motive.facebook.client-secret}") private val clientSecret: String) {
 
     @PostMapping
@@ -43,7 +43,7 @@ internal class UserController(private val repository: UserRepository,
                 .queryParam("client_secret", clientSecret)
                 .queryParam("code", code)
                 .queryParam("redirect_uri", redirectUrl).build().toUri()
-        val response = RestTemplate().getForObject(uri, TokenResponse::class.java)
+        val response = restTemplate.getForObject(uri, TokenResponse::class.java)
         return response?.let { ok(it.token) } ?: ResponseEntity(INTERNAL_SERVER_ERROR)
     }
 

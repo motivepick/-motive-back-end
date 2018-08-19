@@ -33,11 +33,10 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
     }
 
     @GetMapping("/{id}")
-    fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> {
-        return taskRepo.findById(taskId)
-                .map { ok(it) }
-                .orElse(notFound().build())
-    }
+    fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+            taskRepo.findById(taskId)
+                    .map { ok(it) }
+                    .orElse(notFound().build())
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> {

@@ -30,14 +30,12 @@ internal class GoalController
     }
 
     @GetMapping("/list/{accountId}")
-    fun list(@PathVariable("accountId") accountId: Long): ResponseEntity<List<Goal>> {
-        return ok(goalRepo.findAllByUserAccountId(accountId))
-    }
+    fun list(@PathVariable("accountId") accountId: Long): ResponseEntity<List<Goal>> =
+            ok(goalRepo.findAllByUserAccountId(accountId))
 
     @GetMapping("/{id}/tasks")
-    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> {
-        return ok(taskRepo.findAllByGoalId(goalId))
-    }
+    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> =
+            ok(taskRepo.findAllByGoalId(goalId))
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> =
@@ -59,14 +57,13 @@ internal class GoalController
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") goalId: Long): ResponseEntity<Any> {
-        if (goalRepo.existsById(goalId)) {
-            goalRepo.deleteById(goalId)
-            return ResponseEntity(HttpStatus.OK)
-        } else {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-    }
+    fun delete(@PathVariable("id") goalId: Long): ResponseEntity<Any> =
+            if (goalRepo.existsById(goalId)) {
+                goalRepo.deleteById(goalId)
+                ResponseEntity(HttpStatus.OK)
+            } else {
+                ResponseEntity(HttpStatus.NOT_FOUND)
+            }
 
     @PutMapping("/{id}/assign-task")
     fun assign(@PathVariable("id") goalId: Long, @RequestParam("taskId") taskId: Long): ResponseEntity<Any> {
