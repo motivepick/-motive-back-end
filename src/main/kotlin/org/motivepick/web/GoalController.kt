@@ -1,6 +1,7 @@
 package org.motivepick.web
 
 import org.motivepick.domain.entity.Goal
+import org.motivepick.domain.entity.Task
 import org.motivepick.domain.ui.goal.CreateGoalRequest
 import org.motivepick.domain.ui.goal.UpdateGoalRequest
 import org.motivepick.repository.GoalRepository
@@ -31,6 +32,11 @@ internal class GoalController
     @GetMapping("/list/{accountId}")
     fun list(@PathVariable("accountId") accountId: Long): ResponseEntity<List<Goal>> {
         return ok(goalRepo.findAllByUserAccountId(accountId))
+    }
+
+    @GetMapping("/{id}/tasks")
+    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> {
+        return ok(taskRepo.findAllByGoalId(goalId))
     }
 
     @GetMapping("/{id}")
