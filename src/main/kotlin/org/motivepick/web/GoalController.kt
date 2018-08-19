@@ -8,6 +8,7 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -25,6 +26,11 @@ internal class GoalController
 
             return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
         } ?: ResponseEntity.notFound().build()
+    }
+
+    @GetMapping("/list/{accountId}")
+    fun list(@PathVariable("accountId") accountId: Long): ResponseEntity<List<Goal>> {
+        return ok(goalRepo.findAllByUserAccountId(accountId))
     }
 
     @GetMapping("/{id}")
