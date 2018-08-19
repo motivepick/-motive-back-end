@@ -34,7 +34,7 @@ as on the following screenshot:
 When deploy to LIVE make sure at least the next parameters are overridden with LIVE values:
 
 ```
-motive.facebook.client-secret
+authentication.success.url
 spring.datasource.url
 spring.datasource.username
 spring.datasource.password

@@ -1,7 +1,6 @@
 package org.motivepick.config
 
 import org.motivepick.security.MotiveAuthenticationSuccessHandler
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -9,10 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint
 
 @Configuration
-class SecurityConfig : WebSecurityConfigurerAdapter() {
-
-    @Autowired
-    private lateinit var successHandler: MotiveAuthenticationSuccessHandler
+class SecurityConfig(private val successHandler: MotiveAuthenticationSuccessHandler) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
         http
