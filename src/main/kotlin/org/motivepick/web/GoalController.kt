@@ -21,6 +21,7 @@ internal class GoalController
             val goal = Goal(user, request.name)
             goal.description = request.description
             goal.dueDate = request.dueDate
+            goal.colorTag = request.colorTag
 
             return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
         } ?: ResponseEntity.notFound().build()
@@ -40,6 +41,7 @@ internal class GoalController
                     request.description?.let { goal.description = it }
                     request.dueDate?.let { goal.dueDate = it }
                     request.closed?.let { goal.closed = it }
+                    request.colorTag?.let { goal.colorTag = it }
                     return@map ResponseEntity.ok(goalRepo.save(goal))
                 }.orElse(ResponseEntity.notFound().build())
     }

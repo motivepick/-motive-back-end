@@ -16,6 +16,8 @@ class Goal(
 
     var description: String? = null
 
+    var colorTag: String? = null
+
     @Column(nullable = false)
     var created: LocalDateTime = LocalDateTime.now(UTC)
 

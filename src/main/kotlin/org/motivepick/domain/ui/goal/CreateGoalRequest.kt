@@ -7,4 +7,5 @@ data class CreateGoalRequest @JsonCreator constructor(val accountId: Long, val n
 
     var description: String? = null
     var dueDate: LocalDateTime? = null
+    var colorTag: String? = null
 }
