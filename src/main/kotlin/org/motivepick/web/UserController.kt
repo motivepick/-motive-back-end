@@ -1,13 +1,12 @@
 package org.motivepick.web
 
 import org.motivepick.domain.entity.User
-import org.motivepick.extension.getAccountId
 import org.motivepick.repository.UserRepository
+import org.motivepick.security.CurrentUser
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,12 +15,13 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/users")
-internal class UserController(private val repo: UserRepository) {
-
+internal class UserController(
+        private val repo: UserRepository,
+        private val currentUser: CurrentUser) {
 
     @GetMapping
-    fun read(authenticationToken: OAuth2AuthenticationToken): ResponseEntity<User> =
-            repo.findByAccountId(authenticationToken.getAccountId())
+    fun read(): ResponseEntity<User> =
+            repo.findByAccountId(currentUser.getAccountId())
                     ?.let { ok(it) }
                     ?: notFound().build()
 

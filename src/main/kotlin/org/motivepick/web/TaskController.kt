@@ -3,35 +3,35 @@ package org.motivepick.web
 import org.motivepick.domain.entity.Task
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
-import org.motivepick.extension.getAccountId
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
+import org.motivepick.security.CurrentUser
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/tasks")
-internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
+internal class TaskController(
+        private val taskRepo: TaskRepository,
+        private val userRepo: UserRepository,
+        private val currentUser: CurrentUser) {
 
     @PostMapping
-    fun create(authentication: OAuth2AuthenticationToken, @RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
-        return userRepo.findByAccountId(authentication.getAccountId())?.let { user ->
-            val task = Task(user, request.name)
-            task.description = request.description
-            task.dueDate = request.dueDate
+    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
+        val user = userRepo.findByAccountId(currentUser.getAccountId())!!
+        val task = Task(user, request.name)
+        task.description = request.description
+        task.dueDate = request.dueDate
 
-            return ResponseEntity(taskRepo.save(task), CREATED)
-        } ?: ResponseEntity.notFound().build()
+        return ResponseEntity(taskRepo.save(task), CREATED)
     }
 
     @GetMapping("/list")
-    fun list(authentication: OAuth2AuthenticationToken,
-             @RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
-        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(authentication.getAccountId(), !onlyOpen))
+    fun list(@RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
+        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), !onlyOpen))
     }
 
     @GetMapping("/{id}")

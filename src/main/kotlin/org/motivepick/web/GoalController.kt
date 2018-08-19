@@ -4,40 +4,40 @@ import org.motivepick.domain.entity.Goal
 import org.motivepick.domain.entity.Task
 import org.motivepick.domain.ui.goal.CreateGoalRequest
 import org.motivepick.domain.ui.goal.UpdateGoalRequest
-import org.motivepick.extension.getAccountId
 import org.motivepick.repository.GoalRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
+import org.motivepick.security.CurrentUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/goals")
 internal class GoalController
-(private val goalRepo: GoalRepository, private val taskRepo: TaskRepository, private val userRepo: UserRepository) {
+(private val goalRepo: GoalRepository,
+ private val taskRepo: TaskRepository,
+ private val userRepo: UserRepository,
+ private val currentUser: CurrentUser
+) {
 
     @PostMapping
-    fun create(authentication: OAuth2AuthenticationToken, @RequestBody request: CreateGoalRequest): ResponseEntity<Goal> {
-        return userRepo.findByAccountId(authentication.getAccountId())?.let { user ->
-            val goal = Goal(user, request.name)
-            goal.description = request.description
-            goal.dueDate = request.dueDate
-            goal.colorTag = request.colorTag
+    fun create(@RequestBody request: CreateGoalRequest): ResponseEntity<Goal> {
+        val user = userRepo.findByAccountId(currentUser.getAccountId())!!
+        val goal = Goal(user, request.name)
+        goal.description = request.description
+        goal.dueDate = request.dueDate
+        goal.colorTag = request.colorTag
 
-            return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
-        } ?: ResponseEntity.notFound().build()
+        return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
     }
 
     @GetMapping("/list")
-    fun list(authentication: OAuth2AuthenticationToken): ResponseEntity<List<Goal>> =
-            ok(goalRepo.findAllByUserAccountId(authentication.getAccountId()))
+    fun list(): ResponseEntity<List<Goal>> = ok(goalRepo.findAllByUserAccountId(currentUser.getAccountId()))
 
     @GetMapping("/{id}/tasks")
-    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> =
-            ok(taskRepo.findAllByGoalId(goalId))
+    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> = ok(taskRepo.findAllByGoalId(goalId))
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> =

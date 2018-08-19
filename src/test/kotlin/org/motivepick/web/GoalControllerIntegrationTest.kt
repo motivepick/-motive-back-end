@@ -1,26 +1,25 @@
 package org.motivepick.web
 
+import com.github.springtestdbunit.annotation.DatabaseOperation
+import com.github.springtestdbunit.annotation.DatabaseSetup
+import com.github.springtestdbunit.annotation.DatabaseTearDown
 import org.junit.Assert.*
-import org.junit.Ignore
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.motivepick.IntegrationTest
 import org.motivepick.domain.ui.goal.CreateGoalRequest
 import org.motivepick.domain.ui.goal.UpdateGoalRequest
-import org.motivepick.extension.getAccountId
 import org.motivepick.repository.GoalRepository
 import org.motivepick.repository.TaskRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 
-// TODO: temporary ignored
-@Ignore
-//@RunWith(SpringRunner::class)
-//@IntegrationTest
-//@DatabaseSetup("/dbunit/goals.xml")
-//@DatabaseTearDown("/dbunit/goals.xml", type = DatabaseOperation.DELETE_ALL)
+@RunWith(SpringRunner::class)
+@IntegrationTest(1234567890L, "Firstname Lastname")
+@DatabaseSetup("/dbunit/goals.xml")
+@DatabaseTearDown("/dbunit/goals.xml", type = DatabaseOperation.DELETE_ALL)
 class GoalControllerIntegrationTest {
 
     @Autowired
@@ -33,26 +32,13 @@ class GoalControllerIntegrationTest {
     private lateinit var taskRepository: TaskRepository
 
     @Test
-    fun createUserNotFound() {
-        val authentication = mock(OAuth2AuthenticationToken::class.java)
-        val request = CreateGoalRequest("some goal")
-
-        `when`(authentication.getAccountId()).thenReturn(12345L)
-        val response = controller.create(authentication, request)
-
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-    }
-
-    @Test
     fun create() {
-        val authentication = mock(OAuth2AuthenticationToken::class.java)
         val accountId = 1234567890L
-        `when`(authentication.getAccountId()).thenReturn(12345L)
 
         val request = CreateGoalRequest("some goal")
         request.description = "some description"
         request.dueDate = LocalDateTime.now()
-        val response = controller.create(authentication, request)
+        val response = controller.create(request)
 
         assertEquals(HttpStatus.CREATED, response.statusCode)
 

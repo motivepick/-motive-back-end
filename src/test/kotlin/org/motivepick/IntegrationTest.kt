@@ -21,6 +21,7 @@ import javax.transaction.Transactional
         DependencyInjectionTestExecutionListener::class,
         DirtiesContextTestExecutionListener::class,
         TransactionalTestExecutionListener::class,
-        MockitoTestExecutionListener::class
+        MockitoTestExecutionListener::class,
+        OAuth2TestExecutionListener::class
 )
-annotation class IntegrationTest
+annotation class IntegrationTest(val userAccountId: Long, val userName: String)
