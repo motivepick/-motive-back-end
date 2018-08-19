@@ -17,4 +17,10 @@ spring.datasource:
   username: postgres
   password: postgres
 
-motive.facebook.client-secret: 16d922eb48ba0d30f0d9feee7c1acbec
+spring.security.oauth2.client.registration.facebook:
+  client-id: 2126656117583758
+  client-secret: 16d922eb48ba0d30f0d9feee7c1acbec
+
+authentication.success.url: http://localhost:3000
+
+logging.level.org.springframework.security: DEBUG
