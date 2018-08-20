@@ -15,6 +15,10 @@ class SecurityConfig(private val successHandler: MotiveAuthenticationSuccessHand
                 .cors()
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
+
+                // see CurrentUser#accountIdFromRequestHeader, delete as soon as mobile OAuth is done
+                .antMatchers(HttpMethod.GET).permitAll().antMatchers(HttpMethod.POST).permitAll().antMatchers(HttpMethod.PUT).permitAll().antMatchers(HttpMethod.DELETE).permitAll()
+
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(Http403ForbiddenEntryPoint())
                 .and().oauth2Login().successHandler(successHandler)

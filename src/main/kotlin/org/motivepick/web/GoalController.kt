@@ -33,7 +33,7 @@ internal class GoalController
         return ResponseEntity(goalRepo.save(goal), HttpStatus.CREATED)
     }
 
-    @GetMapping("/list")
+    @GetMapping
     fun list(): ResponseEntity<List<Goal>> = ok(goalRepo.findAllByUserAccountId(currentUser.getAccountId()))
 
     @GetMapping("/{id}/tasks")

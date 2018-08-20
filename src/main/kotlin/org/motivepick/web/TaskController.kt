@@ -29,7 +29,7 @@ internal class TaskController(
         return ResponseEntity(taskRepo.save(task), CREATED)
     }
 
-    @GetMapping("/list")
+    @GetMapping
     fun list(@RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
         return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), !onlyOpen))
     }
