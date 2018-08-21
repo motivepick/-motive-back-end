@@ -4,6 +4,7 @@ import org.motivepick.domain.entity.Goal
 import org.motivepick.domain.entity.Task
 import org.motivepick.domain.ui.goal.CreateGoalRequest
 import org.motivepick.domain.ui.goal.UpdateGoalRequest
+import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.repository.GoalRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
@@ -38,6 +39,18 @@ internal class GoalController
 
     @GetMapping("/{id}/tasks")
     fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> = ok(taskRepo.findAllByGoalId(goalId))
+
+    @PostMapping("/{id}/tasks")
+    fun createTaskForGoal(@PathVariable("id") goalId: Long, @RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
+        return goalRepo.findById(goalId).map { goal ->
+            val user = userRepo.findByAccountId(currentUser.getAccountId())!!
+            val task = Task(user, request.name)
+            task.description = request.description
+            task.dueDate = request.dueDate
+            task.goal = goal
+            ResponseEntity.ok(taskRepo.save(task))
+        }.orElse(ResponseEntity.notFound().build())
+    }
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> =
