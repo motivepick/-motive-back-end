@@ -28,6 +28,8 @@ class CurrentUser {
      * Temporary solution to not block development of the mobile part. Going to be deleted as soon as
      * OAuth2 for the mobile app will be fixed.
      */
-    private fun accountIdFromRequestHeader(): String? =
-            (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes).request.getHeader("X-Account-Id")
+    private fun accountIdFromRequestHeader(): String? {
+        val attributes = RequestContextHolder.getRequestAttributes() ?: return ""
+        return (attributes as ServletRequestAttributes).request.getHeader("X-Account-Id")
+    }
 }
