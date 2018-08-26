@@ -20,6 +20,7 @@ internal class GoalController
 (private val goalRepo: GoalRepository,
         private val taskRepo: TaskRepository,
         private val userRepo: UserRepository,
+        private val statistician: Statistician,
         private val currentUser: CurrentUser
 ) {
 
@@ -59,6 +60,12 @@ internal class GoalController
             goalRepo.findById(goalId)
                     .map { ResponseEntity.ok(it) }
                     .orElse(ResponseEntity.notFound().build())
+
+    @GetMapping("/{id}/statistics")
+    fun statistics(@PathVariable("id") goalId: Long): ResponseEntity<Statistics> {
+        val tasks = taskRepo.findAllByGoalId(goalId)
+        return ok(statistician.calculateStatisticsFor(tasks))
+    }
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") goalId: Long, @RequestBody request: UpdateGoalRequest): ResponseEntity<Goal> {

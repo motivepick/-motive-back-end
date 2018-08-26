@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*
 internal class TaskController(
         private val taskRepo: TaskRepository,
         private val userRepo: UserRepository,
+        private val statistician: Statistician,
         private val currentUser: CurrentUser) {
 
     @PostMapping
@@ -38,6 +39,12 @@ internal class TaskController(
             taskRepo.findById(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
+
+    @GetMapping("/statistics")
+    fun statistics(): ResponseEntity<Statistics> {
+        val tasks = taskRepo.findAllByUserAccountId(currentUser.getAccountId())
+        return ok(statistician.calculateStatisticsFor(tasks))
+    }
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
