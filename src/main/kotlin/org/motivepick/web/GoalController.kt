@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/goals")
 internal class GoalController
 (private val goalRepo: GoalRepository,
- private val taskRepo: TaskRepository,
- private val userRepo: UserRepository,
- private val currentUser: CurrentUser
+        private val taskRepo: TaskRepository,
+        private val userRepo: UserRepository,
+        private val currentUser: CurrentUser
 ) {
 
     @PostMapping
@@ -38,7 +38,9 @@ internal class GoalController
     fun list(): ResponseEntity<List<Goal>> = ok(goalRepo.findAllByUserAccountId(currentUser.getAccountId()))
 
     @GetMapping("/{id}/tasks")
-    fun listTasks(@PathVariable("id") goalId: Long): ResponseEntity<List<Task>> = ok(taskRepo.findAllByGoalId(goalId))
+    fun listTasks(@PathVariable("id") goalId: Long,
+            @RequestParam(name = "closed", defaultValue = "false") closed: Boolean): ResponseEntity<List<Task>> =
+            ok(taskRepo.findAllByGoalIdAndClosedOrderByCreatedDesc(goalId, closed))
 
     @PostMapping("/{id}/tasks")
     fun createTaskForGoal(@PathVariable("id") goalId: Long, @RequestBody request: CreateTaskRequest): ResponseEntity<Task> {

@@ -7,5 +7,5 @@ interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
     fun findAllByUserAccountIdAndClosedOrderByCreatedDesc(userId: Long, closed: Boolean): List<Task>
 
-    fun findAllByGoalId(goalId: Long): List<Task>
+    fun findAllByGoalIdAndClosedOrderByCreatedDesc(goalId: Long, closed: Boolean): List<Task>
 }

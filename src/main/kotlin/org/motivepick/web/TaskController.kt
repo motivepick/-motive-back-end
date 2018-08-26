@@ -30,9 +30,8 @@ internal class TaskController(
     }
 
     @GetMapping
-    fun list(@RequestParam(name = "onlyOpen", defaultValue = "true") onlyOpen: Boolean): ResponseEntity<List<Task>> {
-        return ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), !onlyOpen))
-    }
+    fun list(@RequestParam(name = "closed", defaultValue = "false") closed: Boolean): ResponseEntity<List<Task>> =
+            ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), closed))
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
@@ -41,24 +40,22 @@ internal class TaskController(
                     .orElse(notFound().build())
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> {
-        return taskRepo.findById(taskId)
-                .map { task ->
-                    request.name?.let { task.name = it }
-                    request.description?.let { task.description = it }
-                    request.dueDate?.let { task.dueDate = it }
-                    request.closed?.let { task.closed = it }
-                    return@map ResponseEntity.ok(taskRepo.save(task))
-                }.orElse(ResponseEntity.notFound().build())
-    }
+    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
+            taskRepo.findById(taskId)
+                    .map { task ->
+                        request.name?.let { task.name = it }
+                        request.description?.let { task.description = it }
+                        request.dueDate?.let { task.dueDate = it }
+                        request.closed?.let { task.closed = it }
+                        return@map ResponseEntity.ok(taskRepo.save(task))
+                    }.orElse(ResponseEntity.notFound().build())
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> {
-        return if (taskRepo.existsById(taskId)) {
-            taskRepo.deleteById(taskId)
-            ResponseEntity(OK)
-        } else {
-            ResponseEntity(NOT_FOUND)
-        }
-    }
+    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> =
+            if (taskRepo.existsById(taskId)) {
+                taskRepo.deleteById(taskId)
+                ResponseEntity(OK)
+            } else {
+                ResponseEntity(NOT_FOUND)
+            }
 }
