@@ -1,0 +1,10 @@
+spring.datasource:
+  url: jdbc:postgresql://localhost:5432/motive
+  username: postgres
+  password: postgres
+
+facebook.client:
+  clientId: 2126656117583758
+  clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec
+
+authentication.success.url: http://localhost:3000

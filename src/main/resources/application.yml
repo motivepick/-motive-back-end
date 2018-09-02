@@ -1,3 +1,5 @@
+spring.profiles.active: prod
+
 logging:
   level:
     com: DEBUG
@@ -12,15 +14,8 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
 
 spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
 
-spring.datasource:
-  url: jdbc:postgresql://localhost:5432/motive
-  username: postgres
-  password: postgres
-
 facebook:
   client:
-    clientId: 2126656117583758
-    clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec
     accessTokenUri: https://graph.facebook.com/oauth/access_token
     userAuthorizationUri: https://www.facebook.com/dialog/oauth
     tokenName: oauth_token
@@ -28,7 +23,5 @@ facebook:
     clientAuthenticationScheme: form
   resource:
     userInfoUri: https://graph.facebook.com/me
-
-authentication.success.url: http://localhost:3000
 
 logging.level.org.springframework.security: DEBUG
