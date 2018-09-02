@@ -6,5 +6,6 @@
 
 	<include file="db/changelog/001.initial.structure.xml"/>
 	<include file="db/changelog/002.alter-goal-table-add-column-color_tag.xml"/>
+	<include file="db/changelog/003.spring.session.tables.xml"/>
 
 </databaseChangeLog>

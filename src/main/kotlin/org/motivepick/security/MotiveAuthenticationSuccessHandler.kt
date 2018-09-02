@@ -4,8 +4,8 @@ import org.motivepick.domain.entity.User
 import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -15,7 +15,7 @@ class MotiveAuthenticationSuccessHandler(@Value("\${authentication.success.url}"
                                          private val authenticationSuccessUrl: String,
 
                                          private val userRepo: UserRepository)
-    : SavedRequestAwareAuthenticationSuccessHandler() {
+    : SimpleUrlAuthenticationSuccessHandler() {
 
     init {
         isAlwaysUseDefaultTargetUrl = true
@@ -23,7 +23,7 @@ class MotiveAuthenticationSuccessHandler(@Value("\${authentication.success.url}"
     }
 
     override fun onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
-        if (authentication is OAuth2AuthenticationToken) {
+        if (authentication is OAuth2Authentication) {
             val accountId = getAccountId(authentication)
             if (!userRepo.existsByAccountId(accountId)) {
                 // TODO: do we need to store access tokens?
@@ -34,11 +34,13 @@ class MotiveAuthenticationSuccessHandler(@Value("\${authentication.success.url}"
         super.onAuthenticationSuccess(request, response, authentication)
     }
 
-    private fun getAccountId(authentication: OAuth2AuthenticationToken): Long {
-        return authentication.principal.attributes["id"]!!.toString().toLong()
+    private fun getAccountId(authentication: OAuth2Authentication): Long {
+        val details = authentication.userAuthentication.details as Map<*, *>
+        return details["id"]!!.toString().toLong()
     }
 
-    private fun getUserName(authentication: OAuth2AuthenticationToken): String {
-        return authentication.principal.attributes["name"]!!.toString()
+    private fun getUserName(authentication: OAuth2Authentication): String {
+        val details = authentication.userAuthentication.details as Map<*, *>
+        return details["name"]!!.toString()
     }
 }
