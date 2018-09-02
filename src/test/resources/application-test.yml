@@ -11,3 +11,5 @@ spring.datasource:
   platform: h2
 
 spring.liquibase.drop-first: true
+
+authentication.success.url: http://test
