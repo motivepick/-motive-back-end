@@ -1,6 +1,5 @@
 package org.motivepick.domain.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 import javax.persistence.*
@@ -24,7 +23,6 @@ class Goal(
     var dueDate: LocalDateTime? = null
     var closed: Boolean = false
 
-    @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed
     @OneToMany(mappedBy = "goal", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var tasks: MutableList<Task> = ArrayList()
 
