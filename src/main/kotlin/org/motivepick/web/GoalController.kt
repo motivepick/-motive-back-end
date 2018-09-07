@@ -16,13 +16,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/goals")
-internal class GoalController
-(private val goalRepo: GoalRepository,
-        private val taskRepo: TaskRepository,
-        private val userRepo: UserRepository,
-        private val statistician: Statistician,
-        private val currentUser: CurrentUser
-) {
+internal class GoalController(private val goalRepo: GoalRepository, private val goalService: GoalService, private val taskRepo: TaskRepository,
+        private val userRepo: UserRepository, private val statistician: Statistician, private val currentUser: CurrentUser) {
 
     @PostMapping
     fun create(@RequestBody request: CreateGoalRequest): ResponseEntity<Goal> {
@@ -36,7 +31,7 @@ internal class GoalController
     }
 
     @GetMapping
-    fun list(): ResponseEntity<List<Goal>> = ok(goalRepo.findAllByUserAccountId(currentUser.getAccountId()))
+    fun list(): ResponseEntity<List<GoalDto>> = ok(goalService.read())
 
     @GetMapping("/{id}/tasks")
     fun listTasks(@PathVariable("id") goalId: Long,
@@ -56,8 +51,8 @@ internal class GoalController
     }
 
     @GetMapping("/{id}")
-    fun read(@PathVariable("id") goalId: Long): ResponseEntity<Goal> =
-            goalRepo.findById(goalId)
+    fun read(@PathVariable("id") goalId: Long): ResponseEntity<GoalDto> =
+            goalService.read(goalId)
                     .map { ResponseEntity.ok(it) }
                     .orElse(ResponseEntity.notFound().build())
 

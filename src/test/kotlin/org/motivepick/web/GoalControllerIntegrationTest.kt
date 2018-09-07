@@ -81,7 +81,6 @@ class GoalControllerIntegrationTest {
         assertEquals(false, goal.closed)
         assertEquals(LocalDateTime.of(2019, 1, 2,
                 0, 0, 0, 0), goal.dueDate)
-        assertEquals(1L, goal.user.id)
     }
 
     @Test
