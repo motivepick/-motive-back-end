@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter
@@ -31,10 +30,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .and().authorizeRequests()
                 .antMatchers("/", "/oauth2/authorization**", "/error**")
                 .permitAll()
-
-                // see CurrentUser#accountIdFromRequestHeader, delete as soon as mobile OAuth is done
-                .antMatchers(HttpMethod.GET).permitAll().antMatchers(HttpMethod.POST).permitAll().antMatchers(HttpMethod.PUT).permitAll().antMatchers(HttpMethod.DELETE).permitAll()
-
                 .anyRequest().authenticated()
                 .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection

@@ -7,4 +7,4 @@ facebook.client:
   clientId: 2126656117583758
   clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec
 
-authentication.success.url: http://localhost:3000
+authentication.success.url.web: http://localhost:3000
