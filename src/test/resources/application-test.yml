@@ -14,3 +14,11 @@ spring.liquibase.drop-first: true
 
 authentication.success.url.web: http://test
 authentication.success.url.mobile: test://
+
+facebook:
+  clientId: testClientId
+  clientSecret: testClientSecret
+
+jwt.token:
+  issuer: motive-test
+  signing.key: testSigningKey

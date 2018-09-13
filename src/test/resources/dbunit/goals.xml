@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
 
-	<USER_ACCOUNT ID="1" ACCOUNT_ID="1234567890" NAME="Firstname Lastname" TOKEN="Test-Token"/>
+	<USER_ACCOUNT ID="1" ACCOUNT_ID="1234567890" NAME="Firstname Lastname"/>
 
 	<GOAL ID="1" NAME="Test goal" CREATED="2018-08-11 19:55:47.900000" DESCRIPTION="Test Description"
 	      CLOSED="FALSE" DUE_DATE="2019-01-02 00:00:00.000000" USER_ID="1"/>

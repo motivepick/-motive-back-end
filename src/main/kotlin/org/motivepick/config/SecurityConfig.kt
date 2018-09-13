@@ -1,51 +1,54 @@
 package org.motivepick.config
 
+import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
+import org.motivepick.security.JwtTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.web.servlet.FilterRegistrationBean
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
-import org.springframework.web.filter.CompositeFilter
-import javax.servlet.Filter
-
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.OrRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
+import javax.servlet.http.HttpServletRequest
 
 @Configuration
-@EnableOAuth2Client
-@EnableJdbcHttpSession
+@EnableWebSecurity
 class SecurityConfig : WebSecurityConfigurerAdapter() {
 
+    companion object {
+        private val ANONYMOUS_URIS = arrayOf(
+                "/",
+                "/oauth2/authorization/facebook",
+                "/oauth2/authorization/facebook/callback**",
+                "/error**")
+    }
+
     @Autowired
-    @Qualifier("facebookOAuthFilter")
-    private lateinit var facebookOAuthFilter: Filter
+    private lateinit var jwtTokenFactory: JwtTokenFactory
 
     override fun configure(http: HttpSecurity) {
         http
                 .cors()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers("/", "/oauth2/authorization**", "/error**")
-                .permitAll()
+                .antMatchers(*ANONYMOUS_URIS).permitAll()
                 .anyRequest().authenticated()
-                .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter::class.java)
+                .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection
     }
 
-    private fun ssoFilter(): Filter {
-        val filter = CompositeFilter()
-        filter.setFilters(listOf(facebookOAuthFilter))
-        return filter
-    }
+    private fun jwtTokenAuthenticationProcessingFilter(): JwtTokenAuthenticationProcessingFilter {
+        val requestMatcher = object : RequestMatcher {
+            val matchers: OrRequestMatcher = OrRequestMatcher(ANONYMOUS_URIS.map { AntPathRequestMatcher(it) })
+            val processingMatcher: RequestMatcher = AntPathRequestMatcher("/**")
 
-    @Bean
-    fun oauth2ClientFilterRegistration(filter: OAuth2ClientContextFilter): FilterRegistrationBean<OAuth2ClientContextFilter> {
-        val registration = FilterRegistrationBean<OAuth2ClientContextFilter>()
-        registration.filter = filter
-        registration.order = -100
-        return registration
+            override fun matches(request: HttpServletRequest): Boolean {
+                return !matchers.matches(request) && processingMatcher.matches(request)
+            }
+        }
+        return JwtTokenAuthenticationProcessingFilter(requestMatcher, jwtTokenFactory)
     }
 }

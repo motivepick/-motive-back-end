@@ -10,9 +10,5 @@ class User(
         var accountId: Long,
 
         @Column(nullable = false)
-        var name: String) : AbstractEntity() {
+        var name: String) : AbstractEntity()
 
-        // TODO: do we still need this
-        @Column(nullable = true)
-        var token: String? = null
-}
