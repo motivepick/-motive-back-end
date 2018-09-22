@@ -30,10 +30,11 @@ class FacebookController(private val facebookConfig: FacebookConfig,
     private val validState = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, Boolean>()
 
     @GetMapping
-    fun login(response: HttpServletResponse) {
+    fun login(request: HttpServletRequest, response: HttpServletResponse) {
         val uuid = UUID.randomUUID().toString()
         val state = Base64.getEncoder().encodeToString(uuid.toByteArray())
-        validState.put(uuid, true)
+        val mobile = request.getParameter("mobile") != null
+        validState.put(uuid, mobile)
 
         val authorizationUri = UriComponentsBuilder.fromUriString(facebookConfig.userAuthorizationUri)
                 .queryParam("client_id", facebookConfig.clientId)
@@ -48,15 +49,12 @@ class FacebookController(private val facebookConfig: FacebookConfig,
     fun loginCallback(request: HttpServletRequest, response: HttpServletResponse) {
         val code = request.getParameter("code")
         val state = String(Base64.getDecoder().decode(request.getParameter("state")))
-
-        if (validState.getIfPresent(state) == null) {
-            throw AuthenticationServiceException("Provided state is incorrect or expired")
-        }
+        val mobile = validState.getIfPresent(state) ?: throw AuthenticationServiceException("Provided state is incorrect or expired")
 
         val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString()
         val jwtToken = facebookService.generateJwtToken(code, redirectUrl)
 
-        val navigationUrl = request.getParameter("mobile")?.let { authenticationSuccessUrlMobile } ?: authenticationSuccessUrlWeb
+        val navigationUrl = if (mobile) authenticationSuccessUrlMobile else authenticationSuccessUrlWeb
 
         response.sendRedirect(navigationUrl + jwtToken)
     }
