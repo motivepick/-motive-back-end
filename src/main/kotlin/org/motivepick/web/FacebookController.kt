@@ -51,7 +51,7 @@ class FacebookController(private val facebookConfig: FacebookConfig,
         val state = String(Base64.getDecoder().decode(request.getParameter("state")))
         val mobile = validState.getIfPresent(state) ?: throw AuthenticationServiceException("Provided state is incorrect or expired")
 
-        val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString()
+        val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().scheme("https").toUriString()
         val jwtToken = facebookService.generateJwtToken(code, redirectUrl)
 
         val navigationUrl = if (mobile) authenticationSuccessUrlMobile else authenticationSuccessUrlWeb
