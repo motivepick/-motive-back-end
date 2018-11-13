@@ -38,7 +38,7 @@ class FacebookController(private val facebookConfig: FacebookConfig,
 
         val authorizationUri = UriComponentsBuilder.fromUriString(facebookConfig.userAuthorizationUri)
                 .queryParam("client_id", facebookConfig.clientId)
-                .queryParam("redirect_uri", ServletUriComponentsBuilder.fromCurrentRequestUri().path("/callback").toUriString())
+                .queryParam("redirect_uri", ServletUriComponentsBuilder.fromCurrentRequestUri().scheme("https").path("/callback").toUriString())
                 .queryParam("state", state)
                 .toUriString()
 
