@@ -1,1 +1,3 @@
+enforce.https.for.oauth: true
+
 authentication.success.url.web: https://motivepick.com/login-success/

@@ -3,6 +3,8 @@ spring.datasource:
   username: postgres
   password: postgres
 
+enforce.https.for.oauth: false
+
 facebook:
   clientId: 2126656117583758
   clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec

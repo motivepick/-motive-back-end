@@ -19,13 +19,16 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/oauth2/authorization/facebook")
 class FacebookController(private val facebookConfig: FacebookConfig,
 
-                         private val facebookService: FacebookService,
+        private val facebookService: FacebookService,
 
-                         @Value("\${authentication.success.url.web}")
-                         private val authenticationSuccessUrlWeb: String,
+        @Value("\${enforce.https.for.oauth}")
+        private val enforceHttpsForOauth: Boolean,
 
-                         @Value("\${authentication.success.url.mobile}")
-                         private val authenticationSuccessUrlMobile: String) {
+        @Value("\${authentication.success.url.web}")
+        private val authenticationSuccessUrlWeb: String,
+
+        @Value("\${authentication.success.url.mobile}")
+        private val authenticationSuccessUrlMobile: String) {
 
     private val validState = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, Boolean>()
 
@@ -36,9 +39,14 @@ class FacebookController(private val facebookConfig: FacebookConfig,
         val mobile = request.getParameter("mobile") != null
         validState.put(uuid, mobile)
 
+        val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .scheme(if (enforceHttpsForOauth) "https" else "http")
+                .path("/callback")
+                .toUriString()
+
         val authorizationUri = UriComponentsBuilder.fromUriString(facebookConfig.userAuthorizationUri)
                 .queryParam("client_id", facebookConfig.clientId)
-                .queryParam("redirect_uri", ServletUriComponentsBuilder.fromCurrentRequestUri().scheme("https").path("/callback").toUriString())
+                .queryParam("redirect_uri", redirectUrl)
                 .queryParam("state", state)
                 .toUriString()
 
@@ -49,9 +57,12 @@ class FacebookController(private val facebookConfig: FacebookConfig,
     fun loginCallback(request: HttpServletRequest, response: HttpServletResponse) {
         val code = request.getParameter("code")
         val state = String(Base64.getDecoder().decode(request.getParameter("state")))
-        val mobile = validState.getIfPresent(state) ?: throw AuthenticationServiceException("Provided state is incorrect or expired")
+        val mobile = validState.getIfPresent(state)
+                ?: throw AuthenticationServiceException("Provided state is incorrect or expired")
 
-        val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().scheme("https").toUriString()
+        val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
+                .scheme(if (enforceHttpsForOauth) "https" else "http")
+                .toUriString()
         val jwtToken = facebookService.generateJwtToken(code, redirectUrl)
 
         val navigationUrl = if (mobile) authenticationSuccessUrlMobile else authenticationSuccessUrlWeb
