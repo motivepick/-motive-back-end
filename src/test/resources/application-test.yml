@@ -12,6 +12,8 @@ spring.datasource:
 
 spring.liquibase.drop-first: true
 
+enforce.https.for.oauth: true
+
 authentication.success.url.web: http://test
 authentication.success.url.mobile: test://
 
