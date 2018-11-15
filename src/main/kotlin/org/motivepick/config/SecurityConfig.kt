@@ -23,6 +23,8 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 "/",
                 "/oauth2/authorization/facebook",
                 "/oauth2/authorization/facebook/callback**",
+                "/oauth2/authorization/vk",
+                "/oauth2/authorization/vk/callback**",
                 "/error**")
     }
 

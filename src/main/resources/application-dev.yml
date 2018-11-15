@@ -9,6 +9,10 @@ facebook:
   clientId: 2126656117583758
   clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec
 
+vk:
+  clientId: 6752973
+  clientSecret: OIS0gHh6SiYYfx9MEhJk
+
 authentication.success.url.web: http://localhost:3000/login-success/
 
 jwt.token:
