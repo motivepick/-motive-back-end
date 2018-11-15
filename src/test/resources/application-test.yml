@@ -17,6 +17,10 @@ enforce.https.for.oauth: true
 authentication.success.url.web: http://test
 authentication.success.url.mobile: test://
 
+vk:
+  clientId: testClientId
+  clientSecret: testClientSecret
+
 facebook:
   clientId: testClientId
   clientSecret: testClientSecret
