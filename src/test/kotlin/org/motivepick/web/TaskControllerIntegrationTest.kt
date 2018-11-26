@@ -130,7 +130,7 @@ class TaskControllerIntegrationTest {
         assertEquals(request.name, taskFromDb.name)
         assertEquals(request.description, taskFromDb.description)
         assertEquals(request.closed, taskFromDb.closed)
-        assertEquals(request.dueDate, taskFromDb.dueDate)
+        assertEquals(now, taskFromDb.dueDate)
     }
 
     @Test
