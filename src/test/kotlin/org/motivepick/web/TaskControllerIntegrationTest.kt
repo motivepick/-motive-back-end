@@ -110,11 +110,12 @@ class TaskControllerIntegrationTest {
 
     @Test
     fun update() {
+        val now = LocalDateTime.now()
         val request = UpdateTaskRequest()
         request.name = "some new name"
         request.description = "some new description"
         request.closed = true
-        request.dueDate = ISO_LOCAL_DATE_TIME.format(LocalDateTime.now())
+        request.dueDate = ISO_LOCAL_DATE_TIME.format(now)
 
         val task = controller.update(1L, request).body!!
 
@@ -122,7 +123,7 @@ class TaskControllerIntegrationTest {
         assertEquals(request.name, task.name)
         assertEquals(request.description, task.description)
         assertEquals(request.closed, task.closed)
-        assertEquals(request.dueDate, task.dueDate)
+        assertEquals(now, task.dueDate)
 
         val taskFromDb = taskRepository.findById(1L).get()
 
