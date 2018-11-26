@@ -8,7 +8,6 @@ import java.time.LocalTime
 import java.time.ZoneOffset.UTC
 import java.util.*
 
-
 @Component
 class Statistician {
 

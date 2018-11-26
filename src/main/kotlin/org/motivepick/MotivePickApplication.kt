@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.time.Clock
 
 @SpringBootApplication
 class MotivePickApplication {
@@ -25,6 +26,9 @@ class MotivePickApplication {
 
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate()
+
+    @Bean
+    fun clock(): Clock = Clock.systemUTC()
 }
 
 fun main(args: Array<String>) {
