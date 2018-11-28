@@ -19,7 +19,6 @@ internal class TaskController(
         private val taskRepo: TaskRepository,
         private val userRepo: UserRepository,
         private val statistician: Statistician,
-        private val scheduleFactory: ScheduleFactory,
         private val currentUser: CurrentUser) {
 
     @PostMapping
@@ -33,8 +32,13 @@ internal class TaskController(
     }
 
     @GetMapping
-    fun list(@RequestParam(name = "closed", defaultValue = "false") closed: Boolean): ResponseEntity<List<Task>> =
+    fun list(@RequestParam(name = "closed") closed: Boolean?): ResponseEntity<List<Task>> {
+        return if (closed == null) {
+            ok(taskRepo.findAllByUserAccountIdOrderByCreatedDesc(currentUser.getAccountId()))
+        } else {
             ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), closed))
+        }
+    }
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
@@ -46,12 +50,6 @@ internal class TaskController(
     fun statistics(): ResponseEntity<Statistics> {
         val tasks = taskRepo.findAllByUserAccountId(currentUser.getAccountId())
         return ok(statistician.calculateStatisticsFor(tasks))
-    }
-
-    @GetMapping("/schedule")
-    fun schedule(): ResponseEntity<Schedule> {
-        val tasks = taskRepo.findAllByUserAccountIdAndClosedFalseAndDueDateNotNull(currentUser.getAccountId())
-        return ok(scheduleFactory.scheduleFor(tasks))
     }
 
     @PutMapping("/{id}")
