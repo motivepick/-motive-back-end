@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-echo 'deployment is done'
+echo 'Starting the deployment'
+
+cd ./target
+ls
