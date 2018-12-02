@@ -7,6 +7,7 @@ import javax.persistence.*
 
 @Entity
 class Task(
+        @JsonIgnore
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
         var user: User,
@@ -22,7 +23,7 @@ class Task(
     var dueDate: LocalDateTime? = null
     var closed: Boolean = false
 
-    @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed
+    @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed. The same for above
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GOAL_ID")
     var goal: Goal? = null
