@@ -4,8 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-	<include file="db/changelog/001.initial.structure.xml"/>
-	<include file="db/changelog/002.alter-goal-table-add-column-color_tag.xml"/>
-	<include file="db/changelog/003.spring.session.tables.xml"/>
+    <include file="db/changelog/001.initial.structure.xml"/>
+    <include file="db/changelog/002.alter-goal-table-add-column-color_tag.xml"/>
+    <include file="db/changelog/003.spring.session.tables.xml"/>
+    <include file="db/changelog/004.task.closing_date.column.xml"/>
 
 </databaseChangeLog>

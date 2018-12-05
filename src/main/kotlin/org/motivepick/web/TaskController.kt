@@ -33,10 +33,13 @@ internal class TaskController(
 
     @GetMapping
     fun list(@RequestParam(name = "closed") closed: Boolean?): ResponseEntity<List<Task>> {
-        return if (closed == null) {
-            ok(taskRepo.findAllByUserAccountIdOrderByCreatedDesc(currentUser.getAccountId()))
-        } else {
-            ok(taskRepo.findAllByUserAccountIdAndClosedOrderByCreatedDesc(currentUser.getAccountId(), closed))
+        val accountId = currentUser.getAccountId()
+        return when {
+            closed == null -> {
+                ok(taskRepo.findAllByUserAccountIdOrderByCreatedDesc(accountId))
+            }
+            closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueOrderByClosingDateDesc(accountId))
+            else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseOrderByCreatedDesc(accountId))
         }
     }
 
@@ -58,7 +61,9 @@ internal class TaskController(
                     .map { task ->
                         request.name?.let { task.name = it }
                         request.description?.let { task.description = it }
+                        request.created?.let { task.created = it }
                         request.dueDate?.let { task.dueDate = if (it.isBlank()) null else LocalDateTime.parse(it) }
+                        request.closingDate?.let { task.closingDate = it }
                         request.closed?.let { task.closed = it }
                         return@map ResponseEntity.ok(taskRepo.save(task))
                     }.orElse(ResponseEntity.notFound().build())
