@@ -2,7 +2,7 @@
 
 The service that is going to defeat the laziness.
 
-Try it out on https://motiv.yaskovdev.com.
+Try it out on https://motivepick.com.
 
 ## How to run locally
 
