@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
 @RunWith(SpringRunner::class)
 @IntegrationTest(1234567890L, "Firstname Lastname")
@@ -110,12 +109,11 @@ class TaskControllerIntegrationTest {
 
     @Test
     fun update() {
-        val now = LocalDateTime.now()
         val request = UpdateTaskRequest()
         request.name = "some new name"
         request.description = "some new description"
         request.closed = true
-        request.dueDate = ISO_LOCAL_DATE_TIME.format(now)
+        request.dueDate = LocalDateTime.now()
 
         val task = controller.update(1L, request).body!!
 
@@ -123,14 +121,14 @@ class TaskControllerIntegrationTest {
         assertEquals(request.name, task.name)
         assertEquals(request.description, task.description)
         assertEquals(request.closed, task.closed)
-        assertEquals(now, task.dueDate)
+        assertEquals(request.dueDate, task.dueDate)
 
         val taskFromDb = taskRepository.findById(1L).get()
 
         assertEquals(request.name, taskFromDb.name)
         assertEquals(request.description, taskFromDb.description)
         assertEquals(request.closed, taskFromDb.closed)
-        assertEquals(now, taskFromDb.dueDate)
+        assertEquals(request.dueDate, taskFromDb.dueDate)
     }
 
     @Test

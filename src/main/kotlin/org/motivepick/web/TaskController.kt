@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/tasks")
@@ -62,9 +61,12 @@ internal class TaskController(
                         request.name?.let { task.name = it }
                         request.description?.let { task.description = it }
                         request.created?.let { task.created = it }
-                        request.dueDate?.let { task.dueDate = if (it.isBlank()) null else LocalDateTime.parse(it) }
+                        request.dueDate?.let { task.dueDate = it }
                         request.closingDate?.let { task.closingDate = it }
                         request.closed?.let { task.closed = it }
+                        if (request.deleteDueDate) {
+                            task.dueDate = null
+                        }
                         return@map ResponseEntity.ok(taskRepo.save(task))
                     }.orElse(ResponseEntity.notFound().build())
 
