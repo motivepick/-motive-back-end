@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/tasks")
@@ -67,8 +68,29 @@ internal class TaskController(
                         if (request.deleteDueDate) {
                             task.dueDate = null
                         }
-                        return@map ResponseEntity.ok(taskRepo.save(task))
-                    }.orElse(ResponseEntity.notFound().build())
+                        ResponseEntity.ok(taskRepo.save(task))
+                    }
+                    .orElse(ResponseEntity.notFound().build())
+
+    @PutMapping("/{id}/closing")
+    fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+            taskRepo.findById(taskId)
+                    .map { task ->
+                        task.closed = true
+                        task.closingDate = LocalDateTime.now()
+                        ResponseEntity.ok(taskRepo.save(task))
+                    }
+                    .orElse(ResponseEntity.notFound().build())
+
+    @PutMapping("/{id}/undo-closing")
+    fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+            taskRepo.findById(taskId)
+                    .map { task ->
+                        task.closed = false
+                        task.created = LocalDateTime.now()
+                        ResponseEntity.ok(taskRepo.save(task))
+                    }
+                    .orElse(ResponseEntity.notFound().build())
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> =
