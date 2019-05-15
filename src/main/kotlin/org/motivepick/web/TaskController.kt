@@ -68,7 +68,7 @@ internal class TaskController(
                         if (request.deleteDueDate) {
                             task.dueDate = null
                         }
-                        ResponseEntity.ok(taskRepo.save(task))
+                        ok(taskRepo.save(task))
                     }
                     .orElse(ResponseEntity.notFound().build())
 
@@ -78,7 +78,7 @@ internal class TaskController(
                     .map { task ->
                         task.closed = true
                         task.closingDate = LocalDateTime.now()
-                        ResponseEntity.ok(taskRepo.save(task))
+                        ok(taskRepo.save(task))
                     }
                     .orElse(ResponseEntity.notFound().build())
 
@@ -88,7 +88,7 @@ internal class TaskController(
                     .map { task ->
                         task.closed = false
                         task.created = LocalDateTime.now()
-                        ResponseEntity.ok(taskRepo.save(task))
+                        ok(taskRepo.save(task))
                     }
                     .orElse(ResponseEntity.notFound().build())
 
