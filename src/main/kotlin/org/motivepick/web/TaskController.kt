@@ -24,8 +24,8 @@ internal class TaskController(
     @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
         val user = userRepo.findByAccountId(currentUser.getAccountId())!!
-        val task = Task(user, request.name)
-        task.description = request.description
+        val task = Task(user, request.name.trim())
+        task.description = request.description?.trim()
         task.dueDate = request.dueDate
 
         return ResponseEntity(taskRepo.save(task), CREATED)
@@ -59,8 +59,8 @@ internal class TaskController(
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
             taskRepo.findById(taskId)
                     .map { task ->
-                        request.name?.let { task.name = it }
-                        request.description?.let { task.description = it }
+                        request.name?.let { task.name = it.trim() }
+                        request.description?.let { task.description = it.trim() }
                         request.created?.let { task.created = it }
                         request.dueDate?.let { task.dueDate = it }
                         request.closingDate?.let { task.closingDate = it }

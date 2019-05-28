@@ -31,8 +31,8 @@ class TaskControllerIntegrationTest {
     fun create() {
         val accountId = 1234567890L
 
-        val request = CreateTaskRequest("some task")
-        request.description = "some description"
+        val request = CreateTaskRequest("\n some task")
+        request.description = "  some description "
         request.dueDate = LocalDateTime.now()
         val response = controller.create(request)
 
@@ -43,8 +43,8 @@ class TaskControllerIntegrationTest {
         assertNotNull(task.created)
         assertEquals(accountId, task.user.accountId)
         assertEquals(false, task.closed)
-        assertEquals(request.name, task.name)
-        assertEquals(request.description, task.description)
+        assertEquals("some task", task.name)
+        assertEquals("some description", task.description)
         assertEquals(request.dueDate, task.dueDate)
         assertNull(task.goal)
 
@@ -53,8 +53,8 @@ class TaskControllerIntegrationTest {
         assertNotNull(taskFromDb.created)
         assertEquals(accountId, taskFromDb.user.accountId)
         assertEquals(false, taskFromDb.closed)
-        assertEquals(request.name, taskFromDb.name)
-        assertEquals(request.description, taskFromDb.description)
+        assertEquals("some task", taskFromDb.name)
+        assertEquals("some description", taskFromDb.description)
         assertEquals(request.dueDate, taskFromDb.dueDate)
         assertNull(taskFromDb.goal)
     }
@@ -110,23 +110,23 @@ class TaskControllerIntegrationTest {
     @Test
     fun update() {
         val request = UpdateTaskRequest()
-        request.name = "some new name"
-        request.description = "some new description"
+        request.name = " some new name\n\t "
+        request.description = "  some new description"
         request.closed = true
         request.dueDate = LocalDateTime.now()
 
         val task = controller.update(1L, request).body!!
 
         assertEquals(1L, task.id)
-        assertEquals(request.name, task.name)
-        assertEquals(request.description, task.description)
+        assertEquals("some new name", task.name)
+        assertEquals("some new description", task.description)
         assertEquals(request.closed, task.closed)
         assertEquals(request.dueDate, task.dueDate)
 
         val taskFromDb = taskRepository.findById(1L).get()
 
-        assertEquals(request.name, taskFromDb.name)
-        assertEquals(request.description, taskFromDb.description)
+        assertEquals("some new name", taskFromDb.name)
+        assertEquals("some new description", taskFromDb.description)
         assertEquals(request.closed, taskFromDb.closed)
         assertEquals(request.dueDate, taskFromDb.dueDate)
     }
