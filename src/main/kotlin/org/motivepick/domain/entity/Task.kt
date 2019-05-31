@@ -25,6 +25,9 @@ class Task(
 
     var closingDate: LocalDateTime? = null
 
+    @Column(nullable = false)
+    var visible: Boolean = true
+
     @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed. The same for above
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GOAL_ID")

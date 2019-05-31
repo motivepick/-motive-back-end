@@ -6,7 +6,8 @@ import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
-import org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
@@ -36,28 +37,28 @@ internal class TaskController(
         val accountId = currentUser.getAccountId()
         return when {
             closed == null -> {
-                ok(taskRepo.findAllByUserAccountIdOrderByCreatedDesc(accountId))
+                ok(taskRepo.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId))
             }
-            closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueOrderByClosingDateDesc(accountId))
-            else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseOrderByCreatedDesc(accountId))
+            closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(accountId))
+            else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(accountId))
         }
     }
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
-            taskRepo.findById(taskId)
+            taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
     @GetMapping("/statistics")
     fun statistics(): ResponseEntity<Statistics> {
-        val tasks = taskRepo.findAllByUserAccountId(currentUser.getAccountId())
+        val tasks = taskRepo.findAllByUserAccountIdAndVisibleTrue(currentUser.getAccountId())
         return ok(statistician.calculateStatisticsFor(tasks))
     }
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
-            taskRepo.findById(taskId)
+            taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
                         request.name?.let { task.name = it.trim() }
                         request.description?.let { task.description = it.trim() }
@@ -74,7 +75,7 @@ internal class TaskController(
 
     @PutMapping("/{id}/closing")
     fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
-            taskRepo.findById(taskId)
+            taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
                         task.closed = true
                         task.closingDate = LocalDateTime.now()
@@ -84,7 +85,7 @@ internal class TaskController(
 
     @PutMapping("/{id}/undo-closing")
     fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
-            taskRepo.findById(taskId)
+            taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
                         task.closed = false
                         task.created = LocalDateTime.now()
@@ -93,11 +94,11 @@ internal class TaskController(
                     .orElse(ResponseEntity.notFound().build())
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Any> =
-            if (taskRepo.existsById(taskId)) {
-                taskRepo.deleteById(taskId)
-                ResponseEntity(OK)
-            } else {
-                ResponseEntity(NOT_FOUND)
-            }
+    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+            taskRepo.findByIdAndVisibleTrue(taskId)
+                    .map { task ->
+                        task.visible = false
+                        ok(taskRepo.save(task))
+                    }
+                    .orElse(ResponseEntity(NOT_FOUND))
 }

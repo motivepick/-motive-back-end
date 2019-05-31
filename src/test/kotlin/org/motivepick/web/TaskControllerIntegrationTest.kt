@@ -145,6 +145,10 @@ class TaskControllerIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
-        assertFalse(taskRepository.existsById(1L))
+        val visible = taskRepository
+                .findById(1L)
+                .map { it.visible }
+                .orElseThrow { AssertionError("task should still exist, just be marked invisible") }
+        assertFalse(visible)
     }
 }

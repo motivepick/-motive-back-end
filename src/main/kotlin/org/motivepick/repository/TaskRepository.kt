@@ -2,16 +2,19 @@ package org.motivepick.repository
 
 import org.motivepick.domain.entity.Task
 import org.springframework.data.repository.PagingAndSortingRepository
+import java.util.*
 
 interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
-    fun findAllByUserAccountId(userId: Long): List<Task>
+    fun findByIdAndVisibleTrue(id: Long): Optional<Task>
 
-    fun findAllByUserAccountIdOrderByCreatedDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndVisibleTrue(userId: Long): List<Task>
 
-    fun findAllByUserAccountIdAndClosedFalseOrderByCreatedDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(userId: Long): List<Task>
 
-    fun findAllByUserAccountIdAndClosedTrueOrderByClosingDateDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(userId: Long): List<Task>
+
+    fun findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(userId: Long): List<Task>
 
     fun findAllByGoalIdAndClosedOrderByCreatedDesc(goalId: Long, closed: Boolean): List<Task>
 
