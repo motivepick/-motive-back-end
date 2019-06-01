@@ -6,8 +6,7 @@
 
     <include file="db/changelog/001.initial.structure.xml"/>
     <include file="db/changelog/002.alter-goal-table-add-column-color_tag.xml"/>
-    <include file="db/changelog/003.spring.session.tables.xml"/>
-    <include file="db/changelog/004.task.closing_date.column.xml"/>
-    <include file="db/changelog/005.task.visible.column.xml"/>
+    <include file="db/changelog/003.task.closing_date.column.xml"/>
+    <include file="db/changelog/004.task.visible.column.xml"/>
 
 </databaseChangeLog>
