@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.motivepick.config.FacebookConfig
 import org.motivepick.domain.entity.User
 import org.motivepick.repository.UserRepository
+import org.motivepick.service.TaskService
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -11,17 +12,18 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class FacebookService(private val userRepo: UserRepository,
-                      private val jwtTokenFactory: JwtTokenFactory,
-                      private val facebookConfig: FacebookConfig,
-                      private val restTemplate: RestTemplate) {
+        private val taskService: TaskService,
+        private val jwtTokenFactory: JwtTokenFactory,
+        private val facebookConfig: FacebookConfig,
+        private val restTemplate: RestTemplate) {
 
     fun generateJwtToken(code: String, redirectUri: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
         val facebookProfile = requestFacebookProfile(accessToken)
 
         if (!userRepo.existsByAccountId(facebookProfile.id)) {
-            val user = User(facebookProfile.id, facebookProfile.name)
-            userRepo.save(user)
+            val user = userRepo.save(User(facebookProfile.id, facebookProfile.name))
+            taskService.createInitialTasks(user)
         }
 
         return jwtTokenFactory.createAccessJwtToken(facebookProfile.id.toString())

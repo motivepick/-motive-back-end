@@ -1,5 +1,6 @@
-package org.motivepick.web
+package org.motivepick.service
 
+import org.motivepick.web.GoalDto
 import java.util.*
 
 interface GoalService {

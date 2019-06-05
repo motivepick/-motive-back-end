@@ -1,9 +1,10 @@
-package org.motivepick.web
+package org.motivepick.service
 
 import org.motivepick.domain.entity.Goal
 import org.motivepick.domain.entity.Task
 import org.motivepick.repository.GoalRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.web.GoalDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
