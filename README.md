@@ -9,7 +9,7 @@ Try it out on [https://motivepick.com](https://motivepick.com).
 1. Install PostgreSQL
 2. Create the database using `CREATE DATABASE motive ENCODING 'UTF8' TEMPLATE template0;`
 3. Make sure that the database is running on `localhost` on `5432` port, the username is `postgres` and the password is `postgres`. If that's not the case, see "How To Run With Non-Default Database.
-3. In the project root run `./mvnw spring-boot:run`.
+3. In the project root run `./mvnw spring-boot:run -D spring.profiles.active=dev`.
 
 ## Short Note About Deployment To LIVE
 
