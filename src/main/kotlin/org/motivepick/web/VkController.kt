@@ -21,6 +21,8 @@ class VkController(private val vkConfig: VkConfig,
 
         private val vkService: VkService,
 
+        private val cookieFactory: CookieFactory,
+
         @Value("\${enforce.https.for.oauth}")
         private val enforceHttpsForOauth: Boolean,
 
@@ -66,8 +68,11 @@ class VkController(private val vkConfig: VkConfig,
                 .toUriString()
         val jwtToken = vkService.generateJwtToken(code, redirectUrl)
 
-        val navigationUrl = if (mobile) authenticationSuccessUrlMobile else authenticationSuccessUrlWeb
-
-        response.sendRedirect(navigationUrl + jwtToken)
+        if (mobile) {
+            response.sendRedirect(authenticationSuccessUrlMobile + jwtToken)
+        } else {
+            response.addCookie(cookieFactory.cookieToSet(jwtToken))
+            response.sendRedirect(authenticationSuccessUrlWeb)
+        }
     }
 }

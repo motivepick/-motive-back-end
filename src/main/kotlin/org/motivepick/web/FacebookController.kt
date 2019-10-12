@@ -21,6 +21,8 @@ class FacebookController(private val facebookConfig: FacebookConfig,
 
         private val facebookService: FacebookService,
 
+        private val cookieFactory: CookieFactory,
+
         @Value("\${enforce.https.for.oauth}")
         private val enforceHttpsForOauth: Boolean,
 
@@ -65,8 +67,11 @@ class FacebookController(private val facebookConfig: FacebookConfig,
                 .toUriString()
         val jwtToken = facebookService.generateJwtToken(code, redirectUrl)
 
-        val navigationUrl = if (mobile) authenticationSuccessUrlMobile else authenticationSuccessUrlWeb
-
-        response.sendRedirect(navigationUrl + jwtToken)
+        if (mobile) {
+            response.sendRedirect(authenticationSuccessUrlMobile + jwtToken)
+        } else {
+            response.addCookie(cookieFactory.cookieToSet(jwtToken))
+            response.sendRedirect(authenticationSuccessUrlWeb)
+        }
     }
 }
