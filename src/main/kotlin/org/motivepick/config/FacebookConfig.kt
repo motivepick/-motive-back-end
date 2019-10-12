@@ -7,17 +7,17 @@ import org.springframework.context.annotation.Configuration
 class FacebookConfig (
 
     @Value("\${facebook.clientId}")
-    val clientId: String,
+    override val clientId: String,
 
     @Value("\${facebook.clientSecret}")
     val clientSecret: String,
 
     @Value("\${facebook.userAuthorizationUri}")
-    val userAuthorizationUri: String,
+    override val userAuthorizationUri: String,
 
     @Value("\${facebook.accessTokenUri}")
     val accessTokenUri: String,
 
     @Value("\${facebook.userInfoUri}")
     val userInfoUri: String
-)
+) : Oauth2Config

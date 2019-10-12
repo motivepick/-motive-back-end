@@ -14,33 +14,33 @@ import org.springframework.web.util.UriComponentsBuilder
 class FacebookService(private val userRepo: UserRepository,
         private val taskService: TaskService,
         private val jwtTokenFactory: JwtTokenFactory,
-        private val facebookConfig: FacebookConfig,
-        private val restTemplate: RestTemplate) {
+        private val config: FacebookConfig,
+        private val restTemplate: RestTemplate) : TokenGenerator {
 
-    fun generateJwtToken(code: String, redirectUri: String): String {
+    override fun generateJwtToken(code: String, redirectUri: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
-        val facebookProfile = requestFacebookProfile(accessToken)
+        val profile = requestProfile(accessToken)
 
-        if (!userRepo.existsByAccountId(facebookProfile.id)) {
-            val user = userRepo.save(User(facebookProfile.id, facebookProfile.name))
+        if (!userRepo.existsByAccountId(profile.id)) {
+            val user = userRepo.save(User(profile.id, profile.name))
             taskService.createInitialTasks(user)
         }
 
-        return jwtTokenFactory.createAccessJwtToken(facebookProfile.id.toString())
+        return jwtTokenFactory.createAccessJwtToken(profile.id.toString())
     }
 
     private fun requestAccessToken(code: String, redirectUri: String): String {
-        val uri = UriComponentsBuilder.fromUriString(facebookConfig.accessTokenUri)
-                .queryParam("client_id", facebookConfig.clientId)
-                .queryParam("client_secret", facebookConfig.clientSecret)
+        val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
+                .queryParam("client_id", config.clientId)
+                .queryParam("client_secret", config.clientSecret)
                 .queryParam("code", code)
                 .queryParam("redirect_uri", redirectUri).build().toUri()
         return restTemplate.getForObject(uri, TokenResponse::class.java)?.token
                 ?: throw AuthenticationServiceException("Could not retrieve access token")
     }
 
-    private fun requestFacebookProfile(accessToken: String): FacebookProfile {
-        val uri = UriComponentsBuilder.fromUriString(facebookConfig.userInfoUri)
+    private fun requestProfile(accessToken: String): FacebookProfile {
+        val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
                 .queryParam("access_token", accessToken)
                 .build().toUri()
         return restTemplate.getForObject(uri, FacebookProfile::class.java)

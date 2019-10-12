@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration
 class VkConfig (
 
     @Value("\${vk.clientId}")
-    val clientId: String,
+    override val clientId: String,
 
     @Value("\${vk.clientSecret}")
     val clientSecret: String,
 
     @Value("\${vk.userAuthorizationUri}")
-    val userAuthorizationUri: String,
+    override val userAuthorizationUri: String,
 
     @Value("\${vk.accessTokenUri}")
     val accessTokenUri: String,
@@ -23,4 +23,4 @@ class VkConfig (
 
     @Value("\${vk.apiVersion}")
     val apiVersion: String
-)
+): Oauth2Config

@@ -14,10 +14,10 @@ import org.springframework.web.util.UriComponentsBuilder
 class VkService(private val userRepo: UserRepository,
         private val taskService: TaskService,
         private val jwtTokenFactory: JwtTokenFactory,
-        private val vkConfig: VkConfig,
-        private val restTemplate: RestTemplate) {
+        private val config: VkConfig,
+        private val restTemplate: RestTemplate) : TokenGenerator {
 
-    fun generateJwtToken(code: String, redirectUri: String): String {
+    override fun generateJwtToken(code: String, redirectUri: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
         val profile = requestProfile(accessToken)
 
@@ -30,9 +30,9 @@ class VkService(private val userRepo: UserRepository,
     }
 
     private fun requestAccessToken(code: String, redirectUri: String): TokenResponse {
-        val uri = UriComponentsBuilder.fromUriString(vkConfig.accessTokenUri)
-                .queryParam("client_id", vkConfig.clientId)
-                .queryParam("client_secret", vkConfig.clientSecret)
+        val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
+                .queryParam("client_id", config.clientId)
+                .queryParam("client_secret", config.clientSecret)
                 .queryParam("code", code)
                 .queryParam("redirect_uri", redirectUri).build().toUri()
         return restTemplate.getForObject(uri, TokenResponse::class.java)
@@ -40,10 +40,10 @@ class VkService(private val userRepo: UserRepository,
     }
 
     private fun requestProfile(accessToken: TokenResponse): VkProfile {
-        val uri = UriComponentsBuilder.fromUriString(vkConfig.userInfoUri)
+        val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
                 .queryParam("access_token", accessToken.token)
                 .queryParam("user_ids", accessToken.id)
-                .queryParam("v", vkConfig.apiVersion)
+                .queryParam("v", config.apiVersion)
                 .build().toUri()
         val response = restTemplate.getForObject(uri, VkProfileResponse::class.java)
         if (response == null) {
