@@ -5,5 +5,5 @@ import org.springframework.data.repository.PagingAndSortingRepository
 
 interface GoalRepository : PagingAndSortingRepository<Goal, Long> {
 
-    fun findAllByUserAccountId(userId: Long): List<Goal>
+    fun findAllByUserAccountId(userId: String): List<Goal>
 }

@@ -22,9 +22,8 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         private val ANONYMOUS_URIS = arrayOf(
                 "/",
                 "/oauth2/authorization/facebook",
-                "/oauth2/authorization/facebook/callback**",
                 "/oauth2/authorization/vk",
-                "/oauth2/authorization/vk/callback**",
+                "/temporary/login",
                 "/error**")
     }
 

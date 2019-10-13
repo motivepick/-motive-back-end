@@ -8,11 +8,16 @@ import org.springframework.stereotype.Component
 @Component
 class CurrentUser {
 
-    fun getAccountId(): Long {
+    fun getAccountId(): String {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication is UsernamePasswordAuthenticationToken) {
-            return authentication.principal.toString().toLong()
+            val principal = authentication.principal;
+            if (principal == null) {
+                throw UsernameNotFoundException("authentication is present, but user account is absent")
+            } else {
+                return principal.toString()
+            }
         }
-        throw UsernameNotFoundException("Could not lookup accountId")
+        throw UsernameNotFoundException("authentication is absent or has unexpected type")
     }
 }

@@ -8,13 +8,15 @@ interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
     fun findByIdAndVisibleTrue(id: Long): Optional<Task>
 
-    fun findAllByUserAccountIdAndVisibleTrue(userId: Long): List<Task>
+    fun findAllByUserAccountId(userId: String): List<Task>
 
-    fun findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndVisibleTrue(userId: String): List<Task>
 
-    fun findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
 
-    fun findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(userId: Long): List<Task>
+    fun findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
+
+    fun findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(userId: String): List<Task>
 
     fun findAllByGoalIdAndClosedOrderByCreatedDesc(goalId: Long, closed: Boolean): List<Task>
 

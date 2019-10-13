@@ -71,7 +71,7 @@ internal class TaskController(
                         }
                         ok(taskRepo.save(task))
                     }
-                    .orElse(ResponseEntity.notFound().build())
+                    .orElse(notFound().build())
 
     @PutMapping("/{id}/closing")
     fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
@@ -81,7 +81,7 @@ internal class TaskController(
                         task.closingDate = LocalDateTime.now()
                         ok(taskRepo.save(task))
                     }
-                    .orElse(ResponseEntity.notFound().build())
+                    .orElse(notFound().build())
 
     @PutMapping("/{id}/undo-closing")
     fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
@@ -91,7 +91,7 @@ internal class TaskController(
                         task.created = LocalDateTime.now()
                         ok(taskRepo.save(task))
                     }
-                    .orElse(ResponseEntity.notFound().build())
+                    .orElse(notFound().build())
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Task> =

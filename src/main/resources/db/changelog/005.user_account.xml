@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="1570962013" author="Sergey Yaskov">
+        <modifyDataType catalogName="MOTIVE" schemaName="PUBLIC" tableName="USER_ACCOUNT"
+            columnName="ACCOUNT_ID" newDataType="VARCHAR(500)"/>
+        <addColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="USER_ACCOUNT">
+            <column name="TEMPORARY" type="BOOLEAN" defaultValue="FALSE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

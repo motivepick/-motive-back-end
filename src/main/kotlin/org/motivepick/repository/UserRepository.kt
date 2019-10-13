@@ -5,7 +5,5 @@ import org.springframework.data.repository.PagingAndSortingRepository
 
 interface UserRepository : PagingAndSortingRepository<User, Long> {
 
-    fun existsByAccountId(accountId: Long): Boolean
-
-    fun findByAccountId(accountId: Long): User?
+    fun findByAccountId(accountId: String): User?
 }

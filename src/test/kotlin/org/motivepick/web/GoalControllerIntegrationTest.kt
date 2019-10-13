@@ -33,7 +33,7 @@ class GoalControllerIntegrationTest {
 
     @Test
     fun create() {
-        val accountId = 1234567890L
+        val accountId = "1234567890"
 
         val request = CreateGoalRequest("some goal")
         request.description = "some description"

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="db/changelog/001.initial.structure.xml"/>
     <include file="db/changelog/002.alter-goal-table-add-column-color_tag.xml"/>
     <include file="db/changelog/003.task.closing_date.column.xml"/>
     <include file="db/changelog/004.task.visible.column.xml"/>
+    <include file="db/changelog/005.user_account.xml"/>
 
 </databaseChangeLog>

@@ -7,8 +7,10 @@ import javax.persistence.Entity
 @Entity(name = "USER_ACCOUNT")
 class User(
         @Column(nullable = false)
-        var accountId: Long,
+        var accountId: String,
 
         @Column(nullable = false)
-        var name: String) : AbstractEntity()
+        var name: String,
 
+        @Column(nullable = false)
+        var temporary: Boolean) : AbstractEntity()
