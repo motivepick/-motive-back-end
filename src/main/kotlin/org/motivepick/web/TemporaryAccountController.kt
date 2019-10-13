@@ -21,7 +21,7 @@ class TemporaryAccountController(private val config: ServerConfig, private val t
         userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true))
         val token = tokenFactory.createAccessJwtToken(temporaryAccountId)
         if (request.getParameter("mobile") == null) {
-            response.addCookie(cookieFactory.cookieToSet(token))
+            response.addCookie(cookieFactory.cookie(token))
             response.sendRedirect(config.authenticationSuccessUrlWeb)
         } else {
             response.sendRedirect(config.authenticationSuccessUrlMobile + token)

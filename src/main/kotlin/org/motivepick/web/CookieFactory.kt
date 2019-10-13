@@ -7,7 +7,7 @@ import javax.servlet.http.Cookie
 @Component
 class CookieFactory(private val config: ServerConfig) {
 
-    fun cookieToSet(jwtToken: String): Cookie {
+    fun cookie(jwtToken: String): Cookie {
         val cookie = Cookie(JWT_TOKEN_COOKIE, jwtToken)
         cookie.domain = config.cookieDomain
         cookie.path = "/"

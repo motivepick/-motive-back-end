@@ -50,7 +50,7 @@ class Oauth2LoginHandler(private val config: Oauth2Config, private val tokenGene
         if (mobile) {
             response.sendRedirect(serverConfig.authenticationSuccessUrlMobile + jwtToken)
         } else {
-            response.addCookie(cookieFactory.cookieToSet(jwtToken))
+            response.addCookie(cookieFactory.cookie(jwtToken))
             response.sendRedirect(serverConfig.authenticationSuccessUrlWeb)
         }
     }

@@ -22,8 +22,8 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         val token = lookupToken(request)
-        if (token == null) {
-            return UsernamePasswordAuthenticationToken(null, null, emptyList())
+        return if (token == null) {
+            UsernamePasswordAuthenticationToken(null, null, emptyList())
         } else {
             val claims: Jws<Claims>
             try {
@@ -34,8 +34,7 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
             val subject = claims.body.subject
             val scopes = claims.body.get("scopes", List::class.java)
             val authorities = scopes.map { SimpleGrantedAuthority(it as String) }
-
-            return UsernamePasswordAuthenticationToken(subject, null, authorities)
+            UsernamePasswordAuthenticationToken(subject, null, authorities)
         }
     }
 

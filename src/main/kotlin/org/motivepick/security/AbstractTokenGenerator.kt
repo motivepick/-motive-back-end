@@ -16,9 +16,9 @@ abstract class AbstractTokenGenerator(private val userService: UserService, priv
         return jwtTokenFactory.createAccessJwtToken(profile.id)
     }
 
-    abstract fun requestProfile(accessToken: TokenResponse): Profile
+    protected abstract fun requestProfile(accessToken: TokenResponse): Profile
 
-    protected fun requestAccessToken(code: String, redirectUri: String): TokenResponse {
+    private fun requestAccessToken(code: String, redirectUri: String): TokenResponse {
         val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
                 .queryParam("client_id", config.clientId)
                 .queryParam("client_secret", config.clientSecret)

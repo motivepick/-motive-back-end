@@ -28,7 +28,7 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
     }
 
     @GetMapping
-    fun list(@RequestParam(name = "closed") closed: Boolean?): ResponseEntity<List<Task>> {
+    fun list(@RequestParam("closed") closed: Boolean?): ResponseEntity<List<Task>> {
         val accountId = user.getAccountId()
         return when {
             closed == null -> ok(taskRepo.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId))
