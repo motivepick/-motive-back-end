@@ -13,7 +13,9 @@ vk:
   clientId: 6752973
   clientSecret: OIS0gHh6SiYYfx9MEhJk
 
-authentication.success.url.web: http://localhost:3000/login-success/
+authentication.success.url.web: http://localhost:3000
+logout.success.url: http://localhost:3000/login
+cookie.domain: localhost
 
 jwt.token:
   issuer: motive-local

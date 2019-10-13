@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component
 import javax.servlet.http.Cookie
 
 @Component
-class CookieFactory {
+class CookieFactory(private val config: ServerConfig) {
 
     fun cookieToSet(jwtToken: String): Cookie {
         val cookie = Cookie(JWT_TOKEN_COOKIE, jwtToken)
-        cookie.domain = "localhost"
+        cookie.domain = config.cookieDomain
         cookie.path = "/"
         cookie.maxAge = 3600 * 24 * 365
-        cookie.isHttpOnly = false
+        cookie.isHttpOnly = true
         return cookie
     }
 }

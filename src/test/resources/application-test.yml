@@ -16,6 +16,7 @@ enforce.https.for.oauth: true
 
 authentication.success.url.web: http://test
 authentication.success.url.mobile: test://
+logout.success.url: http://localhost:3000/login
 
 vk:
   clientId: testClientId

@@ -1,17 +1,16 @@
 package org.motivepick.config
 
+import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
 import org.motivepick.security.JwtTokenFactory
-import org.motivepick.web.CookieFactory
+import org.motivepick.web.ServerConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpStatus.OK
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.OrRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -34,7 +33,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     private lateinit var jwtTokenFactory: JwtTokenFactory
 
     @Autowired
-    private lateinit var cookieFactory: CookieFactory
+    private lateinit var config: ServerConfig
 
     override fun configure(http: HttpSecurity) {
         http
@@ -45,8 +44,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .anyRequest().authenticated()
                 .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection
-                // TODO: fix cookie removal on logout and make them HTTP only
-                .logout().addLogoutHandler(CustomCookieClearingLogoutHandler(cookieFactory)).logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(OK))
+                .logout().deleteCookies(JWT_TOKEN_COOKIE).logoutSuccessUrl(config.logoutSuccessUrl)
     }
 
     private fun jwtTokenAuthenticationProcessingFilter(): JwtTokenAuthenticationProcessingFilter {

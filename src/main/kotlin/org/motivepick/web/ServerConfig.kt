@@ -13,5 +13,11 @@ class ServerConfig(
         val authenticationSuccessUrlWeb: String,
 
         @Value("\${authentication.success.url.mobile}")
-        val authenticationSuccessUrlMobile: String
+        val authenticationSuccessUrlMobile: String,
+
+        @Value("\${logout.success.url}")
+        val logoutSuccessUrl: String,
+
+        @Value("\${cookie.domain}")
+        val cookieDomain: String
 )
