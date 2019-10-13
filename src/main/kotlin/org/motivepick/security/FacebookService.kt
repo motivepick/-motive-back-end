@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class FacebookService(private val userService: UserService, private val jwtTokenFactory: JwtTokenFactory,
-        private val config: FacebookConfig, private val restTemplate: RestTemplate) : TokenGenerator {
+        private val config: FacebookConfig, private val httpClient: RestTemplate) : TokenGenerator(config, httpClient) {
 
     override fun generateJwtToken(code: String, redirectUri: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
@@ -19,28 +19,13 @@ class FacebookService(private val userService: UserService, private val jwtToken
         return jwtTokenFactory.createAccessJwtToken(profile.id)
     }
 
-    private fun requestAccessToken(code: String, redirectUri: String): String {
-        val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
-                .queryParam("client_id", config.clientId)
-                .queryParam("client_secret", config.clientSecret)
-                .queryParam("code", code)
-                .queryParam("redirect_uri", redirectUri).build().toUri()
-        return restTemplate.getForObject(uri, TokenResponse::class.java)?.token
-                ?: throw AuthenticationServiceException("Could not retrieve access token")
-    }
-
-    private fun requestProfile(accessToken: String): FacebookProfile {
+    private fun requestProfile(accessToken: TokenResponse): FacebookProfile {
         val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
-                .queryParam("access_token", accessToken)
+                .queryParam("access_token", accessToken.token)
                 .build().toUri()
-        return restTemplate.getForObject(uri, FacebookProfile::class.java)
-                ?: throw AuthenticationServiceException("Could not retrieve FB profile")
+        return httpClient.getForObject(uri, FacebookProfile::class.java)
+                ?: throw AuthenticationServiceException("Could not retrieve profile")
     }
-
-    internal data class TokenResponse(
-            @JsonProperty("access_token")
-            val token: String
-    )
 
     internal data class FacebookProfile(
 

@@ -16,29 +16,22 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/tasks")
-internal class TaskController(
-        private val taskRepo: TaskRepository,
-        private val userRepo: UserRepository,
-        private val statistician: Statistician,
-        private val currentUser: CurrentUser) {
+internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository, private val user: CurrentUser) {
 
     @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
-        val user = userRepo.findByAccountId(currentUser.getAccountId())!!
+        val user = userRepo.findByAccountId(user.getAccountId())!!
         val task = Task(user, request.name.trim())
         task.description = request.description?.trim()
         task.dueDate = request.dueDate
-
         return ResponseEntity(taskRepo.save(task), CREATED)
     }
 
     @GetMapping
     fun list(@RequestParam(name = "closed") closed: Boolean?): ResponseEntity<List<Task>> {
-        val accountId = currentUser.getAccountId()
+        val accountId = user.getAccountId()
         return when {
-            closed == null -> {
-                ok(taskRepo.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId))
-            }
+            closed == null -> ok(taskRepo.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId))
             closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(accountId))
             else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(accountId))
         }
@@ -49,12 +42,6 @@ internal class TaskController(
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
-
-    @GetMapping("/statistics")
-    fun statistics(): ResponseEntity<Statistics> {
-        val tasks = taskRepo.findAllByUserAccountIdAndVisibleTrue(currentUser.getAccountId())
-        return ok(statistician.calculateStatisticsFor(tasks))
-    }
 
     @PutMapping("/{id}")
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =

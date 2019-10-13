@@ -7,36 +7,36 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class UserService(private val currentUser: CurrentUser, private val userRepo: UserRepository, private val taskService: TaskService) {
+class UserService(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) {
 
-    fun readCurrentUser(): User? = userRepo.findByAccountId(currentUser.getAccountId())
+    fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
 
     fun createUserWithTasksIfNotExists(accountId: String, name: String, temporary: Boolean): User {
         return try {
-            val temporaryAccountId = currentUser.getAccountId()
-            val temporaryUser = userRepo.findByAccountId(temporaryAccountId)
+            val temporaryAccountId = user.getAccountId()
+            val temporaryUser = repository.findByAccountId(temporaryAccountId)
             if (temporaryUser == null) {
                 throw RuntimeException("Unexpected situation: temporary user with ID "
                         + temporaryAccountId + " should be in the database, but one is absent")
             } else {
-                val existingUser = userRepo.findByAccountId(accountId)
+                val existingUser = repository.findByAccountId(accountId)
                 if (existingUser == null) {
                     temporaryUser.accountId = accountId
                     temporaryUser.temporary = false
                     temporaryUser.name = name
-                    userRepo.save(temporaryUser)
+                    repository.save(temporaryUser)
                 } else {
                     taskService.migrateTasks(temporaryAccountId, accountId)
                     existingUser
                 }
             }
         } catch (e: UsernameNotFoundException) {
-            userRepo.findByAccountId(accountId) ?: newUserWithTasks(accountId, name, temporary)
+            repository.findByAccountId(accountId) ?: newUserWithTasks(accountId, name, temporary)
         }
     }
 
     private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean): User {
-        val user = userRepo.save(User(accountId, name, temporary))
+        val user = repository.save(User(accountId, name, temporary))
         taskService.createInitialTasks(user)
         return user
     }

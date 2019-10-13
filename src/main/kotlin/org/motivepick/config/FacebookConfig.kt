@@ -10,13 +10,13 @@ class FacebookConfig (
     override val clientId: String,
 
     @Value("\${facebook.clientSecret}")
-    val clientSecret: String,
+    override val clientSecret: String,
 
     @Value("\${facebook.userAuthorizationUri}")
     override val userAuthorizationUri: String,
 
     @Value("\${facebook.accessTokenUri}")
-    val accessTokenUri: String,
+    override val accessTokenUri: String,
 
     @Value("\${facebook.userInfoUri}")
     val userInfoUri: String

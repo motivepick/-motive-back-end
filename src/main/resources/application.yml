@@ -1,6 +1,6 @@
 logging:
   level:
-    com: DEBUG
+    com: INFO
     root: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 

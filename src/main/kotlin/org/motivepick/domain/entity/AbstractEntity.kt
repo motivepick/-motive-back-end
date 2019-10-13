@@ -1,7 +1,7 @@
 package org.motivepick.domain.entity
 
 import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
+import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.MappedSuperclass
 
@@ -9,6 +9,6 @@ import javax.persistence.MappedSuperclass
 abstract class AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     var id: Long? = null
 }

@@ -10,13 +10,13 @@ class VkConfig (
     override val clientId: String,
 
     @Value("\${vk.clientSecret}")
-    val clientSecret: String,
+    override val clientSecret: String,
 
     @Value("\${vk.userAuthorizationUri}")
     override val userAuthorizationUri: String,
 
     @Value("\${vk.accessTokenUri}")
-    val accessTokenUri: String,
+    override val accessTokenUri: String,
 
     @Value("\${vk.userInfoUri}")
     val userInfoUri: String,
