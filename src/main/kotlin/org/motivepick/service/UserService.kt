@@ -3,6 +3,7 @@ package org.motivepick.service
 import org.motivepick.domain.entity.User
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.security.Profile
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
@@ -11,7 +12,7 @@ class UserService(private val user: CurrentUser, private val repository: UserRep
 
     fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
 
-    fun createUserWithTasksIfNotExists(accountId: String, name: String, temporary: Boolean): User {
+    fun createUserWithTasksIfNotExists(profile: Profile): User {
         return try {
             val temporaryAccountId = user.getAccountId()
             val temporaryUser = repository.findByAccountId(temporaryAccountId)
@@ -19,19 +20,19 @@ class UserService(private val user: CurrentUser, private val repository: UserRep
                 throw RuntimeException("Unexpected situation: temporary user with ID "
                         + temporaryAccountId + " should be in the database, but one is absent")
             } else {
-                val existingUser = repository.findByAccountId(accountId)
+                val existingUser = repository.findByAccountId(profile.id)
                 if (existingUser == null) {
-                    temporaryUser.accountId = accountId
+                    temporaryUser.accountId = profile.id
                     temporaryUser.temporary = false
-                    temporaryUser.name = name
+                    temporaryUser.name = profile.name
                     repository.save(temporaryUser)
                 } else {
-                    taskService.migrateTasks(temporaryAccountId, accountId)
+                    taskService.migrateTasks(temporaryAccountId, profile.id)
                     existingUser
                 }
             }
         } catch (e: UsernameNotFoundException) {
-            repository.findByAccountId(accountId) ?: newUserWithTasks(accountId, name, temporary)
+            repository.findByAccountId(profile.id) ?: newUserWithTasks(profile.id, profile.name, profile.temporary)
         }
     }
 

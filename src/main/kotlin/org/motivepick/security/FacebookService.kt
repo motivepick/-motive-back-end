@@ -9,22 +9,16 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
-class FacebookService(private val userService: UserService, private val jwtTokenFactory: JwtTokenFactory,
-        private val config: FacebookConfig, private val httpClient: RestTemplate) : TokenGenerator(config, httpClient) {
+class FacebookService(userService: UserService, jwtTokenFactory: JwtTokenFactory, private val config: FacebookConfig,
+        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenFactory, config, httpClient) {
 
-    override fun generateJwtToken(code: String, redirectUri: String): String {
-        val accessToken = requestAccessToken(code, redirectUri)
-        val profile = requestProfile(accessToken)
-        userService.createUserWithTasksIfNotExists(profile.id, profile.name, false)
-        return jwtTokenFactory.createAccessJwtToken(profile.id)
-    }
-
-    private fun requestProfile(accessToken: TokenResponse): FacebookProfile {
+    override fun requestProfile(accessToken: TokenResponse): Profile {
         val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
                 .queryParam("access_token", accessToken.token)
                 .build().toUri()
-        return httpClient.getForObject(uri, FacebookProfile::class.java)
+        val response = httpClient.getForObject(uri, FacebookProfile::class.java)
                 ?: throw AuthenticationServiceException("Could not retrieve profile")
+        return Profile(response.id, response.name, false)
     }
 
     internal data class FacebookProfile(

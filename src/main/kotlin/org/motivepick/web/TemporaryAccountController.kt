@@ -1,6 +1,7 @@
 package org.motivepick.web
 
 import org.motivepick.security.JwtTokenFactory
+import org.motivepick.security.Profile
 import org.motivepick.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +17,7 @@ class TemporaryAccountController(private val config: ServerConfig, private val t
     @GetMapping
     fun login(request: HttpServletRequest, response: HttpServletResponse) {
         val temporaryAccountId = UUID.randomUUID().toString()
-        userService.createUserWithTasksIfNotExists(temporaryAccountId, "", true)
+        userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true))
         val token = tokenFactory.createAccessJwtToken(temporaryAccountId)
         val redirectUrl = if (request.getParameter("mobile") == null) config.authenticationSuccessUrlWeb else config.authenticationSuccessUrlMobile
         response.sendRedirect(redirectUrl + token)

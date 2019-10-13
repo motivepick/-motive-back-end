@@ -9,30 +9,25 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
-class VkService(private val userService: UserService, private val jwtTokenFactory: JwtTokenFactory,
-        private val config: VkConfig, private val httpClient: RestTemplate) : TokenGenerator(config, httpClient) {
+class VkService(userService: UserService, jwtTokenFactory: JwtTokenFactory, private val config: VkConfig,
+        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenFactory, config, httpClient) {
 
-    override fun generateJwtToken(code: String, redirectUri: String): String {
-        val accessToken = requestAccessToken(code, redirectUri)
-        val profile = requestProfile(accessToken).response[0]
-        userService.createUserWithTasksIfNotExists(accessToken.id!!, profile.firstName + " " + profile.lastName, false)
-        return jwtTokenFactory.createAccessJwtToken(accessToken.id)
-    }
-
-    private fun requestProfile(accessToken: TokenResponse): VkProfileResponse {
+    override fun requestProfile(accessToken: TokenResponse): Profile {
         val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
                 .queryParam("access_token", accessToken.token)
                 .queryParam("user_ids", accessToken.id)
                 .queryParam("v", config.apiVersion)
                 .build().toUri()
-        return httpClient.getForObject(uri, VkProfileResponse::class.java)
+        val response = httpClient.getForObject(uri, VkProfileResponse::class.java)
                 ?: throw AuthenticationServiceException("Could not retrieve profile")
+        val profile = response.profiles[0]
+        return Profile(accessToken.id!!, profile.firstName + " " + profile.lastName, false)
     }
 
     internal data class VkProfileResponse(
 
             @JsonProperty("response")
-            val response: List<VkProfile>
+            val profiles: List<VkProfile>
     )
 
     internal data class VkProfile(

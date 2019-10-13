@@ -1,13 +1,22 @@
 package org.motivepick.security
 
 import org.motivepick.config.Oauth2Config
+import org.motivepick.service.UserService
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
-abstract class TokenGenerator(private val config: Oauth2Config, private val httpClient: RestTemplate) {
+abstract class AbstractTokenGenerator(private val userService: UserService, private val jwtTokenFactory: JwtTokenFactory,
+        private val config: Oauth2Config, private val httpClient: RestTemplate) {
 
-    abstract fun generateJwtToken(code: String, redirectUri: String): String
+    fun generateJwtToken(code: String, redirectUri: String): String {
+        val accessToken = requestAccessToken(code, redirectUri)
+        val profile = requestProfile(accessToken)
+        userService.createUserWithTasksIfNotExists(profile)
+        return jwtTokenFactory.createAccessJwtToken(profile.id)
+    }
+
+    abstract fun requestProfile(accessToken: TokenResponse): Profile
 
     protected fun requestAccessToken(code: String, redirectUri: String): TokenResponse {
         val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
