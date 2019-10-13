@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse
 class VkController(private val oauth2LoginHandler: Oauth2LoginHandler) {
 
     @Autowired
-    constructor(config: VkConfig, service: VkService, serverConfig: ServerConfig) : this(Oauth2LoginHandler(config, service, serverConfig))
+    constructor(config: VkConfig, service: VkService, serverConfig: ServerConfig, cookieFactory: CookieFactory)
+            : this(Oauth2LoginHandler(config, service, serverConfig, cookieFactory))
 
     @GetMapping
     fun login(request: HttpServletRequest, response: HttpServletResponse) = oauth2LoginHandler.login(request, response)

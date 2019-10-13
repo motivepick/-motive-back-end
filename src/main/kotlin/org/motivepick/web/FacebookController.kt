@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse
 class FacebookController(private val oauth2LoginHandler: Oauth2LoginHandler) {
 
     @Autowired
-    constructor(config: FacebookConfig, service: FacebookService, serverConfig: ServerConfig) : this(Oauth2LoginHandler(config, service, serverConfig))
+    constructor(config: FacebookConfig, service: FacebookService, serverConfig: ServerConfig, cookieFactory: CookieFactory)
+            : this(Oauth2LoginHandler(config, service, serverConfig, cookieFactory))
 
     @GetMapping
     fun login(request: HttpServletRequest, response: HttpServletResponse) = oauth2LoginHandler.login(request, response)

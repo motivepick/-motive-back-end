@@ -11,7 +11,8 @@ import java.util.concurrent.TimeUnit.MINUTES
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class Oauth2LoginHandler(private val config: Oauth2Config, private val tokenGenerator: AbstractTokenGenerator, private val serverConfig: ServerConfig) {
+class Oauth2LoginHandler(private val config: Oauth2Config, private val tokenGenerator: AbstractTokenGenerator,
+        private val serverConfig: ServerConfig, private val cookieFactory: CookieFactory) {
 
     private val validState = Caffeine.newBuilder().expireAfterWrite(1, MINUTES).build<String, Boolean>()
 
@@ -46,8 +47,11 @@ class Oauth2LoginHandler(private val config: Oauth2Config, private val tokenGene
                 .toUriString()
         val jwtToken = tokenGenerator.generateJwtToken(code, redirectUrl)
 
-        val navigationUrl = if (mobile) serverConfig.authenticationSuccessUrlMobile else serverConfig.authenticationSuccessUrlWeb
-
-        response.sendRedirect(navigationUrl + jwtToken)
+        if (mobile) {
+            response.sendRedirect(serverConfig.authenticationSuccessUrlMobile + jwtToken)
+        } else {
+            response.addCookie(cookieFactory.cookieToSet(jwtToken))
+            response.sendRedirect(serverConfig.authenticationSuccessUrlWeb)
+        }
     }
 }

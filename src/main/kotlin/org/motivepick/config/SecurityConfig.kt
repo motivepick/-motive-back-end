@@ -45,6 +45,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .anyRequest().authenticated()
                 .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection
+                // TODO: fix cookie removal on logout and make them HTTP only
                 .logout().addLogoutHandler(CustomCookieClearingLogoutHandler(cookieFactory)).logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(OK))
     }
 

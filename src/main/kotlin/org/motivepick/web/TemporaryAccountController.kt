@@ -12,14 +12,19 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/temporary/login")
-class TemporaryAccountController(private val config: ServerConfig, private val tokenFactory: JwtTokenFactory, private val userService: UserService) {
+class TemporaryAccountController(private val config: ServerConfig, private val tokenFactory: JwtTokenFactory,
+        private val userService: UserService, private val cookieFactory: CookieFactory) {
 
     @GetMapping
     fun login(request: HttpServletRequest, response: HttpServletResponse) {
         val temporaryAccountId = UUID.randomUUID().toString()
         userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true))
         val token = tokenFactory.createAccessJwtToken(temporaryAccountId)
-        val redirectUrl = if (request.getParameter("mobile") == null) config.authenticationSuccessUrlWeb else config.authenticationSuccessUrlMobile
-        response.sendRedirect(redirectUrl + token)
+        if (request.getParameter("mobile") == null) {
+            response.addCookie(cookieFactory.cookieToSet(token))
+            response.sendRedirect(config.authenticationSuccessUrlWeb)
+        } else {
+            response.sendRedirect(config.authenticationSuccessUrlMobile + token)
+        }
     }
 }
