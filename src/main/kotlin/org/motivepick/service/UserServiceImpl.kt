@@ -4,12 +4,16 @@ import org.motivepick.domain.entity.User
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.Profile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserServiceImpl(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) : UserService {
+
+    val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
     @Transactional
     override fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
@@ -30,7 +34,11 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
                     temporaryUser.name = profile.name
                     repository.save(temporaryUser)
                 } else {
-                    taskService.migrateTasks(temporaryAccountId, profile.id)
+                    if (isIndeedTemporary(temporaryUser)) {
+                        taskService.migrateTasks(temporaryAccountId, profile.id)
+                    } else {
+                        logger.warn("User $temporaryAccountId is not temporary. Check that cookie get removed")
+                    }
                     existingUser
                 }
             }
@@ -38,6 +46,12 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
             repository.findByAccountId(profile.id) ?: newUserWithTasks(profile.id, profile.name, profile.temporary)
         }
     }
+
+    /**
+     * Migrate tasks only if the source user is indeed temporary to prevent migration in case
+     * when cookie removal does not work and a user has more than one account in Motive.
+     */
+    private fun isIndeedTemporary(source: User) = source.temporary
 
     private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean): User {
         val user = repository.save(User(accountId, name, temporary))
