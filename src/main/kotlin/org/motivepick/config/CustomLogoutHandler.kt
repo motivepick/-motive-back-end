@@ -7,6 +7,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * Spring-provided logout handler that suppose to delete cookie does not delete them, so using custom one.
+ */
 class CustomLogoutHandler(private val cookieFactory: CookieFactory) : LogoutHandler {
 
     override fun logout(request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication?) {
