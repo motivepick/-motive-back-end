@@ -1,8 +1,8 @@
 package org.motivepick.config
 
-import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
 import org.motivepick.security.JwtTokenFactory
+import org.motivepick.web.CookieFactory
 import org.motivepick.web.ServerConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -33,6 +33,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     private lateinit var jwtTokenFactory: JwtTokenFactory
 
     @Autowired
+    private lateinit var cookieFactory: CookieFactory
+
+    @Autowired
     private lateinit var config: ServerConfig
 
     override fun configure(http: HttpSecurity) {
@@ -44,7 +47,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .anyRequest().authenticated()
                 .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection
-                .logout().deleteCookies(JWT_TOKEN_COOKIE).logoutSuccessUrl(config.logoutSuccessUrl)
+                .logout().addLogoutHandler(CustomLogoutHandler(cookieFactory)).logoutSuccessUrl(config.logoutSuccessUrl)
     }
 
     private fun jwtTokenAuthenticationProcessingFilter(): JwtTokenAuthenticationProcessingFilter {

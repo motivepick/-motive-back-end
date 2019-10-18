@@ -15,4 +15,13 @@ class CookieFactory(private val config: ServerConfig) {
         cookie.isHttpOnly = true
         return cookie
     }
+
+    fun cookie(jwtToken: String, age: Int): Cookie {
+        val cookie = Cookie(JWT_TOKEN_COOKIE, jwtToken)
+        cookie.domain = config.cookieDomain
+        cookie.path = "/"
+        cookie.maxAge = age
+        cookie.isHttpOnly = true
+        return cookie
+    }
 }
