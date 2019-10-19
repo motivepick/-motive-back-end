@@ -10,6 +10,8 @@ interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
     fun findAllByUserAccountId(userId: String): List<Task>
 
+    fun findAllByUserAccountIdAndClosedFalseAndDueDateNotNull(userId: String): List<Task>
+
     fun findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
 
     fun findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
