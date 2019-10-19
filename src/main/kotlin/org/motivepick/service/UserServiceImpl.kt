@@ -3,6 +3,7 @@ package org.motivepick.service
 import org.motivepick.domain.entity.User
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.Profile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -37,7 +38,7 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
                     if (isIndeedTemporary(temporaryUser)) {
                         taskService.migrateTasks(temporaryAccountId, profile.id)
                     } else {
-                        logger.warn("User $temporaryAccountId is not temporary. Check that cookie get removed")
+                        logger.warn("User $temporaryAccountId is not temporary. Check that the $JWT_TOKEN_COOKIE cookie gets removed")
                     }
                     existingUser
                 }
