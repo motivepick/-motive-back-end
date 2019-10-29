@@ -48,8 +48,8 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
 
     /**
      * Note that it does not throw [AuthenticationServiceException] anymore because for callbacks
-     * the JWT token may be present (if a temporary user tries to promote himself to a permanent one) or
-     * may be absent (in a normal situation, i.e., if an unknown user tries to authenticate).
+     * the JWT token may be absent (in a normal situation, i.e., if an unknown user tries to authenticate) or
+     * may be present (if a temporary user tries to promote himself to a permanent one).
      */
     private fun lookupToken(request: HttpServletRequest): String? = request.cookies?.find { it.name == JWT_TOKEN_COOKIE }?.value
 }

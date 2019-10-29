@@ -2,7 +2,6 @@
 
 PID_FILE=./application.pid
 
-if [ -f "$PID_FILE" ]
-then
-    kill $(cat ${PID_FILE})
+if [ -f "$PID_FILE" ]; then
+  kill "$(cat ${PID_FILE})"
 fi
