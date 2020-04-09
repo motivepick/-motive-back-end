@@ -6,6 +6,7 @@ import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.service.TaskService
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
@@ -16,22 +17,18 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/tasks")
-internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository, private val user: CurrentUser) {
+internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository,
+        private val taskService: TaskService, private val user: CurrentUser) {
 
     @PostMapping
-    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> {
-        val user = userRepo.findByAccountId(user.getAccountId())!!
-        val task = Task(user, request.name.trim())
-        task.description = request.description?.trim()
-        task.dueDate = request.dueDate
-        return ResponseEntity(taskRepo.save(task), CREATED)
-    }
+    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
+            ResponseEntity(taskService.createTask(request), CREATED)
 
     @GetMapping
     fun list(@RequestParam("closed") closed: Boolean?): ResponseEntity<List<Task>> {
         val accountId = user.getAccountId()
         return when {
-            closed == null -> ok(taskRepo.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId))
+            closed == null -> ok(taskService.findAllForCurrentUser())
             closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(accountId))
             else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(accountId))
         }

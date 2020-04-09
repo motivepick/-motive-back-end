@@ -3,6 +3,7 @@ package org.motivepick.web
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -13,6 +14,6 @@ class ScheduleController(private val currentUser: CurrentUser, private val taskR
     @GetMapping("/schedule")
     fun schedule(): ResponseEntity<Schedule> {
         val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNull(currentUser.getAccountId())
-        return ResponseEntity.ok(scheduleFactory.scheduleFor(tasks))
+        return ok(scheduleFactory.scheduleFor(tasks))
     }
 }

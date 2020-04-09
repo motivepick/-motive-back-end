@@ -2,6 +2,7 @@ logging:
   level:
     com: INFO
     root: INFO
+    springframework.security: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
 
 management.endpoints.web.exposure.include: info,health,httptrace
@@ -22,7 +23,5 @@ vk:
   accessTokenUri: https://oauth.vk.com/access_token
   userInfoUri: https://api.vk.com/method/users.get
   apiVersion: 5.87
-
-logging.level.org.springframework.security: DEBUG
 
 authentication.success.url.mobile: 'motive://'
