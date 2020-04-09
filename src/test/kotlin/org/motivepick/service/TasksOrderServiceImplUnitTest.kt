@@ -2,7 +2,7 @@ package org.motivepick.service
 
 import org.junit.Test
 
-class TasksOrderServiceImplTest {
+class TasksOrderServiceImplUnitTest {
 
     @Test
     fun test() {

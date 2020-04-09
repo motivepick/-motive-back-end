@@ -3,6 +3,9 @@ spring.datasource:
   username: postgres
   password: postgres
 
+spring.jpa.show-sql: true
+spring.jpa.properties.hibernate.format_sql: true
+
 enforce.https.for.oauth: false
 
 facebook:

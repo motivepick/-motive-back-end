@@ -1,12 +1,13 @@
 package org.motivepick.service
 
 import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TasksOrderEntity
+import org.motivepick.repository.TasksOrderRepository
+import org.motivepick.repository.UserRepository
 import org.springframework.stereotype.Service
 
-val ACCOUNT_ID_TO_ORDER = mutableMapOf<String, MutableList<Long?>>()
-
 @Service
-class TasksOrderServiceImpl : TasksOrderService {
+class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository) : TasksOrderService {
 
     override fun ordered(accountId: String, tasks: List<Task>): List<Task> {
         val order = findTasksOrderForUser(accountId)
@@ -22,15 +23,19 @@ class TasksOrderServiceImpl : TasksOrderService {
 
     // TODO: if you update a page very quickly after move, it will read tasks faster than the order was saved (probably because of the map, not database)
     override fun moveTask(accountId: String, sourceId: Long, destinationId: Long) {
-        val order = ACCOUNT_ID_TO_ORDER[accountId]!!
+        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)!!
+        val order = orderEntity.orderedIds.toMutableList()
         val destinationIndex = order.indexOf(destinationId)
         order.remove(sourceId)
-        ACCOUNT_ID_TO_ORDER[accountId] = insertWithShift(order, destinationIndex, sourceId)
+        orderEntity.orderedIds = insertWithShift(order, destinationIndex, sourceId)
+        tasksOrderRepository.save(orderEntity)
     }
 
     override fun addTask(accountId: String, taskId: Long) {
-        val order = ACCOUNT_ID_TO_ORDER[accountId]!!
-        ACCOUNT_ID_TO_ORDER[accountId] = insertWithShift(order, 0, taskId)
+        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)!!
+        val order = orderEntity.orderedIds.toMutableList()
+        orderEntity.orderedIds = insertWithShift(order, 0, taskId)
+        tasksOrderRepository.save(orderEntity)
     }
 
     // TODO: refactor this method
@@ -49,13 +54,12 @@ class TasksOrderServiceImpl : TasksOrderService {
     }
 
     private fun findTasksOrderForUser(accountId: String): MutableList<Long?> {
-        if (!ACCOUNT_ID_TO_ORDER.containsKey(accountId)) {
-            ACCOUNT_ID_TO_ORDER[accountId] = ArrayList()
-        }
-        return ACCOUNT_ID_TO_ORDER[accountId]!!
+        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)
+        return orderEntity?.orderedIds?.toMutableList() ?: ArrayList()
     }
 
     private fun saveTasksOrderForUser(accountId: String, order: List<Long?>) {
-        ACCOUNT_ID_TO_ORDER[accountId] = order.toMutableList()
+        val user = userRepository.findByAccountId(accountId)
+        tasksOrderRepository.save(TasksOrderEntity(user!!, order))
     }
 }

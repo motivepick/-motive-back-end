@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.LocalTime.MAX
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -45,7 +45,7 @@ class ScheduleFactory(private val clock: Clock) {
 
     private fun week(): MutableMap<LocalDateTime, List<Task>> {
         val schedule: MutableMap<LocalDateTime, List<Task>> = LinkedHashMap()
-        val endOfToday = LocalDate.now(clock).atTime(LocalTime.MAX)
+        val endOfToday = LocalDate.now(clock).atTime(MAX)
         for (i in 0..6) {
             schedule[endOfToday.plusDays(i.toLong())] = ArrayList()
         }
