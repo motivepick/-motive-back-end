@@ -6,7 +6,7 @@ import org.motivepick.security.CurrentUser
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.Profile
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserServiceImpl(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) : UserService {
 
-    val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
+    val logger: Logger = getLogger(UserServiceImpl::class.java)
 
     @Transactional
     override fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())

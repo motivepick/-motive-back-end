@@ -6,13 +6,13 @@ import org.motivepick.repository.TasksOrderRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.service.Lists.insertWithShift
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
 
 @Service
 class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository) : TasksOrderService {
 
-    val logger: Logger = LoggerFactory.getLogger(TasksOrderServiceImpl::class.java)
+    val logger: Logger = getLogger(TasksOrderServiceImpl::class.java)
 
     override fun ordered(accountId: String, tasks: List<Task>): List<Task> {
         val order = findTasksOrderForUser(accountId)
