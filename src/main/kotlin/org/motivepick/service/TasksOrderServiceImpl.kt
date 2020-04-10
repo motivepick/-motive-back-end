@@ -18,7 +18,7 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
         val order = findTasksOrderForUser(accountId)
         return if (order.isEmpty()) {
             val ids = tasks.map { it.id }
-            saveTasksOrderForUser(accountId, ids)
+            createTasksOrderForUser(accountId, ids)
             tasks
         } else {
             val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
@@ -41,10 +41,14 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
     }
 
     override fun addTask(accountId: String, taskId: Long) {
-        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)!!
-        val order = orderEntity.orderedIds.toMutableList()
-        orderEntity.orderedIds = insertWithShift(order, 0, taskId)
-        tasksOrderRepository.save(orderEntity)
+        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)
+        if (orderEntity == null) {
+            createTasksOrderForUser(accountId, listOf(taskId))
+        } else {
+            val order = orderEntity.orderedIds.toMutableList()
+            orderEntity.orderedIds = insertWithShift(order, 0, taskId)
+            tasksOrderRepository.save(orderEntity)
+        }
     }
 
     private fun findTasksOrderForUser(accountId: String): MutableList<Long?> {
@@ -52,7 +56,7 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
         return orderEntity?.orderedIds?.toMutableList() ?: ArrayList()
     }
 
-    private fun saveTasksOrderForUser(accountId: String, order: List<Long?>) {
+    private fun createTasksOrderForUser(accountId: String, order: List<Long?>) {
         val user = userRepository.findByAccountId(accountId)
         tasksOrderRepository.save(TasksOrderEntity(user!!, order))
     }

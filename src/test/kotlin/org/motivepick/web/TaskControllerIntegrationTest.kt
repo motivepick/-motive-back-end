@@ -1,6 +1,6 @@
 package org.motivepick.web
 
-import com.github.springtestdbunit.annotation.DatabaseOperation
+import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import org.junit.Assert.*
@@ -10,6 +10,7 @@ import org.motivepick.IntegrationTest
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
+import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringRunner
@@ -18,7 +19,7 @@ import java.time.LocalDateTime
 @RunWith(SpringRunner::class)
 @IntegrationTest(1234567890L, "Firstname Lastname")
 @DatabaseSetup("/dbunit/tasks.xml")
-@DatabaseTearDown("/dbunit/tasks.xml", type = DatabaseOperation.DELETE_ALL)
+@DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
 class TaskControllerIntegrationTest {
 
     @Autowired
@@ -27,9 +28,13 @@ class TaskControllerIntegrationTest {
     @Autowired
     private lateinit var taskRepository: TaskRepository
 
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
     @Test
     fun create() {
         val accountId = "1234567890"
+        userRepository.findByAccountId("1234567890")
 
         val request = CreateTaskRequest("\n some task")
         request.description = "  some description "
