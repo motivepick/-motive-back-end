@@ -4,10 +4,15 @@ import org.motivepick.domain.entity.Task
 import org.motivepick.domain.entity.TasksOrderEntity
 import org.motivepick.repository.TasksOrderRepository
 import org.motivepick.repository.UserRepository
+import org.motivepick.service.Lists.insertWithShift
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository) : TasksOrderService {
+
+    val logger: Logger = LoggerFactory.getLogger(TasksOrderServiceImpl::class.java)
 
     override fun ordered(accountId: String, tasks: List<Task>): List<Task> {
         val order = findTasksOrderForUser(accountId)
@@ -16,8 +21,12 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
             saveTasksOrderForUser(accountId, ids)
             tasks
         } else {
-            val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()  // TODO: add the remaining tasks to the order and write warning
-            order.map { taskToId[it]!! }
+            val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
+            val taskIdsNotInOrder = taskToId.keys.subtract(order)
+            if (taskIdsNotInOrder.isNotEmpty()) {
+                logger.warn("Tasks {} were not in the order, you forgot to update the order at some point", taskIdsNotInOrder)
+            }
+            order.map { taskToId[it]!! } + taskIdsNotInOrder.map { taskToId[it]!! }
         }
     }
 
@@ -36,21 +45,6 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
         val order = orderEntity.orderedIds.toMutableList()
         orderEntity.orderedIds = insertWithShift(order, 0, taskId)
         tasksOrderRepository.save(orderEntity)
-    }
-
-    // TODO: refactor this method
-    private fun insertWithShift(list: MutableList<Long?>, index: Int, element: Long?): MutableList<Long?> {
-        val result: MutableList<Long?> = mutableListOf()
-        for ((i, value) in list.iterator().withIndex()) {
-            if (i == index) {
-                result.add(element)
-            }
-            result.add(value)
-        }
-        if (index == list.size) {
-            result.add(element)
-        }
-        return result
     }
 
     private fun findTasksOrderForUser(accountId: String): MutableList<Long?> {
