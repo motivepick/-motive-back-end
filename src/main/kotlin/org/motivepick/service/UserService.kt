@@ -8,4 +8,6 @@ interface UserService {
     fun readCurrentUser(): User?
 
     fun createUserWithTasksIfNotExists(profile: Profile): User
+
+    fun deleteTemporaryUserWithTasks(temporaryAccountId: String)
 }

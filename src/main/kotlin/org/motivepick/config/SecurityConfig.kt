@@ -1,7 +1,8 @@
 package org.motivepick.config
 
 import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
-import org.motivepick.security.JwtTokenFactory
+import org.motivepick.security.JwtTokenService
+import org.motivepick.service.UserService
 import org.motivepick.web.CookieFactory
 import org.motivepick.web.ServerConfig
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,7 +31,10 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
     @Autowired
-    private lateinit var jwtTokenFactory: JwtTokenFactory
+    private lateinit var jwtTokenService: JwtTokenService
+
+    @Autowired
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var cookieFactory: CookieFactory
@@ -47,7 +51,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .anyRequest().authenticated()
                 .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .csrf().disable() // TODO implement CSRF protection
-                .logout().addLogoutHandler(CustomLogoutHandler(cookieFactory)).logoutSuccessUrl(config.logoutSuccessUrl)
+                .logout().addLogoutHandler(CustomLogoutHandler(jwtTokenService, userService, cookieFactory)).logoutSuccessUrl(config.logoutSuccessUrl)
     }
 
     private fun jwtTokenAuthenticationProcessingFilter(): JwtTokenAuthenticationProcessingFilter {
@@ -59,6 +63,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 return !matchers.matches(request) && processingMatcher.matches(request)
             }
         }
-        return JwtTokenAuthenticationProcessingFilter(requestMatcher, jwtTokenFactory)
+        return JwtTokenAuthenticationProcessingFilter(requestMatcher, jwtTokenService)
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository) : TasksOrderService {
 
-    val logger: Logger = getLogger(TasksOrderServiceImpl::class.java)
+    private val logger: Logger = getLogger(TasksOrderServiceImpl::class.java)
 
     override fun ordered(accountId: String, tasks: List<Task>): List<Task> {
         val order = findTasksOrderForUser(accountId)
@@ -49,6 +49,10 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
             orderEntity.orderedIds = insertWithShift(order, 0, taskId)
             tasksOrderRepository.save(orderEntity)
         }
+    }
+
+    override fun deleteTasksOrders(accountId: String) {
+        tasksOrderRepository.deleteByUserAccountId(accountId)
     }
 
     private fun findTasksOrderForUser(accountId: String): MutableList<Long?> {

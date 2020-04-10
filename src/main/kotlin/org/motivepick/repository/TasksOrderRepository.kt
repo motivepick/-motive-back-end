@@ -6,4 +6,6 @@ import org.springframework.data.repository.PagingAndSortingRepository
 interface TasksOrderRepository : PagingAndSortingRepository<TasksOrderEntity, Long> {
 
     fun findByUserAccountId(accountId: String): TasksOrderEntity?
+
+    fun deleteByUserAccountId(accountId: String)
 }

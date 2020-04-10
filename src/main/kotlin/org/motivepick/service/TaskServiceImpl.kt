@@ -44,4 +44,10 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         tasks.forEach { it.user = toUser }
         taskRepository.saveAll(tasks)
     }
+
+    @Transactional
+    override fun deleteTasksFully(userAccountId: String) {
+        tasksOrderService.deleteTasksOrders(userAccountId)
+        taskRepository.deleteByUserAccountId(userAccountId)
+    }
 }

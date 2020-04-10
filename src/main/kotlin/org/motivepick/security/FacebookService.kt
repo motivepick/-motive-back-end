@@ -9,8 +9,8 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
-class FacebookService(userService: UserService, jwtTokenFactory: JwtTokenFactory, private val config: FacebookConfig,
-        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenFactory, config, httpClient) {
+class FacebookService(userService: UserService, tokenService: JwtTokenService, private val config: FacebookConfig,
+        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, tokenService, config, httpClient) {
 
     override fun requestProfile(accessToken: TokenResponse): Profile {
         val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)

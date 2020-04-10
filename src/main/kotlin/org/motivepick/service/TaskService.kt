@@ -13,4 +13,6 @@ interface TaskService {
     fun createInitialTasks(tasksOwner: User): Iterable<Task>
 
     fun migrateTasks(fromUserAccountId: String, toUserAccountId: String)
+
+    fun deleteTasksFully(userAccountId: String)
 }

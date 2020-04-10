@@ -6,14 +6,14 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
-abstract class AbstractTokenGenerator(private val userService: UserService, private val jwtTokenFactory: JwtTokenFactory,
+abstract class AbstractTokenGenerator(private val userService: UserService, private val tokenService: JwtTokenService,
         private val config: Oauth2Config, private val httpClient: RestTemplate) {
 
     fun generateJwtToken(code: String, redirectUri: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
         val profile = requestProfile(accessToken)
         userService.createUserWithTasksIfNotExists(profile)
-        return jwtTokenFactory.createAccessJwtToken(profile.id)
+        return tokenService.createAccessJwtToken(profile.id)
     }
 
     protected abstract fun requestProfile(accessToken: TokenResponse): Profile

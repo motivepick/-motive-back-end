@@ -17,4 +17,6 @@ interface TaskRepository : PagingAndSortingRepository<Task, Long> {
     fun findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
 
     fun findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(userId: String): List<Task>
+
+    fun deleteByUserAccountId(userId: String)
 }

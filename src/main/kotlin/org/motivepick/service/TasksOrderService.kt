@@ -9,4 +9,6 @@ interface TasksOrderService {
     fun moveTask(accountId: String, sourceId: Long, destinationId: Long)
 
     fun addTask(accountId: String, taskId: Long)
+
+    fun deleteTasksOrders(accountId: String)
 }

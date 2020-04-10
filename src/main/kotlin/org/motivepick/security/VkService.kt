@@ -9,8 +9,8 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
-class VkService(userService: UserService, jwtTokenFactory: JwtTokenFactory, private val config: VkConfig,
-        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenFactory, config, httpClient) {
+class VkService(userService: UserService, jwtTokenService: JwtTokenService, private val config: VkConfig,
+        private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenService, config, httpClient) {
 
     override fun requestProfile(accessToken: TokenResponse): Profile {
         val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)

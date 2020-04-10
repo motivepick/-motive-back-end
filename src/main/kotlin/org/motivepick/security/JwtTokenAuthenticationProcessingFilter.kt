@@ -17,17 +17,16 @@ import javax.servlet.http.HttpServletResponse
 const val JWT_TOKEN_COOKIE = "MOTIVE_SESSION"
 
 class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
-        private val jwtTokenFactory: JwtTokenFactory)
-    : AbstractAuthenticationProcessingFilter(matcher) {
+        private val tokenService: JwtTokenService) : AbstractAuthenticationProcessingFilter(matcher) {
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
-        val token = lookupToken(request)
+        val token = tokenService.lookupToken(request)
         return if (token == null) {
             UsernamePasswordAuthenticationToken(null, null, emptyList())
         } else {
             val claims: Jws<Claims>
             try {
-                claims = jwtTokenFactory.extractClaims(token)
+                claims = tokenService.extractClaims(token)
             } catch (e: MalformedJwtException) {
                 throw AuthenticationServiceException("Incorrect JWT token")
             }
@@ -45,11 +44,4 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
         SecurityContextHolder.setContext(context)
         chain.doFilter(request, response)
     }
-
-    /**
-     * Note that it does not throw [AuthenticationServiceException] anymore because for callbacks
-     * the JWT token may be absent (in a normal situation, i.e., if an unknown user tries to authenticate) or
-     * may be present (if a temporary user tries to promote himself to a permanent one).
-     */
-    private fun lookupToken(request: HttpServletRequest): String? = request.cookies?.find { it.name == JWT_TOKEN_COOKIE }?.value
 }

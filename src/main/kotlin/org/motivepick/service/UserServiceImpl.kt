@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserServiceImpl(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) : UserService {
 
-    val logger: Logger = getLogger(UserServiceImpl::class.java)
+    private val logger: Logger = getLogger(UserServiceImpl::class.java)
 
     @Transactional
     override fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
@@ -48,11 +48,26 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
         }
     }
 
+    @Transactional
+    override fun deleteTemporaryUserWithTasks(temporaryAccountId: String) {
+        val temporaryUser = repository.findByAccountId(temporaryAccountId)
+        if (temporaryUser == null) {
+            throw RuntimeException("Unexpected situation: temporary user with ID "
+                    + temporaryAccountId + " should be in the database, but one is absent")
+        } else if (isIndeedTemporary(temporaryUser)) {
+            logger.info("Going to delete user {} with their tasks", temporaryAccountId)
+            taskService.deleteTasksFully(temporaryAccountId)
+            repository.delete(temporaryUser)
+        } else {
+            logger.warn("User $temporaryAccountId is not temporary")
+        }
+    }
+
     /**
      * Migrate tasks only if the source user is indeed temporary to prevent migration in case
      * when cookie removal does not work and a user has more than one account in Motive.
      */
-    private fun isIndeedTemporary(source: User) = source.temporary
+    private fun isIndeedTemporary(user: User) = user.temporary
 
     private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean): User {
         val user = repository.save(User(accountId, name, temporary))
