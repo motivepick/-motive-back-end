@@ -3,12 +3,16 @@ package org.motivepick.domain.entity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.FetchType.LAZY
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 
 @Entity
 class Task(
         @JsonIgnore
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne(fetch = LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
         var user: User,
 
@@ -29,7 +33,7 @@ class Task(
     var visible: Boolean = true
 
     @JsonIgnore // TODO: don't mix persistent and REST layers. The annotation should be removed. The same for above
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "GOAL_ID")
-    var goal: Goal? = null
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "TASK_LIST_ID")
+    var taskList: TaskListEntity? = null
 }

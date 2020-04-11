@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="array.type" value="BIGINT[]" dbms="postgresql"/>
+    <property name="array.type" value="ARRAY" dbms="h2"/>
+
+    <changeSet id="202004112021" author="Sergey Yaskov">
+        <createTable tableName="TASK_LIST">
+            <column name="ID" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="PK__ID__TASK_LIST"/>
+            </column>
+
+            <column name="USER_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK__TASK_LIST__USER_ID__USER_ACCOUNT__ID"
+                    references="USER_ACCOUNT(ID)"/>
+            </column>
+
+            <column name="TASK_LIST_TYPE" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASK">
+            <column name="TASK_LIST_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="FK__TASK__TASK_LIST_ID__TASK_LIST__ID"
+                    references="TASK_LIST(ID)"/>
+            </column>
+        </addColumn>
+
+        <addColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER">
+            <column name="TASK_LIST_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="FK__TASK_ORDER__TASK_LIST_ID__TASK_LIST__ID"
+                    references="TASK_LIST(ID)"/>
+            </column>
+        </addColumn>
+
+        <dropPrimaryKey catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER"/>
+        <addPrimaryKey catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER"
+            columnNames="ID" constraintName="PK__ID__TASK_ORDER"/>
+        <dropForeignKeyConstraint baseTableName="TASKS_ORDER"
+            constraintName="FK__TASKS_ORDER__USER_ID__USER_ACCOUNT__ID"/>
+        <addForeignKeyConstraint baseTableName="TASKS_ORDER" baseColumnNames="USER_ID"
+            constraintName="FK__TASK_ORDER__USER_ID__USER_ACCOUNT__ID"
+            referencedTableName="USER_ACCOUNT" referencedColumnNames="ID"/>
+        <renameTable catalogName="MOTIVE" schemaName="PUBLIC" oldTableName="TASKS_ORDER" newTableName="TASK_ORDER"/>
+
+        <dropColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASK" columnName="GOAL_ID"/>
+        <dropTable catalogName="MOTIVE" schemaName="PUBLIC" tableName="GOAL"/>
+    </changeSet>
+</databaseChangeLog>

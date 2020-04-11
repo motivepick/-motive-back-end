@@ -51,7 +51,7 @@ class TaskControllerIntegrationTest {
         assertEquals("some task", task.name)
         assertEquals("some description", task.description)
         assertEquals(request.dueDate, task.dueDate)
-        assertNull(task.goal)
+        assertNull(task.taskList)
 
         val taskFromDb = taskRepository.findById(task.id!!).get()
         assertNotNull(taskFromDb.id)
@@ -61,7 +61,7 @@ class TaskControllerIntegrationTest {
         assertEquals("some task", taskFromDb.name)
         assertEquals("some description", taskFromDb.description)
         assertEquals(request.dueDate, taskFromDb.dueDate)
-        assertNull(taskFromDb.goal)
+        assertNull(taskFromDb.taskList)
     }
 
     @Test
@@ -101,7 +101,7 @@ class TaskControllerIntegrationTest {
         assertEquals(LocalDateTime.of(2019, 1, 2,
                 0, 0, 0, 0), task.dueDate)
         assertEquals(1L, task.user.id)
-        assertEquals(1L, task.goal!!.id)
+        assertEquals(1L, task.taskList!!.id)
     }
 
     @Test

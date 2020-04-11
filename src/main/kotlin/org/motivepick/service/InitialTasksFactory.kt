@@ -16,8 +16,8 @@ class InitialTasksFactory {
         val tomorrow = now.plusDays(1)
         val dayAfterTomorrow = now.plusDays(2)
         val inTwoMonths = now.plusMonths(2)
-        return listOf(task(tasksOwner, "Find a hotel in Sofia", true),
-                task(tasksOwner, "Write a review for the Estonian teacher", yesterday, true),
+        return listOf(task(tasksOwner, "Find a hotel in Sofia", false),
+                task(tasksOwner, "Write a review for the Estonian teacher", yesterday, false),
                 task(tasksOwner, "Buy a birthday present for Steve", tomorrow, false),
                 task(tasksOwner, "Finish the course about microservices", false),
                 task(tasksOwner, "Finalize the blog post", dayAfterTomorrow, false),

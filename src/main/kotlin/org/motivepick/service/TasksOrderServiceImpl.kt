@@ -1,36 +1,29 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.Task
-import org.motivepick.domain.entity.TasksOrderEntity
+import org.motivepick.domain.entity.TaskListType
+import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TasksOrderRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.service.Lists.insertWithShift
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory.getLogger
+import org.motivepick.service.Lists.withPageable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository) : TasksOrderService {
+class TasksOrderServiceImpl(private val userRepository: UserRepository, private val tasksOrderRepository: TasksOrderRepository,
+        private val taskListRepository: TaskListRepository) : TasksOrderService {
 
-    private val logger: Logger = getLogger(TasksOrderServiceImpl::class.java)
-
-    override fun ordered(accountId: String, tasks: List<Task>): List<Task> {
-        val order = findTasksOrderForUser(accountId)
-        return if (order.isEmpty()) {
-            val ids = tasks.map { it.id }
-            createTasksOrderForUser(accountId, ids)
-            tasks
-        } else {
-            val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
-            val taskIdsNotInOrder = taskToId.keys.subtract(order)
-            if (taskIdsNotInOrder.isNotEmpty()) {
-                logger.warn("Tasks {} were not in the order, you forgot to update the order at some point", taskIdsNotInOrder)
-            }
-            order.map { taskToId[it]!! } + taskIdsNotInOrder.map { taskToId[it]!! }
-        }
+    @Transactional
+    override fun findOrder(accountId: String, listType: TaskListType, pageable: Pageable): Page<Long> {
+        val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
+        val orderEntity = tasksOrderRepository.findByTaskListId(taskList!!.id!!)
+        return withPageable(orderEntity!!.orderedIds.filterNotNull(), pageable)
     }
 
     // TODO: if you update a page very quickly after move, it will read tasks faster than the order was saved (probably because of the map, not database)
+    @Transactional
     override fun moveTask(accountId: String, sourceId: Long, destinationId: Long) {
         val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)!!
         val order = orderEntity.orderedIds.toMutableList()
@@ -40,28 +33,16 @@ class TasksOrderServiceImpl(private val userRepository: UserRepository, private 
         tasksOrderRepository.save(orderEntity)
     }
 
+    @Transactional
     override fun addTask(accountId: String, taskId: Long) {
-        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)
-        if (orderEntity == null) {
-            createTasksOrderForUser(accountId, listOf(taskId))
-        } else {
-            val order = orderEntity.orderedIds.toMutableList()
-            orderEntity.orderedIds = insertWithShift(order, 0, taskId)
-            tasksOrderRepository.save(orderEntity)
-        }
+        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)!!
+        val order = orderEntity.orderedIds.toMutableList()
+        orderEntity.orderedIds = insertWithShift(order, 0, taskId)
+        tasksOrderRepository.save(orderEntity)
     }
 
+    @Transactional
     override fun deleteTasksOrders(accountId: String) {
         tasksOrderRepository.deleteByUserAccountId(accountId)
-    }
-
-    private fun findTasksOrderForUser(accountId: String): MutableList<Long?> {
-        val orderEntity = tasksOrderRepository.findByUserAccountId(accountId)
-        return orderEntity?.orderedIds?.toMutableList() ?: ArrayList()
-    }
-
-    private fun createTasksOrderForUser(accountId: String, order: List<Long?>) {
-        val user = userRepository.findByAccountId(accountId)
-        tasksOrderRepository.save(TasksOrderEntity(user!!, order))
     }
 }

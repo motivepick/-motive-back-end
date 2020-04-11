@@ -9,5 +9,6 @@
     <include file="db/changelog/004.task.visible.column.xml"/>
     <include file="db/changelog/005.user_account.xml"/>
     <include file="db/changelog/006.tasks_order.xml"/>
+    <include file="db/changelog/007.task_list.xml"/>
 
 </databaseChangeLog>

@@ -13,11 +13,11 @@ class CurrentUser {
         if (authentication is UsernamePasswordAuthenticationToken) {
             val principal = authentication.principal;
             if (principal == null) {
-                throw UsernameNotFoundException("authentication is present, but user account is absent")
+                throw UsernameNotFoundException("Authentication is present, but user account is absent")
             } else {
                 return principal.toString()
             }
         }
-        throw UsernameNotFoundException("authentication is absent or has unexpected type")
+        throw UsernameNotFoundException("Authentication is absent or has unexpected type")
     }
 }

@@ -7,5 +7,9 @@ interface TasksOrderRepository : PagingAndSortingRepository<TasksOrderEntity, Lo
 
     fun findByUserAccountId(accountId: String): TasksOrderEntity?
 
+    fun findByTaskListId(taskListId: Long): TasksOrderEntity?
+
+    fun findAllByUserAccountId(accountId: String): List<TasksOrderEntity>
+
     fun deleteByUserAccountId(accountId: String)
 }

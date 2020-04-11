@@ -9,7 +9,9 @@ import javax.persistence.FetchType.LAZY
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
-@Entity(name = "TASKS_ORDER")
+@Entity(name = "TASK_ORDER")
 @TypeDef(name = "ListArray", typeClass = ListArrayType::class)
 class TasksOrderEntity(@ManyToOne(fetch = LAZY) @JoinColumn(name = "USER_ID", nullable = false) var user: User,
-        @Type(type = "ListArray") @Column(nullable = false, columnDefinition = "BIGINT[]") var orderedIds: List<Long?>) : AbstractEntity()
+        @Type(type = "ListArray") @Column(nullable = false, columnDefinition = "BIGINT[]") var orderedIds: List<Long?>,
+        @ManyToOne(fetch = LAZY) @JoinColumn(name = "TASK_LIST_ID") var taskList: TaskListEntity) : AbstractEntity() {
+}
