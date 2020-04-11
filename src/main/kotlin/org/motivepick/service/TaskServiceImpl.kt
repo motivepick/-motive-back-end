@@ -1,12 +1,14 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.*
-import org.motivepick.domain.entity.TaskListType.CLOSED_TASKS
+import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskListEntity
+import org.motivepick.domain.entity.TaskListType
+import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
+import org.motivepick.domain.entity.User
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
-import org.motivepick.repository.TasksOrderRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.springframework.data.domain.Page
@@ -18,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
         private val taskRepository: TaskRepository, private val currentUser: CurrentUser,
-        private val tasksOrderRepository: TasksOrderRepository, private val tasksOrderService: TasksOrderService,
         private val taskListRepository: TaskListRepository) : TaskService {
 
     @Transactional
@@ -30,7 +31,8 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     @Transactional
     override fun findForCurrentUser(listType: TaskListType, pageable: Pageable): Page<Task> {
         val accountId = currentUser.getAccountId()
-        val taskIdsPage = tasksOrderService.findOrder(accountId, listType, pageable)
+        val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
+        val taskIdsPage = Lists.withPageable(taskList!!.orderedIds.filterNotNull(), pageable)
         val tasks = taskRepository.findAllByIdIn(taskIdsPage.content)
         val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
@@ -43,20 +45,20 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         task.description = request.description?.trim()
         task.dueDate = request.dueDate
         val createdTask = taskRepository.save(task)
-        tasksOrderService.addTask(currentUser.getAccountId(), createdTask.id!!)
+        // TODO
+//        taskOrderService.addTask(currentUser.getAccountId(), createdTask.id!!)
         return createdTask
     }
 
     @Transactional
     override fun createInitialTasks(tasksOwner: User): Iterable<Task> {
         val tasks = tasksFactory.createInitialTasks(tasksOwner)
-        val taskLists = taskListRepository.saveAll(listOf(TaskListEntity(tasksOwner, INBOX), TaskListEntity(tasksOwner, CLOSED_TASKS)))
+        val taskLists = taskListRepository.saveAll(listOf(TaskListEntity(tasksOwner, INBOX, listOf()), TaskListEntity(tasksOwner, CLOSED, listOf())))
         val inbox = taskLists.first { it.type == INBOX }
-        val closedTasks = taskLists.first { it.type == CLOSED_TASKS }
         tasks.forEach { it.taskList = inbox }
         val savedTasks = taskRepository.saveAll(tasks)
-        tasksOrderRepository.saveAll(listOf(TasksOrderEntity(tasksOwner, savedTasks.map { it.id }, inbox),
-                TasksOrderEntity(tasksOwner, listOf(), closedTasks)))
+        inbox.orderedIds = savedTasks.mapNotNull { it.id }
+        taskListRepository.save(inbox)
         return savedTasks
     }
 
@@ -68,16 +70,13 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         tasks.forEach { it.user = toUser }
         taskRepository.saveAll(tasks)
 
-        val orders = tasksOrderRepository.findAllByUserAccountId(fromUserAccountId)
-        orders.forEach { it.user = toUser }
-        tasksOrderRepository.saveAll(orders)
-
-        // TODO: migrate task lists
+        val taskLists = taskListRepository.findAllByUserAccountId(fromUserAccountId)
+        taskLists.forEach { it.user = toUser }
+        taskListRepository.saveAll(taskLists)
     }
 
     @Transactional
     override fun deleteTasksFully(userAccountId: String) {
-        tasksOrderService.deleteTasksOrders(userAccountId)
         taskListRepository.deleteByUserAccountId(userAccountId)
         taskRepository.deleteByUserAccountId(userAccountId)
     }

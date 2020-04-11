@@ -8,9 +8,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class TaskListController(private val user: CurrentUser, private val taskService: TaskService) {
@@ -18,4 +16,16 @@ class TaskListController(private val user: CurrentUser, private val taskService:
     @GetMapping("/task-lists/{type}")
     fun read(@PathVariable("type") listType: TaskListType, pageable: Pageable): ResponseEntity<Page<Task>> =
             ok(taskService.findForCurrentUser(listType, pageable))
+
+    @PostMapping("/orders")
+    fun moveTask(@RequestBody request: MoveTaskRequest): ResponseEntity<Void> {
+        val accountId = user.getAccountId()
+        // TODO
+//        taskOrderService.moveTask(accountId, request.sourceId!!, request.destinationId!!)
+        return ok().build()
+    }
+
+    // TODO: implement close task by moving task
+
+    // TODO: task deletion as moving task as well
 }

@@ -20,33 +20,22 @@
             <column name="TASK_LIST_TYPE" type="VARCHAR(500)">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="ORDERED_TASK_IDS" type="${array.type}">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
-        <addColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASK">
+        <addColumn tableName="TASK">
             <column name="TASK_LIST_ID" type="BIGINT">
                 <constraints nullable="true" foreignKeyName="FK__TASK__TASK_LIST_ID__TASK_LIST__ID"
                     references="TASK_LIST(ID)"/>
             </column>
         </addColumn>
 
-        <addColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER">
-            <column name="TASK_LIST_ID" type="BIGINT">
-                <constraints nullable="true" foreignKeyName="FK__TASK_ORDER__TASK_LIST_ID__TASK_LIST__ID"
-                    references="TASK_LIST(ID)"/>
-            </column>
-        </addColumn>
+        <dropTable tableName="TASKS_ORDER"/>
 
-        <dropPrimaryKey catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER"/>
-        <addPrimaryKey catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASKS_ORDER"
-            columnNames="ID" constraintName="PK__ID__TASK_ORDER"/>
-        <dropForeignKeyConstraint baseTableName="TASKS_ORDER"
-            constraintName="FK__TASKS_ORDER__USER_ID__USER_ACCOUNT__ID"/>
-        <addForeignKeyConstraint baseTableName="TASKS_ORDER" baseColumnNames="USER_ID"
-            constraintName="FK__TASK_ORDER__USER_ID__USER_ACCOUNT__ID"
-            referencedTableName="USER_ACCOUNT" referencedColumnNames="ID"/>
-        <renameTable catalogName="MOTIVE" schemaName="PUBLIC" oldTableName="TASKS_ORDER" newTableName="TASK_ORDER"/>
-
-        <dropColumn catalogName="MOTIVE" schemaName="PUBLIC" tableName="TASK" columnName="GOAL_ID"/>
-        <dropTable catalogName="MOTIVE" schemaName="PUBLIC" tableName="GOAL"/>
+        <dropColumn tableName="TASK" columnName="GOAL_ID"/>
+        <dropTable tableName="GOAL"/>
     </changeSet>
 </databaseChangeLog>

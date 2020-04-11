@@ -1,11 +1,15 @@
 package org.motivepick.domain.entity
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType
+import org.hibernate.annotations.Type
+import org.hibernate.annotations.TypeDef
 import javax.persistence.*
 import javax.persistence.CascadeType.ALL
 import javax.persistence.EnumType.STRING
 import javax.persistence.FetchType.LAZY
 
 @Entity(name = "TASK_LIST")
+@TypeDef(name = "ListArray", typeClass = ListArrayType::class)
 class TaskListEntity(
         @ManyToOne(fetch = LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
@@ -13,7 +17,11 @@ class TaskListEntity(
 
         @Column(name = "TASK_LIST_TYPE", nullable = false)
         @Enumerated(STRING)
-        var type: TaskListType) : AbstractEntity() {
+        var type: TaskListType,
+
+        @Type(type = "ListArray")
+        @Column(name = "ORDERED_TASK_IDS", nullable = false, columnDefinition = "BIGINT[]")
+        var orderedIds: List<Long?>) : AbstractEntity() {
 
     @OneToMany(mappedBy = "taskList", cascade = [ALL], orphanRemoval = true, fetch = LAZY)
     var tasks: MutableList<Task> = ArrayList()
