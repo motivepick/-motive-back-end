@@ -4,10 +4,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-
 object Lists {
 
-    fun <T> insertWithShift(list: List<T>, index: Int, element: T): List<T> =
+    fun <T> insertBefore(list: List<T>, index: Int, element: T): List<T> =
             list.subList(0, index) + element + list.subList(index, list.size)
 
     fun <T> withPageable(list: List<T>, pageable: Pageable): Page<T> {
