@@ -5,13 +5,12 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.User
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 
 interface TaskService {
 
     fun findForCurrentUser(): List<Task>
 
-    fun findForCurrentUser(listType: TaskListType, pageable: Pageable): Page<Task>
+    fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<Task>
 
     fun createTask(request: CreateTaskRequest): Task
 

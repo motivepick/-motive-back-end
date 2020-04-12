@@ -6,6 +6,7 @@ import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.service.TaskListService
 import org.motivepick.service.TaskService
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -13,12 +14,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/tasks")
 internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository,
-        private val taskService: TaskService, private val user: CurrentUser) {
+        private val taskService: TaskService, private val taskListService: TaskListService, private val user: CurrentUser) {
 
     @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
@@ -59,22 +59,14 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
 
     @PutMapping("/{id}/closing")
     fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
-            taskRepo.findByIdAndVisibleTrue(taskId)
-                    .map { task ->
-                        task.closed = true
-                        task.closingDate = LocalDateTime.now()
-                        ok(taskRepo.save(task))
-                    }
+            taskListService.closeTask(taskId)
+                    .map { ok(it) }
                     .orElse(notFound().build())
 
     @PutMapping("/{id}/undo-closing")
     fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
-            taskRepo.findByIdAndVisibleTrue(taskId)
-                    .map { task ->
-                        task.closed = false
-                        task.created = LocalDateTime.now()
-                        ok(taskRepo.save(task))
-                    }
+            taskListService.undoCloseTask(taskId)
+                    .map { ok(it) }
                     .orElse(notFound().build())
 
     @DeleteMapping("/{id}")
