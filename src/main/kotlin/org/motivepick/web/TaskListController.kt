@@ -21,8 +21,4 @@ class TaskListController(private val taskService: TaskService, private val taskL
         taskListService.moveTask(request.sourceListType!!, request.sourceIndex!!, request.destinationListType!!, request.destinationIndex!!)
         return ok().build()
     }
-
-    // TODO: implement close task by moving task
-
-    // TODO: task deletion as moving task as well
 }

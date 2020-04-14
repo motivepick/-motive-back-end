@@ -3,6 +3,7 @@ package org.motivepick.domain.entity
 import com.vladmihalcea.hibernate.type.array.ListArrayType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
+import org.springframework.util.Assert.notNull
 import javax.persistence.*
 import javax.persistence.CascadeType.ALL
 import javax.persistence.EnumType.STRING
@@ -27,7 +28,9 @@ class TaskListEntity(
     var tasks: MutableList<Task> = ArrayList()
 
     fun addTask(task: Task) {
+        notNull(task.id, "Task ID must be present if you want to add the task to the task list")
         task.taskList = this
         tasks.add(task)
+        orderedIds = listOf(task.id) + orderedIds
     }
 }

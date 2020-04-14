@@ -65,22 +65,6 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
-    fun listOpened() {
-        val tasks = controller.list(false).body!!
-
-        assertEquals(1, tasks.size)
-        assertEquals(1L, tasks[0].id)
-    }
-
-    @Test
-    fun listClosed() {
-        val tasks = controller.list(true).body!!
-
-        assertEquals(1, tasks.size)
-        assertEquals(2L, tasks[0].id)
-    }
-
-    @Test
     fun readNotFound() {
         val response = controller.read(1000L)
 

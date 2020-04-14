@@ -23,12 +23,6 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         private val taskListRepository: TaskListRepository) : TaskService {
 
     @Transactional
-    override fun findForCurrentUser(): List<Task> {
-        val accountId = currentUser.getAccountId()
-        return taskRepository.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId)
-    }
-
-    @Transactional
     override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<Task> {
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()
@@ -42,13 +36,11 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     @Transactional
     override fun createTask(request: CreateTaskRequest): Task {
         val user = userRepository.findByAccountId(currentUser.getAccountId())!!
-        val task = Task(user, request.name.trim())
-        task.description = request.description?.trim()
-        task.dueDate = request.dueDate
-        val createdTask = taskRepository.save(task)
-        // TODO
-//        taskOrderService.addTask(currentUser.getAccountId(), createdTask.id!!)
-        return createdTask
+        val task = taskRepository.save(taskFromRequest(user, request))
+        val taskList = taskListRepository.findByUserAccountIdAndType(user.accountId, INBOX)!!
+        taskList.addTask(task)
+        taskListRepository.save(taskList)
+        return task
     }
 
     @Transactional
@@ -80,5 +72,12 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     override fun deleteTasksFully(userAccountId: String) {
         taskListRepository.deleteByUserAccountId(userAccountId)
         taskRepository.deleteByUserAccountId(userAccountId)
+    }
+
+    private fun taskFromRequest(user: User, request: CreateTaskRequest): Task {
+        val task = Task(user, request.name.trim())
+        task.description = request.description?.trim()
+        task.dueDate = request.dueDate
+        return task
     }
 }

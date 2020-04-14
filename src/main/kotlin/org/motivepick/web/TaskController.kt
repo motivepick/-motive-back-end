@@ -5,7 +5,6 @@ import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
-import org.motivepick.security.CurrentUser
 import org.motivepick.service.TaskListService
 import org.motivepick.service.TaskService
 import org.springframework.http.HttpStatus.CREATED
@@ -18,21 +17,11 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/tasks")
 internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository,
-        private val taskService: TaskService, private val taskListService: TaskListService, private val user: CurrentUser) {
+        private val taskService: TaskService, private val taskListService: TaskListService) {
 
     @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
             ResponseEntity(taskService.createTask(request), CREATED)
-
-    @GetMapping
-    fun list(@RequestParam("closed") closed: Boolean?): ResponseEntity<List<Task>> {
-        val accountId = user.getAccountId()
-        return when {
-            closed == null -> ok(taskService.findForCurrentUser())
-            closed -> ok(taskRepo.findAllByUserAccountIdAndClosedTrueAndVisibleTrueOrderByClosingDateDesc(accountId))
-            else -> ok(taskRepo.findAllByUserAccountIdAndClosedFalseAndVisibleTrueOrderByCreatedDesc(accountId))
-        }
-    }
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
