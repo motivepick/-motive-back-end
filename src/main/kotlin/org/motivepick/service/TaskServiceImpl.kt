@@ -50,18 +50,19 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     }
 
     @Transactional
-    override fun createInitialTasks(tasksOwner: User): Iterable<Task> {
+    override fun createInitialTasks(tasksOwner: User) {
         val tasks = tasksFactory.createInitialTasks(tasksOwner)
-        val taskLists = taskListRepository.saveAll(listOf(TaskListEntity(tasksOwner, INBOX, listOf()), TaskListEntity(tasksOwner, CLOSED, listOf())))
-        val inbox = taskLists.first { it.type == INBOX }
-        tasks.forEach { it.taskList = inbox }
-        val savedTasks = taskRepository.saveAll(tasks)
-        inbox.orderedIds = savedTasks.mapNotNull { it.id }
-        taskListRepository.save(inbox)
-        return savedTasks
+        val inbox = taskListRepository.save(TaskListEntity(tasksOwner, INBOX, listOf()))
+        val closed = taskListRepository.save(TaskListEntity(tasksOwner, CLOSED, listOf()))
+        tasks[INBOX]!!.forEach { it.taskList = inbox }
+        tasks[CLOSED]!!.forEach { it.taskList = closed }
+        val savedInboxTasks = taskRepository.saveAll(tasks[INBOX]!!)
+        val savedClosedTasks = taskRepository.saveAll(tasks[CLOSED]!!)
+        inbox.orderedIds = savedInboxTasks.mapNotNull { it.id }
+        closed.orderedIds = savedClosedTasks.mapNotNull { it.id }
+        taskListRepository.saveAll(listOf(inbox, closed))
     }
 
-    // TODO: fix migration for the case when migrating to existing user with existing tasks
     @Transactional
     override fun migrateTasks(fromUserAccountId: String, toUserAccountId: String) {
         val toUser = userRepository.findByAccountId(toUserAccountId)!!
@@ -70,9 +71,20 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         tasks.forEach { it.user = toUser }
         taskRepository.saveAll(tasks)
 
-        val taskLists = taskListRepository.findAllByUserAccountId(fromUserAccountId)
-        taskLists.forEach { it.user = toUser }
-        taskListRepository.saveAll(taskLists)
+        val fromTaskLists = taskListRepository.findAllByUserAccountId(fromUserAccountId)
+        val fromTaskListToType = fromTaskLists.map { it.type to it }.toMap()
+        val toTaskLists = taskListRepository.findAllByUserAccountId(toUserAccountId)
+        val toTaskListToType = toTaskLists.map { it.type to it }.toMap()
+
+        listOf(INBOX, CLOSED).forEach { type ->
+            val fromTaskList = fromTaskListToType[type]!!
+            val toTaskList = toTaskListToType[type]!!
+            fromTaskList.tasks.forEach(toTaskList::addTask)
+            fromTaskList.tasks.removeAll { true }
+        }
+        taskListRepository.deleteByIdIn(fromTaskLists.mapNotNull { it.id })
+        taskListRepository.saveAll(toTaskLists)
+        userRepository.deleteByAccountId(fromUserAccountId)
     }
 
     @Transactional

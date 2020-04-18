@@ -14,7 +14,7 @@ interface TaskService {
 
     fun createTask(request: CreateTaskRequest): Task
 
-    fun createInitialTasks(tasksOwner: User): Iterable<Task>
+    fun createInitialTasks(tasksOwner: User)
 
     fun migrateTasks(fromUserAccountId: String, toUserAccountId: String)
 

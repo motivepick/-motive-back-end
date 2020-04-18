@@ -1,6 +1,9 @@
 package org.motivepick.service
 
 import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskListType
+import org.motivepick.domain.entity.TaskListType.CLOSED
+import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.domain.entity.User
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -10,19 +13,19 @@ import java.time.ZoneOffset.UTC
 @Component
 class InitialTasksFactory {
 
-    fun createInitialTasks(tasksOwner: User): List<Task> {
+    fun createInitialTasks(tasksOwner: User): Map<TaskListType, List<Task>> {
         val now = now(UTC)
         val yesterday = now.minusDays(1)
         val tomorrow = now.plusDays(1)
         val dayAfterTomorrow = now.plusDays(2)
         val inTwoMonths = now.plusMonths(2)
-        return listOf(task(tasksOwner, "Find a hotel in Sofia", true),
-                task(tasksOwner, "Write a review for the Estonian teacher", yesterday, true),
-                task(tasksOwner, "Buy a birthday present for Steve", tomorrow, false),
+        return mapOf(INBOX to listOf(task(tasksOwner, "Buy a birthday present for Steve", tomorrow, false),
                 task(tasksOwner, "Finish the course about microservices", false),
                 task(tasksOwner, "Finalize the blog post", dayAfterTomorrow, false),
                 task(tasksOwner, "Tidy up the kitchen", yesterday, false),
-                task(tasksOwner, "Transfer money for the new illustration to Ann", "12$ for each illustration should be transferred. 36$ in total.", inTwoMonths))
+                task(tasksOwner, "Transfer money for the new illustration to Ann", "12$ for each illustration should be transferred. 36$ in total.", inTwoMonths)),
+                CLOSED to listOf(task(tasksOwner, "Find a hotel in Sofia", true),
+                        task(tasksOwner, "Write a review for the Estonian teacher", yesterday, true)))
     }
 
     private fun task(tasksOwner: User, name: String, closed: Boolean): Task {

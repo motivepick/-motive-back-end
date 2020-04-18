@@ -6,4 +6,6 @@ import org.springframework.data.repository.PagingAndSortingRepository
 interface UserRepository : PagingAndSortingRepository<User, Long> {
 
     fun findByAccountId(accountId: String): User?
+
+    fun deleteByAccountId(accountId: String)
 }
