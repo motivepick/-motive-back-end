@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="202004182304" author="Sergey Yaskov">
+        <createIndex indexName="IDX__TASK__USER_ID" tableName="TASK">
+            <column name="USER_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX__TASK__TASK_LIST_ID" tableName="TASK">
+            <column name="TASK_LIST_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX__TASK__VISIBLE" tableName="TASK">
+            <column name="VISIBLE"/>
+        </createIndex>
+
+        <createIndex indexName="IDX__TASK_LIST__USER_ID" tableName="TASK_LIST">
+            <column name="USER_ID"/>
+        </createIndex>
+        <createIndex indexName="IDX__TASK_LIST__TASK_LIST_TYPE" tableName="TASK_LIST">
+            <column name="TASK_LIST_TYPE"/>
+        </createIndex>
+
+        <createIndex indexName="IDX__USER_ACCOUNT__ACCOUNT_ID" tableName="USER_ACCOUNT">
+            <column name="ACCOUNT_ID"/>
+        </createIndex>
+
+        <addNotNullConstraint tableName="TASK" columnName="TASK_LIST_ID"/>
+    </changeSet>
+</databaseChangeLog>
