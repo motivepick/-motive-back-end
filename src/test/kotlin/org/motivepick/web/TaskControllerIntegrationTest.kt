@@ -4,6 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.motivepick.IntegrationTest
@@ -32,6 +33,7 @@ class TaskControllerIntegrationTest {
     private lateinit var userRepository: UserRepository
 
     @Test
+    @Ignore
     fun create() {
         val accountId = "1234567890"
         userRepository.findByAccountId("1234567890")
@@ -73,6 +75,7 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
+    @Ignore
     fun read() {
         val task = controller.read(1L).body!!
 
