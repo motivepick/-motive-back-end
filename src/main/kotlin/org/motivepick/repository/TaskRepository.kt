@@ -6,6 +6,8 @@ import java.util.*
 
 interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
+    fun findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(userId: String): List<Task>
+
     fun findByIdAndVisibleTrue(id: Long): Optional<Task>
 
     fun findAllByUserAccountId(userId: String): List<Task>

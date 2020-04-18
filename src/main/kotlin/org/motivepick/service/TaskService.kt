@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page
 
 interface TaskService {
 
+    fun findForCurrentUser(): List<Task>
+
     fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<Task>
 
     fun createTask(request: CreateTaskRequest): Task

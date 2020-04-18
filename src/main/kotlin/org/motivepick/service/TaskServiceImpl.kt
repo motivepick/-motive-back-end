@@ -23,6 +23,12 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         private val taskListRepository: TaskListRepository) : TaskService {
 
     @Transactional
+    override fun findForCurrentUser(): List<Task> {
+        val accountId = currentUser.getAccountId()
+        return taskRepository.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId)
+    }
+
+    @Transactional
     override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<Task> {
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()

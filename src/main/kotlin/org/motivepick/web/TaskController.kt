@@ -4,7 +4,6 @@ import org.motivepick.domain.entity.Task
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
-import org.motivepick.repository.UserRepository
 import org.motivepick.service.TaskListService
 import org.motivepick.service.TaskService
 import org.springframework.http.HttpStatus.CREATED
@@ -16,12 +15,16 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/tasks")
-internal class TaskController(private val taskRepo: TaskRepository, private val userRepo: UserRepository,
-        private val taskService: TaskService, private val taskListService: TaskListService) {
+internal class TaskController(private val taskRepo: TaskRepository, private val taskService: TaskService,
+        private val taskListService: TaskListService) {
 
     @PostMapping
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
             ResponseEntity(taskService.createTask(request), CREATED)
+
+    @GetMapping
+    fun legacyList(): ResponseEntity<List<Task>> =
+            ok(taskService.findForCurrentUser())
 
     @GetMapping("/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
