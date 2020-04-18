@@ -13,7 +13,7 @@ class ScheduleController(private val currentUser: CurrentUser, private val taskR
 
     @GetMapping("/schedule")
     fun schedule(): ResponseEntity<Schedule> {
-        val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNull(currentUser.getAccountId())
+        val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
         return ok(scheduleFactory.scheduleFor(tasks))
     }
 }

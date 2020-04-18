@@ -9,5 +9,5 @@ interface UserService {
 
     fun createUserWithTasksIfNotExists(profile: Profile): User
 
-    fun deleteTemporaryUserWithTasks(temporaryAccountId: String)
+    fun deleteTemporaryUserWithTasks(accountId: String)
 }

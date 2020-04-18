@@ -34,7 +34,7 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
         val taskIdsPage = Lists.withPageable(taskList!!.orderedIds.filterNotNull(), pageable)
-        val tasks = taskRepository.findAllByIdIn(taskIdsPage.content)
+        val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content)
         val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
     }
@@ -61,6 +61,7 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         return savedTasks
     }
 
+    // TODO: fix migration for the case when migrating to existing user with existing tasks
     @Transactional
     override fun migrateTasks(fromUserAccountId: String, toUserAccountId: String) {
         val toUser = userRepository.findByAccountId(toUserAccountId)!!

@@ -49,17 +49,17 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
     }
 
     @Transactional
-    override fun deleteTemporaryUserWithTasks(temporaryAccountId: String) {
-        val temporaryUser = repository.findByAccountId(temporaryAccountId)
-        if (temporaryUser == null) {
-            throw RuntimeException("Unexpected situation: temporary user with ID "
-                    + temporaryAccountId + " should be in the database, but one is absent")
-        } else if (isIndeedTemporary(temporaryUser)) {
-            logger.info("Going to delete user {} with their tasks", temporaryAccountId)
-            taskService.deleteTasksFully(temporaryAccountId)
-            repository.delete(temporaryUser)
+    override fun deleteTemporaryUserWithTasks(accountId: String) {
+        val user = repository.findByAccountId(accountId)
+        if (user == null) {
+            throw RuntimeException("Unexpected situation: user with ID "
+                    + accountId + " should be in the database, but one is absent")
+        } else if (isIndeedTemporary(user)) {
+            logger.info("Going to delete temporary user {} with their tasks", accountId)
+            taskService.deleteTasksFully(accountId)
+            repository.delete(user)
         } else {
-            logger.warn("User $temporaryAccountId is not temporary")
+            logger.info("User $accountId is not temporary, no need to delete anything")
         }
     }
 

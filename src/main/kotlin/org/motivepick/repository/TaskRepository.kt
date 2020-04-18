@@ -12,9 +12,9 @@ interface TaskRepository : PagingAndSortingRepository<Task, Long> {
 
     fun findAllByUserAccountId(userId: String): List<Task>
 
-    fun findAllByUserAccountIdAndClosedFalseAndDueDateNotNull(userId: String): List<Task>
+    fun findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(userId: String): List<Task>
 
-    fun findAllByIdIn(ids: List<Long>): List<Task>
+    fun findAllByIdInAndVisibleTrue(ids: List<Long>): List<Task>
 
     fun deleteByUserAccountId(userId: String)
 }
