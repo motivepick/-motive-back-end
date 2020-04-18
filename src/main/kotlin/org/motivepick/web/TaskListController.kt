@@ -2,6 +2,7 @@ package org.motivepick.web
 
 import org.motivepick.domain.entity.Task
 import org.motivepick.domain.entity.TaskListType
+import org.motivepick.domain.ui.task.MoveTaskRequest
 import org.motivepick.service.TaskListService
 import org.motivepick.service.TaskService
 import org.springframework.data.domain.Page

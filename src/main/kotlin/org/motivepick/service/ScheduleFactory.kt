@@ -1,6 +1,7 @@
-package org.motivepick.web
+package org.motivepick.service
 
 import org.motivepick.domain.entity.Task
+import org.motivepick.domain.model.Schedule
 import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.LocalDate

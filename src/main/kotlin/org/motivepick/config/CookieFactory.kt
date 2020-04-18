@@ -1,4 +1,4 @@
-package org.motivepick.web
+package org.motivepick.config
 
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.springframework.stereotype.Component

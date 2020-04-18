@@ -1,21 +1,21 @@
 package org.motivepick.web
 
+import org.motivepick.config.CookieFactory
+import org.motivepick.config.ServerConfig
 import org.motivepick.security.JwtTokenService
 import org.motivepick.security.Profile
 import org.motivepick.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/temporary/login")
 class TemporaryAccountController(private val config: ServerConfig, private val tokenService: JwtTokenService,
         private val userService: UserService, private val cookieFactory: CookieFactory) {
 
-    @GetMapping
+    @GetMapping("/temporary/login")
     fun login(request: HttpServletRequest, response: HttpServletResponse) {
         val temporaryAccountId = UUID.randomUUID().toString()
         userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true))

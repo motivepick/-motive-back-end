@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jws
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.JwtTokenService
 import org.motivepick.service.UserService
-import org.motivepick.web.CookieFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication

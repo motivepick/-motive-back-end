@@ -1,4 +1,4 @@
-package org.motivepick.web
+package org.motivepick.domain.ui.task
 
 import org.motivepick.domain.entity.TaskListType
 

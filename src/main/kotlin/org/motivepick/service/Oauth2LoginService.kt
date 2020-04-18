@@ -1,7 +1,9 @@
-package org.motivepick.web
+package org.motivepick.service
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import org.motivepick.config.CookieFactory
 import org.motivepick.config.Oauth2Config
+import org.motivepick.config.ServerConfig
 import org.motivepick.security.AbstractTokenGenerator
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -11,7 +13,7 @@ import java.util.concurrent.TimeUnit.MINUTES
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class Oauth2LoginHandler(private val config: Oauth2Config, private val tokenGenerator: AbstractTokenGenerator,
+class Oauth2LoginService(private val config: Oauth2Config, private val tokenGenerator: AbstractTokenGenerator,
         private val serverConfig: ServerConfig, private val cookieFactory: CookieFactory) {
 
     private val validState = Caffeine.newBuilder().expireAfterWrite(1, MINUTES).build<String, Boolean>()

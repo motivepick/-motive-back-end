@@ -1,4 +1,4 @@
-package org.motivepick.web
+package org.motivepick.domain.model
 
 import org.motivepick.domain.entity.Task
 import java.time.LocalDateTime

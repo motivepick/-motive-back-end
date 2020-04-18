@@ -1,7 +1,9 @@
 package org.motivepick.web
 
+import org.motivepick.domain.model.Schedule
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
+import org.motivepick.service.ScheduleFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.GetMapping

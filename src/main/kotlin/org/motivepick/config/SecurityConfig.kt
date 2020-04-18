@@ -3,8 +3,6 @@ package org.motivepick.config
 import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
 import org.motivepick.security.JwtTokenService
 import org.motivepick.service.UserService
-import org.motivepick.web.CookieFactory
-import org.motivepick.web.ServerConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity

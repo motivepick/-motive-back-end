@@ -14,25 +14,24 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/tasks")
 internal class TaskController(private val taskRepo: TaskRepository, private val taskService: TaskService,
         private val taskListService: TaskListService) {
 
-    @PostMapping
+    @PostMapping("/tasks")
     fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
             ResponseEntity(taskService.createTask(request), CREATED)
 
-    @GetMapping
+    @GetMapping("/tasks")
     fun legacyList(): ResponseEntity<List<Task>> =
             ok(taskService.findForCurrentUser())
 
-    @GetMapping("/{id}")
+    @GetMapping("/tasks/{id}")
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
-    @PutMapping("/{id}")
+    @PutMapping("/tasks/{id}")
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
@@ -49,19 +48,19 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
                     }
                     .orElse(notFound().build())
 
-    @PutMapping("/{id}/closing")
+    @PutMapping("/tasks/{id}/closing")
     fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
             taskListService.closeTask(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
-    @PutMapping("/{id}/undo-closing")
+    @PutMapping("/tasks/{id}/undo-closing")
     fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
             taskListService.undoCloseTask(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/tasks/{id}")
     fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
