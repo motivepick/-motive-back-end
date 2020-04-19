@@ -25,6 +25,6 @@
             <column name="ACCOUNT_ID"/>
         </createIndex>
 
-        <addNotNullConstraint tableName="TASK" columnName="TASK_LIST_ID"/>
+        <addNotNullConstraint tableName="TASK" columnName="TASK_LIST_ID" columnDataType="BIGINT"/>
     </changeSet>
 </databaseChangeLog>
