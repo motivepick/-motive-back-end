@@ -9,10 +9,10 @@ import org.springframework.web.util.UriComponentsBuilder
 abstract class AbstractTokenGenerator(private val userService: UserService, private val tokenService: JwtTokenService,
         private val config: Oauth2Config, private val httpClient: RestTemplate) {
 
-    fun generateJwtToken(code: String, redirectUri: String): String {
+    fun generateJwtToken(code: String, redirectUri: String, language: String): String {
         val accessToken = requestAccessToken(code, redirectUri)
         val profile = requestProfile(accessToken)
-        userService.createUserWithTasksIfNotExists(profile)
+        userService.createUserWithTasksIfNotExists(profile, language)
         return tokenService.createAccessJwtToken(profile.id)
     }
 

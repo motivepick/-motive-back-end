@@ -17,8 +17,9 @@ class TemporaryAccountController(private val config: ServerConfig, private val t
 
     @GetMapping("/temporary/login")
     fun login(request: HttpServletRequest, response: HttpServletResponse) {
+        val locale = request.locale
         val temporaryAccountId = UUID.randomUUID().toString()
-        userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true))
+        userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true), locale.language)
         val token = tokenService.createAccessJwtToken(temporaryAccountId)
         if (request.getParameter("mobile") == null) {
             response.addCookie(cookieFactory.cookie(token))

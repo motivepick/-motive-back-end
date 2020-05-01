@@ -39,6 +39,7 @@ class Oauth2LoginService(private val config: Oauth2Config, private val tokenGene
     }
 
     fun loginCallback(request: HttpServletRequest, response: HttpServletResponse) {
+        val locale = request.locale
         val code = request.getParameter("code")
         val state = String(Base64.getDecoder().decode(request.getParameter("state")))
         val mobile = validState.getIfPresent(state)
@@ -47,7 +48,7 @@ class Oauth2LoginService(private val config: Oauth2Config, private val tokenGene
         val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .scheme(if (serverConfig.enforceHttpsForOauth) "https" else "http")
                 .toUriString()
-        val jwtToken = tokenGenerator.generateJwtToken(code, redirectUrl)
+        val jwtToken = tokenGenerator.generateJwtToken(code, redirectUrl, locale.language)
 
         if (mobile) {
             response.sendRedirect(serverConfig.authenticationSuccessUrlMobile + jwtToken)

@@ -50,8 +50,8 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     }
 
     @Transactional
-    override fun createInitialTasks(tasksOwner: User) {
-        val tasks = tasksFactory.createInitialTasks(tasksOwner)
+    override fun createInitialTasks(tasksOwner: User, language: String) {
+        val tasks = tasksFactory.createInitialTasks(tasksOwner, language)
         val inbox = taskListRepository.save(TaskListEntity(tasksOwner, INBOX, listOf()))
         val closed = taskListRepository.save(TaskListEntity(tasksOwner, CLOSED, listOf()))
         tasks[INBOX]!!.forEach { it.taskList = inbox }

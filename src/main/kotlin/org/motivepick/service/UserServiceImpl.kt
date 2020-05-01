@@ -20,7 +20,7 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
     override fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
 
     @Transactional
-    override fun createUserWithTasksIfNotExists(profile: Profile): User {
+    override fun createUserWithTasksIfNotExists(profile: Profile, language: String): User {
         return try {
             val temporaryAccountId = user.getAccountId()
             val temporaryUser = repository.findByAccountId(temporaryAccountId)
@@ -44,7 +44,8 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
                 }
             }
         } catch (e: UsernameNotFoundException) {
-            repository.findByAccountId(profile.id) ?: newUserWithTasks(profile.id, profile.name, profile.temporary)
+            repository.findByAccountId(profile.id)
+                    ?: newUserWithTasks(profile.id, profile.name, profile.temporary, language)
         }
     }
 
@@ -69,9 +70,9 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
      */
     private fun isIndeedTemporary(user: User) = user.temporary
 
-    private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean): User {
+    private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean, language: String): User {
         val user = repository.save(User(accountId, name, temporary))
-        taskService.createInitialTasks(user)
+        taskService.createInitialTasks(user, language)
         return user
     }
 }

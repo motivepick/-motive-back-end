@@ -24,7 +24,5 @@
         <createIndex indexName="IDX__USER_ACCOUNT__ACCOUNT_ID" tableName="USER_ACCOUNT">
             <column name="ACCOUNT_ID"/>
         </createIndex>
-
-        <addNotNullConstraint tableName="TASK" columnName="TASK_LIST_ID" columnDataType="BIGINT"/>
     </changeSet>
 </databaseChangeLog>
