@@ -12,5 +12,6 @@
     <include file="db/changelog/007.task_list.xml"/>
     <include file="db/changelog/008.indexes_and_constraints.xml"/>
     <include file="db/changelog/009.increase_description_column_length.xml"/>
+    <include file="db/changelog/010.login_state.xml"/>
 
 </databaseChangeLog>

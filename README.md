@@ -12,7 +12,7 @@ Try it out on [https://motivepick.com](https://motivepick.com).
 2. Create the database using `CREATE DATABASE motive ENCODING 'UTF8' TEMPLATE template0;`
 3. Make sure that the database is running on `localhost` on `5432` port, the username is `postgres` and the password
    is `postgres`. If that's not the case, see "How To Run With Non-Default Database".
-3. In the project root run `./mvnw spring-boot:run -D spring.profiles.active=dev`.
+3. In the project root run `./mvnw spring-boot:run -D spring.profiles.active=local`.
 
 ### V2. Run DB in Docker
 
@@ -36,14 +36,14 @@ docker ps -a
 spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/motive
 ```
 
-### MacOS: How To Run Locally
+### macOS: How To Run Locally
 
-```
+```shell
 brew install postgresql
 brew services start postgresql
 createuser -s postgres
 createdb motive --encoding='utf-8' --template='template0;'
-./mvnw spring-boot:run -D spring.profiles.active=dev
+./mvnw spring-boot:run -D spring.profiles.active=local
 ```
 
 ## Short Note About Deployment To LIVE

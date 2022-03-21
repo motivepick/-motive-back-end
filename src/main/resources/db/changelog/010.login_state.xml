@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="202203211931" author="Sergey Yaskov">
+        <createTable tableName="LOGIN_STATE">
+            <column name="ID" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="PK__ID__LOGIN_STATE"/>
+            </column>
+
+            <column name="STATE_UUID" type="VARCHAR2(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="MOBILE" type="BOOLEAN">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="IDX__LOGIN_STATE__STATE_UUID" tableName="LOGIN_STATE">
+            <column name="STATE_UUID"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -1,7 +1,0 @@
-language: java
-deploy:
-  provider: script
-  script: bash scripts/deploy.sh
-  on:
-    branch: master
-  skip_cleanup: true
