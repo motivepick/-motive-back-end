@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-class FacebookController(private val loginService: FacebookLoginService) {
+internal class FacebookController(private val loginService: FacebookLoginService) {
 
     @GetMapping("/oauth2/authorization/facebook")
     fun login(request: HttpServletRequest, response: HttpServletResponse) = loginService.login(request, response)

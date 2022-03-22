@@ -1,6 +1,6 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
@@ -16,7 +16,7 @@ import java.util.*
 import java.util.Optional.empty
 
 @Service
-class TaskListServiceImpl(private val user: CurrentUser, private val taskRepository: TaskRepository,
+internal class TaskListServiceImpl(private val user: CurrentUser, private val taskRepository: TaskRepository,
         private val taskListRepository: TaskListRepository) : TaskListService {
 
     @Transactional
@@ -45,7 +45,7 @@ class TaskListServiceImpl(private val user: CurrentUser, private val taskReposit
     }
 
     @Transactional
-    override fun closeTask(taskId: Long): Optional<Task> {
+    override fun closeTask(taskId: Long): Optional<TaskEntity> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()
@@ -61,7 +61,7 @@ class TaskListServiceImpl(private val user: CurrentUser, private val taskReposit
     }
 
     @Transactional
-    override fun undoCloseTask(taskId: Long): Optional<Task> {
+    override fun undoCloseTask(taskId: Long): Optional<TaskEntity> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()

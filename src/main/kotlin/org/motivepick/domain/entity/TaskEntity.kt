@@ -9,12 +9,12 @@ import javax.persistence.FetchType.LAZY
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
-@Entity
-class Task(
+@Entity(name = "TASK")
+class TaskEntity(
         @JsonIgnore
         @ManyToOne(fetch = LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
-        var user: User,
+        var user: UserEntity,
 
         @Column(nullable = false)
         var name: String) : AbstractEntity() {

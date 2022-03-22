@@ -5,7 +5,7 @@ import javax.persistence.Entity
 
 // user is a reserved keyword
 @Entity(name = "USER_ACCOUNT")
-class User(
+class UserEntity(
         @Column(nullable = false)
         var accountId: String,
 

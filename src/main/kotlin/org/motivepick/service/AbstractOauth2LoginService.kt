@@ -14,7 +14,7 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-abstract class AbstractOauth2LoginService(
+internal abstract class AbstractOauth2LoginService(
     private val config: Oauth2Config,
     private val tokenGenerator: AbstractTokenGenerator,
     private val serverConfig: ServerConfig,

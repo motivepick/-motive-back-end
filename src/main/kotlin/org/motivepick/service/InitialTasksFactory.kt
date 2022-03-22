@@ -1,19 +1,19 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
-import org.motivepick.domain.entity.User
+import org.motivepick.domain.entity.UserEntity
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.time.ZoneOffset.UTC
 
 @Component
-class InitialTasksFactory {
+internal class InitialTasksFactory {
 
-    fun createInitialTasks(tasksOwner: User, language: String): Map<TaskListType, List<Task>> {
+    fun createInitialTasks(tasksOwner: UserEntity, language: String): Map<TaskListType, List<TaskEntity>> {
         val now = now(UTC)
         val yesterday = now.minusDays(1)
         val tomorrow = now.plusDays(1)
@@ -26,7 +26,7 @@ class InitialTasksFactory {
         }
     }
 
-    private fun tasksInRussian(tasksOwner: User, tomorrow: LocalDateTime, dayAfterTomorrow: LocalDateTime, yesterday: LocalDateTime, inTwoMonths: LocalDateTime): Map<TaskListType, List<Task>> {
+    private fun tasksInRussian(tasksOwner: UserEntity, tomorrow: LocalDateTime, dayAfterTomorrow: LocalDateTime, yesterday: LocalDateTime, inTwoMonths: LocalDateTime): Map<TaskListType, List<TaskEntity>> {
         return mapOf(INBOX to listOf(task(tasksOwner, "Купить подарок Лене на день рождения", tomorrow, false),
                 task(tasksOwner, "Закончить курс о микросервисах", false),
                 task(tasksOwner, "Дописать статью для блога", dayAfterTomorrow, false),
@@ -36,7 +36,7 @@ class InitialTasksFactory {
                         task(tasksOwner, "Написать отзыв об учителе по эстонскому", yesterday, true)))
     }
 
-    private fun defaultTasks(tasksOwner: User, tomorrow: LocalDateTime, dayAfterTomorrow: LocalDateTime, yesterday: LocalDateTime, inTwoMonths: LocalDateTime): Map<TaskListType, List<Task>> {
+    private fun defaultTasks(tasksOwner: UserEntity, tomorrow: LocalDateTime, dayAfterTomorrow: LocalDateTime, yesterday: LocalDateTime, inTwoMonths: LocalDateTime): Map<TaskListType, List<TaskEntity>> {
         return mapOf(INBOX to listOf(task(tasksOwner, "Buy a birthday present for Steve", tomorrow, false),
                 task(tasksOwner, "Finish the course about microservices", false),
                 task(tasksOwner, "Finalize the blog post", dayAfterTomorrow, false),
@@ -46,19 +46,19 @@ class InitialTasksFactory {
                         task(tasksOwner, "Write a review for the Estonian teacher", yesterday, true)))
     }
 
-    private fun task(tasksOwner: User, name: String, closed: Boolean): Task {
-        val task = Task(tasksOwner, name)
+    private fun task(tasksOwner: UserEntity, name: String, closed: Boolean): TaskEntity {
+        val task = TaskEntity(tasksOwner, name)
         task.closed = closed
         return task
     }
 
-    private fun task(tasksOwner: User, name: String, dueDate: LocalDateTime, closed: Boolean): Task {
+    private fun task(tasksOwner: UserEntity, name: String, dueDate: LocalDateTime, closed: Boolean): TaskEntity {
         val task = task(tasksOwner, name, closed)
         task.dueDate = dueDate
         return task
     }
 
-    private fun task(tasksOwner: User, name: String, description: String, dueDate: LocalDateTime): Task {
+    private fun task(tasksOwner: UserEntity, name: String, description: String, dueDate: LocalDateTime): TaskEntity {
         val task = task(tasksOwner, name, dueDate, false)
         task.description = description
         return task

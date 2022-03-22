@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ScheduleController(private val currentUser: CurrentUser, private val taskRepository: TaskRepository,
+internal class ScheduleController(private val currentUser: CurrentUser, private val taskRepository: TaskRepository,
         private val scheduleFactory: ScheduleFactory) {
 
     @GetMapping("/schedule")

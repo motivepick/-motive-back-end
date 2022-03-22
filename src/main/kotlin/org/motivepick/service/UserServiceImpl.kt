@@ -1,6 +1,6 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.User
+import org.motivepick.domain.entity.UserEntity
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.JWT_TOKEN_COOKIE
@@ -12,15 +12,15 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserServiceImpl(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) : UserService {
+internal class UserServiceImpl(private val user: CurrentUser, private val repository: UserRepository, private val taskService: TaskService) : UserService {
 
     private val logger: Logger = getLogger(UserServiceImpl::class.java)
 
     @Transactional
-    override fun readCurrentUser(): User? = repository.findByAccountId(user.getAccountId())
+    override fun readCurrentUser(): UserEntity? = repository.findByAccountId(user.getAccountId())
 
     @Transactional
-    override fun createUserWithTasksIfNotExists(profile: Profile, language: String): User {
+    override fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserEntity {
         return try {
             val temporaryAccountId = user.getAccountId()
             val temporaryUser = repository.findByAccountId(temporaryAccountId)
@@ -68,10 +68,10 @@ class UserServiceImpl(private val user: CurrentUser, private val repository: Use
      * Migrate tasks only if the source user is indeed temporary to prevent migration in case
      * when cookie removal does not work and a user has more than one account in Motive.
      */
-    private fun isIndeedTemporary(user: User) = user.temporary
+    private fun isIndeedTemporary(user: UserEntity) = user.temporary
 
-    private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean, language: String): User {
-        val user = repository.save(User(accountId, name, temporary))
+    private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean, language: String): UserEntity {
+        val user = repository.save(UserEntity(accountId, name, temporary))
         taskService.createInitialTasks(user, language)
         return user
     }

@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-class VkController(private val vkLoginService: VkLoginService) {
+internal class VkController(private val vkLoginService: VkLoginService) {
 
     @GetMapping("/oauth2/authorization/vk")
     fun login(request: HttpServletRequest, response: HttpServletResponse) = vkLoginService.login(request, response)

@@ -12,15 +12,13 @@ import java.time.Clock
 class MotivePickApplication {
 
     @Bean
-    fun webMvcConfigurer(): WebMvcConfigurer {
-        return object : WebMvcConfigurer {
-            override fun addCorsMappings(registry: CorsRegistry) {
-                registry
-                        .addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-            }
+    fun webMvcConfigurer(): WebMvcConfigurer = object : WebMvcConfigurer {
+        override fun addCorsMappings(registry: CorsRegistry) {
+            registry
+                .addMapping("/**")
+                .allowedOrigins("*")
+                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
         }
     }
 

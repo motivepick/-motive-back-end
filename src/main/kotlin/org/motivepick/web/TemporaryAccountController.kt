@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-class TemporaryAccountController(private val config: ServerConfig, private val tokenService: JwtTokenService,
+internal class TemporaryAccountController(private val config: ServerConfig, private val tokenService: JwtTokenService,
         private val userService: UserService, private val cookieFactory: CookieFactory) {
 
     @GetMapping("/temporary/login")

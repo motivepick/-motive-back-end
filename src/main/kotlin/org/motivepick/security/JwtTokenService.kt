@@ -32,9 +32,7 @@ class JwtTokenService(
                 .compact()
     }
 
-    fun extractClaims(token: String): Jws<Claims> {
-        return Jwts.parser().setSigningKey(tokenSigningKey).parseClaimsJws(token)
-    }
+    fun extractClaims(token: String): Jws<Claims> = Jwts.parser().setSigningKey(tokenSigningKey).parseClaimsJws(token)
 
     /**
      * Note that it does not throw [AuthenticationServiceException] anymore because for callbacks

@@ -14,7 +14,7 @@ import javax.persistence.FetchType.LAZY
 class TaskListEntity(
         @ManyToOne(fetch = LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
-        var user: User,
+        var user: UserEntity,
 
         @Column(name = "TASK_LIST_TYPE", nullable = false)
         @Enumerated(STRING)
@@ -25,9 +25,9 @@ class TaskListEntity(
         var orderedIds: List<Long?>) : AbstractEntity() {
 
     @OneToMany(mappedBy = "taskList", cascade = [ALL], orphanRemoval = true, fetch = LAZY)
-    var tasks: MutableList<Task> = ArrayList()
+    var tasks: MutableList<TaskEntity> = ArrayList()
 
-    fun addTask(task: Task) {
+    fun addTask(task: TaskEntity) {
         notNull(task.id, "Task ID must be present if you want to add the task to the task list")
         task.taskList = this
         tasks.add(task)

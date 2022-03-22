@@ -1,6 +1,6 @@
 package org.motivepick.web
 
-import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
@@ -18,21 +18,17 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
         private val taskListService: TaskListService) {
 
     @PostMapping("/tasks")
-    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<Task> =
+    fun create(@RequestBody request: CreateTaskRequest): ResponseEntity<TaskEntity> =
             ResponseEntity(taskService.createTask(request), CREATED)
 
-    @GetMapping("/tasks")
-    fun legacyList(): ResponseEntity<List<Task>> =
-            ok(taskService.findForCurrentUser())
-
     @GetMapping("/tasks/{id}")
-    fun read(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+    fun read(@PathVariable("id") taskId: Long): ResponseEntity<TaskEntity> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
     @PutMapping("/tasks/{id}")
-    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<Task> =
+    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<TaskEntity> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
                         request.name?.let { task.name = it.trim() }
@@ -49,19 +45,19 @@ internal class TaskController(private val taskRepo: TaskRepository, private val 
                     .orElse(notFound().build())
 
     @PutMapping("/tasks/{id}/closing")
-    fun close(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+    fun close(@PathVariable("id") taskId: Long): ResponseEntity<TaskEntity> =
             taskListService.closeTask(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
     @PutMapping("/tasks/{id}/undo-closing")
-    fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+    fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<TaskEntity> =
             taskListService.undoCloseTask(taskId)
                     .map { ok(it) }
                     .orElse(notFound().build())
 
     @DeleteMapping("/tasks/{id}")
-    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<Task> =
+    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<TaskEntity> =
             taskRepo.findByIdAndVisibleTrue(taskId)
                     .map { task ->
                         task.visible = false

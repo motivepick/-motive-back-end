@@ -1,11 +1,11 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
-import org.motivepick.domain.entity.User
+import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
@@ -18,29 +18,23 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
+internal class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
         private val taskRepository: TaskRepository, private val currentUser: CurrentUser,
         private val taskListRepository: TaskListRepository) : TaskService {
 
     @Transactional
-    override fun findForCurrentUser(): List<Task> {
-        val accountId = currentUser.getAccountId()
-        return taskRepository.findAllByUserAccountIdAndVisibleTrueOrderByCreatedDesc(accountId)
-    }
-
-    @Transactional
-    override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<Task> {
+    override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskEntity> {
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
         val taskIdsPage = Lists.withPageable(taskList!!.orderedIds.filterNotNull(), pageable)
         val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content)
-        val taskToId: Map<Long?, Task> = tasks.map { it.id to it }.toMap()
+        val taskToId: Map<Long?, TaskEntity> = tasks.map { it.id to it }.toMap()
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
     }
 
     @Transactional
-    override fun createTask(request: CreateTaskRequest): Task {
+    override fun createTask(request: CreateTaskRequest): TaskEntity {
         val user = userRepository.findByAccountId(currentUser.getAccountId())!!
         val task = taskRepository.save(taskFromRequest(user, request))
         val taskList = taskListRepository.findByUserAccountIdAndType(user.accountId, INBOX)!!
@@ -50,7 +44,7 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
     }
 
     @Transactional
-    override fun createInitialTasks(tasksOwner: User, language: String) {
+    override fun createInitialTasks(tasksOwner: UserEntity, language: String) {
         val tasks = tasksFactory.createInitialTasks(tasksOwner, language)
         val inbox = taskListRepository.save(TaskListEntity(tasksOwner, INBOX, listOf()))
         val closed = taskListRepository.save(TaskListEntity(tasksOwner, CLOSED, listOf()))
@@ -93,8 +87,8 @@ class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val
         taskRepository.deleteByUserAccountId(userAccountId)
     }
 
-    private fun taskFromRequest(user: User, request: CreateTaskRequest): Task {
-        val task = Task(user, request.name.trim())
+    private fun taskFromRequest(user: UserEntity, request: CreateTaskRequest): TaskEntity {
+        val task = TaskEntity(user, request.name.trim())
         task.description = request.description?.trim()
         task.dueDate = request.dueDate
         return task

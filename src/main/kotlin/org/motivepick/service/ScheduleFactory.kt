@@ -1,6 +1,6 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.Task
+import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.model.Schedule
 import org.springframework.stereotype.Component
 import java.time.Clock
@@ -8,15 +8,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime.MAX
 import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 
 @Component
 class ScheduleFactory(private val clock: Clock) {
 
-    fun scheduleFor(tasksWithDueDate: List<Task>): Schedule {
-        val week: MutableMap<LocalDateTime, List<Task>> = week()
+    fun scheduleFor(tasksWithDueDate: List<TaskEntity>): Schedule {
+        val week: MutableMap<LocalDateTime, List<TaskEntity>> = week()
         for (dayOfWeek in week.keys) {
             val tasksOfTheDay = tasksWithDueDate.filter { areTheSameDay(dayOfWeek, it.dueDate!!) }
             week[dayOfWeek] = tasksOfTheDay
@@ -44,8 +42,8 @@ class ScheduleFactory(private val clock: Clock) {
         return day.format(formatter) == dueDate.format(formatter)
     }
 
-    private fun week(): MutableMap<LocalDateTime, List<Task>> {
-        val schedule: MutableMap<LocalDateTime, List<Task>> = LinkedHashMap()
+    private fun week(): MutableMap<LocalDateTime, List<TaskEntity>> {
+        val schedule: MutableMap<LocalDateTime, List<TaskEntity>> = LinkedHashMap()
         val endOfToday = LocalDate.now(clock).atTime(MAX)
         for (i in 0..6) {
             schedule[endOfToday.plusDays(i.toLong())] = ArrayList()

@@ -8,7 +8,7 @@ import org.motivepick.security.FacebookService
 import org.springframework.stereotype.Service
 
 @Service
-class FacebookLoginService(
+internal class FacebookLoginService(
     config: FacebookConfig,
     tokenGenerator: FacebookService,
     serverConfig: ServerConfig,
