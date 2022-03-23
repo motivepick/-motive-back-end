@@ -14,7 +14,7 @@
             </column>
 
             <column name="MOBILE" type="BOOLEAN">
-                <constraints unique="true" nullable="false"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
 
