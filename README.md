@@ -46,6 +46,13 @@ createdb motive --encoding='utf-8' --template='template0;'
 ./mvnw spring-boot:run -D spring.profiles.active=local
 ```
 
+## How To Deploy To Azure App Service
+
+```powershell
+mvn clean package
+mvn azure-webapp:deploy
+```
+
 ## Short Note About Deployment To LIVE
 
 When deploy to LIVE make sure to replace `application.yml` with one for LIVE.
