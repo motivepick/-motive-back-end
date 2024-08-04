@@ -6,58 +6,41 @@ Try it out on [https://motivepick.com](https://motivepick.com).
 
 ## How To Run Locally
 
-### V1. Install DB on host machine
+### Configure PostgreSQL Database Locally
 
-1. Install PostgreSQL
-2. Create the database using `CREATE DATABASE motive ENCODING 'UTF8' TEMPLATE template0;`
-3. Make sure that the database is running on `localhost` on `5432` port, the username is `postgres` and the password
-   is `postgres`. If that's not the case, see "How To Run With Non-Default Database".
-3. In the project root run `./mvnw spring-boot:run -D spring.profiles.active=local`.
+Pick one of the below options.
 
-### V2. Run DB in Docker
+#### Option 1 (For Any OS): PostgreSQL Database In Docker
 
-1. Install Docker
-2. Run in project directory:
+Based on [the official PostgreSQL](https://github.com/docker-library/docs/blob/master/postgres/README.md) guide.
 
-```
-docker build -t db-image .
-docker run -d --name db -p 5432:5432 db-image
-```
-
+1. Install Docker.
+2. Run the database container:
+   ```
+   docker run --name db -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=motive -d postgres
+   ```
 3. Verify container is running:
+   ```
+   docker ps -a
+   ```
 
-```
-docker ps -a
-```
-
-4. Update Spring Boot configuration:
-
-```
-spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/motive
-```
-
-### macOS: How To Run Locally
+#### Option 2 (For macOS): PostgreSQL Database As A Package
 
 ```shell
 brew install postgresql
 brew services start postgresql
 createuser -s postgres
 createdb motive --encoding='utf-8' --template='template0;'
-./mvnw spring-boot:run -D spring.profiles.active=local
 ```
 
-## How To Deploy To Azure App Service
+### Start The Back End
 
-```powershell
-mvn clean package
-mvn azure-webapp:deploy
-```
+In the project root run `./mvnw spring-boot:run -D spring.profiles.active=local`.
 
-## Short Note About Deployment To LIVE
+Or, if you are using IntelliJ IDEA, make sure that "Active profiles" is set to `local` and run from the IDE.
 
-When deploy to LIVE make sure to replace `application.yml` with one for LIVE.
 
-## How To Run With Non-Default Database
+## How To Run Locally With A Non-Default Database
 
 Add the next parameters to your Spring Boot configuration:
 
@@ -70,6 +53,19 @@ spring.datasource.password
 as on the following screenshot:
 
 ![Spring Boot Config](springboot_local_config.png)
+
+## How To Deploy To Azure App Service
+
+Make sure that `subscriptionId` in `pom.xml` is your active Azure subscription.
+
+```powershell
+mvn clean package
+mvn azure-webapp:deploy
+```
+
+## Short Note About Deployment To LIVE
+
+When deploy to LIVE make sure to replace `application.yml` with one for LIVE.
 
 ## Build Docker Image
 
