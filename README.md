@@ -39,7 +39,6 @@ In the project root run `./mvnw spring-boot:run -D spring.profiles.active=local`
 
 Or, if you are using IntelliJ IDEA, make sure that "Active profiles" is set to `local` and run from the IDE.
 
-
 ## How To Run Locally With A Non-Default Database
 
 Add the next parameters to your Spring Boot configuration:
@@ -54,7 +53,12 @@ as on the following screenshot:
 
 ![Spring Boot Config](springboot_local_config.png)
 
-## How To Deploy To Azure App Service
+## How To Deploy To Prod
+
+### Deploy The Back End To Azure App Service
+
+Based
+on [this guide](https://learn.microsoft.com/en-us/azure/app-service/quickstart-java?tabs=springboot&pivots=java-javase).
 
 Make sure that `subscriptionId` in `pom.xml` is your active Azure subscription.
 
@@ -62,6 +66,14 @@ Make sure that `subscriptionId` in `pom.xml` is your active Azure subscription.
 mvn clean package
 mvn azure-webapp:deploy
 ```
+
+### Configure A Custom Domain
+
+Use [this guide](https://learn.microsoft.com/en-gb/azure/app-service/app-service-web-tutorial-custom-domain?tabs=root%2Cazurecli).
+
+### Deploy A Database
+
+Use [this guide](https://learn.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-data-jdbc-with-azure-postgresql).
 
 ## Short Note About Deployment To LIVE
 
@@ -77,3 +89,11 @@ docker image push yaskovdev/motive-back-end
 ## How To Open Swagger
 
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+## Troubleshooting
+
+1. If you cannot connect from your local computer to the PostgreSQL database deployed to Azure, make sure that your IP
+   address is added to the "Firewall rule name" in the "Networking" page in the "Azure Database for PostgreSQL flexible
+   server".
+2. If you press "Try Without Login" in the UI and get redirected back to the login page, make sure that
+   the `MOTIVE_SESSION` cookie is set (most likely it isn't, therefore you get redirected back to the login).
