@@ -62,6 +62,10 @@ on [this guide](https://learn.microsoft.com/en-us/azure/app-service/quickstart-j
 
 Make sure that `subscriptionId` in `pom.xml` is your active Azure subscription.
 
+Make sure to have `application-prod.yml` next to `application.yml`.
+
+Run the next commands:
+
 ```powershell
 mvn clean package
 mvn azure-webapp:deploy
