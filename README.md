@@ -53,6 +53,31 @@ as on the following screenshot:
 
 ![Spring Boot Config](springboot_local_config.png)
 
+## How To Run In A Local Network
+
+It is useful if you want to, say, debug a mobile client against the back end that is running on a local computer.
+
+1. Configure port forwarding for ports `3000` and `8080`. They should be forwarded to your local computer where the back
+   end and the Web app will be running. You can find the IP address of the computer using the `ipconfig` command. It
+   usually starts with `192.168`.
+2. Create a DNS `A` record for your domain (assuming your domain is `yaskovdev.com`). The record should map
+   both `milestone-local.yaskovdev.com` and `api.milestone-local.yaskovdev.com` to the same IP address: a public IP
+   address of your local network. You can find it [here](https://www.whatismyip.com/).
+3. Wait for some time for the DNS record to become visible everywhere.
+4. Make sure that both your local computer and your phone are connected to your local network (local router).
+5. In `application-local.yml` replace the value of `authentication.success.url.web`
+   with `http://milestone-local.yaskovdev.com:3000`.
+6. In `application-local.yml` replace the value of `logout.success.url`
+   with `http://milestone-local.yaskovdev.com:3000/login`.
+7. In `application-local.yml` replace the value of `cookie.domain` with `milestone-local.yaskovdev.com`.
+8. In the `motive-web-app`, in the `.env.development` file, replace the value of `REACT_APP_API_URL`
+   with `http://api.milestone-local.yaskovdev.com:8080`.
+9. Run both the back end and the Web app.
+10. Make sure the back end is running and accessible by
+    opening http://api.milestone-local.yaskovdev.com:8080/actuator/health.
+11. Make sure the Web app is running and accessible by opening http://api.milestone-local.yaskovdev.com:3000.
+12. In your phone open http://milestone-local.yaskovdev.com:3000.
+
 ## How To Deploy To Prod
 
 ### Deploy The Back End To Azure App Service
@@ -89,6 +114,12 @@ When deploy to LIVE make sure to replace `application.yml` with one for LIVE.
 docker image build -t yaskovdev/motive-back-end .
 docker image push yaskovdev/motive-back-end
 ```
+
+## How To Check The Status Of The Back End
+
+For Local, go to `http://localhost:8080/actuator/health`.
+
+For Prod, go to `https://motive-back-end.azurewebsites.net/actuator/health`.
 
 ## How To Open Swagger
 
