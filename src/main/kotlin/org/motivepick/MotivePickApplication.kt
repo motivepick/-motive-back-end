@@ -9,10 +9,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.time.Clock
 
 @SpringBootApplication
-class MotivePickApplication {
+open class MotivePickApplication {
 
     @Bean
-    fun webMvcConfigurer(): WebMvcConfigurer = object : WebMvcConfigurer {
+    open fun webMvcConfigurer(): WebMvcConfigurer = object : WebMvcConfigurer {
         override fun addCorsMappings(registry: CorsRegistry) {
             registry
                 .addMapping("/**")
@@ -23,10 +23,10 @@ class MotivePickApplication {
     }
 
     @Bean
-    fun restTemplate(): RestTemplate = RestTemplate()
+    open fun restTemplate(): RestTemplate = RestTemplate()
 
     @Bean
-    fun clock(): Clock = Clock.systemUTC()
+    open fun clock(): Clock = Clock.systemUTC()
 }
 
 fun main(args: Array<String>) {

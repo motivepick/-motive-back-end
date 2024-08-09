@@ -13,4 +13,7 @@ class UserEntity(
         var name: String,
 
         @Column(nullable = false)
-        var temporary: Boolean) : AbstractEntity()
+        var temporary: Boolean) : AbstractEntity() {
+
+        constructor() : this("", "", false)
+}

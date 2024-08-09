@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+open class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     companion object {
         private val ANONYMOUS_URIS = arrayOf(

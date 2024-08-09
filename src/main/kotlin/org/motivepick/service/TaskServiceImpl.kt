@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-internal class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
+internal open class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
         private val taskRepository: TaskRepository, private val currentUser: CurrentUser,
         private val taskListRepository: TaskListRepository) : TaskService {
 

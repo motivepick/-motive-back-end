@@ -8,7 +8,7 @@ import org.motivepick.security.VkService
 import org.springframework.stereotype.Service
 
 @Service
-internal class VkLoginService(
+internal open class VkLoginService(
     config: VkConfig,
     tokenGenerator: VkService,
     serverConfig: ServerConfig,

@@ -18,6 +18,7 @@ class TaskEntity(
 
         @Column(nullable = false)
         var name: String) : AbstractEntity() {
+    constructor() : this(UserEntity(), "")
 
     var description: String? = null
 

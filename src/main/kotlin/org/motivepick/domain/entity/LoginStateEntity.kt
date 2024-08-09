@@ -10,4 +10,7 @@ class LoginStateEntity(
 
     @Column(nullable = false)
     var mobile: Boolean
-) : AbstractEntity()
+) : AbstractEntity() {
+
+    constructor() : this("", false)
+}

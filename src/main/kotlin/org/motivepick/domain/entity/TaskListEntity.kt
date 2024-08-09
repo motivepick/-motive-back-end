@@ -24,6 +24,8 @@ class TaskListEntity(
         @Column(name = "ORDERED_TASK_IDS", nullable = false, columnDefinition = "BIGINT[]")
         var orderedIds: List<Long?>) : AbstractEntity() {
 
+    constructor() : this(UserEntity(), TaskListType.INBOX, emptyList())
+
     @OneToMany(mappedBy = "taskList", cascade = [ALL], orphanRemoval = true, fetch = LAZY)
     var tasks: MutableList<TaskEntity> = ArrayList()
 

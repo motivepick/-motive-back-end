@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ServerConfig(
+open class ServerConfig(
 
         @Value("\${enforce.https.for.oauth}")
         val enforceHttpsForOauth: Boolean,

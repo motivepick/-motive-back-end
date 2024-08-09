@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class FacebookConfig (
+open class FacebookConfig(
 
     @Value("\${facebook.clientId}")
     override val clientId: String,

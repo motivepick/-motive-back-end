@@ -17,7 +17,7 @@ Based on [the official PostgreSQL](https://github.com/docker-library/docs/blob/m
 1. Install Docker.
 2. Run the database container:
    ```
-   docker run --name db -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=motive -d postgres
+   docker run --name db -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=motive -d --restart unless-stopped postgres
    ```
 3. Verify container is running:
    ```
