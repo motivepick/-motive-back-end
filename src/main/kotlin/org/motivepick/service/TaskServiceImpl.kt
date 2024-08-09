@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-internal open class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
+internal class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
         private val taskRepository: TaskRepository, private val currentUser: CurrentUser,
         private val taskListRepository: TaskListRepository) : TaskService {
 
@@ -27,9 +27,9 @@ internal open class TaskServiceImpl(private val tasksFactory: InitialTasksFactor
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
-        val taskIdsPage = Lists.withPageable(taskList!!.orderedIds.filterNotNull(), pageable)
+        val taskIdsPage = Lists.withPageable(taskList!!.orderedIds, pageable)
         val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content)
-        val taskToId: Map<Long?, TaskEntity> = tasks.map { it.id to it }.toMap()
+        val taskToId: Map<Long?, TaskEntity> = tasks.associateBy { it.id }
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
     }
 
@@ -66,9 +66,9 @@ internal open class TaskServiceImpl(private val tasksFactory: InitialTasksFactor
         taskRepository.saveAll(tasks)
 
         val fromTaskLists = taskListRepository.findAllByUserAccountId(fromUserAccountId)
-        val fromTaskListToType = fromTaskLists.map { it.type to it }.toMap()
+        val fromTaskListToType = fromTaskLists.associateBy { it.type }
         val toTaskLists = taskListRepository.findAllByUserAccountId(toUserAccountId)
-        val toTaskListToType = toTaskLists.map { it.type to it }.toMap()
+        val toTaskListToType = toTaskLists.associateBy { it.type }
 
         listOf(INBOX, CLOSED).forEach { type ->
             val fromTaskList = fromTaskListToType[type]!!
@@ -76,7 +76,7 @@ internal open class TaskServiceImpl(private val tasksFactory: InitialTasksFactor
             fromTaskList.tasks.forEach(toTaskList::addTask)
             fromTaskList.tasks.removeAll { true }
         }
-        taskListRepository.deleteByIdIn(fromTaskLists.mapNotNull { it.id })
+        taskListRepository.deleteByIdIn(fromTaskLists.map { it.id })
         taskListRepository.saveAll(toTaskLists)
         userRepository.deleteByAccountId(fromUserAccountId)
     }

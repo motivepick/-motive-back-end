@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-open class VkConfig (
+class VkConfig (
 
     @Value("\${vk.clientId}")
     override val clientId: String,

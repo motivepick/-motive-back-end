@@ -4,18 +4,16 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.time.Clock
 
 @SpringBootApplication
-open class MotivePickApplication {
+class MotivePickApplication {
 
     @Bean
-    open fun restTemplate(): RestTemplate = RestTemplate()
+    fun restTemplate(): RestTemplate = RestTemplate()
 
     @Bean
-    open fun clock(): Clock = Clock.systemUTC()
+    fun clock(): Clock = Clock.systemUTC()
 }
 
 fun main(args: Array<String>) {

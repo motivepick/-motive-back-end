@@ -11,7 +11,7 @@ class CurrentUser {
     fun getAccountId(): String {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication is UsernamePasswordAuthenticationToken) {
-            val principal = authentication.principal;
+            val principal = authentication.principal
             if (principal == null) {
                 throw UsernameNotFoundException("Authentication is present, but user account is absent")
             } else {

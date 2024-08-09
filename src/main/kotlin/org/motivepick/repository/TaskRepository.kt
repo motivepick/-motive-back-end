@@ -1,7 +1,6 @@
 package org.motivepick.repository
 
 import org.motivepick.domain.entity.TaskEntity
-import org.motivepick.domain.entity.TaskListEntity
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.PagingAndSortingRepository
 import java.util.*

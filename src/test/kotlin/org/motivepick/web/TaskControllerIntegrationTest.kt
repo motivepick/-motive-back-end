@@ -4,26 +4,19 @@ import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
-import com.github.springtestdbunit.bean.DatabaseConfigBean
-import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
-import org.motivepick.H2DataTypeFactory
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
-import javax.sql.DataSource
 
 
 @ExtendWith(SpringExtension::class)
@@ -41,27 +34,6 @@ class TaskControllerIntegrationTest {
 
     @Autowired
     private lateinit var userRepository: UserRepository
-
-    @TestConfiguration
-    internal class MyTestConfiguration {
-        @Bean
-        fun configBean(): DatabaseConfigBean {
-            val configBean = DatabaseConfigBean()
-            configBean.datatypeFactory = H2DataTypeFactory()
-            return configBean
-        }
-
-        @Bean(name = ["dbUnitDatabaseConnection"])
-        fun databaseDataSourceConnectionFactoryBean(
-            configBean: DatabaseConfigBean?,
-            dataSource: DataSource?
-        ): DatabaseDataSourceConnectionFactoryBean {
-            val factoryBean = DatabaseDataSourceConnectionFactoryBean()
-            factoryBean.setDatabaseConfig(configBean)
-            factoryBean.setDataSource(dataSource)
-            return factoryBean
-        }
-    }
 
     @Test
     fun create() {

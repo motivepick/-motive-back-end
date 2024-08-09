@@ -16,7 +16,7 @@ import java.util.*
 import java.util.Optional.empty
 
 @Service
-internal open class TaskListServiceImpl(private val user: CurrentUser, private val taskRepository: TaskRepository,
+internal class TaskListServiceImpl(private val user: CurrentUser, private val taskRepository: TaskRepository,
         private val taskListRepository: TaskListRepository) : TaskListService {
 
     @Transactional

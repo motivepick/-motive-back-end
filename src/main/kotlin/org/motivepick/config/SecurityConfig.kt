@@ -17,10 +17,9 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 
-
 @Configuration
 @EnableWebSecurity
-open class SecurityConfig {
+class SecurityConfig {
 
     companion object {
         private val ANONYMOUS_URIS = arrayOf(
