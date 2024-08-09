@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
 
 @ExtendWith(SpringExtension::class)
-@IntegrationTest(1234567890L, "Firstname Lastname")
+@IntegrationTest(1234567890L)
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
