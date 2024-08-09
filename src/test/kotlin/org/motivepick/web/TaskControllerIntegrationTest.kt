@@ -3,24 +3,34 @@ package org.motivepick.web
 import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
+import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import com.github.springtestdbunit.bean.DatabaseConfigBean
+import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
+import org.motivepick.H2DataTypeFactory
+import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
+import javax.sql.DataSource
+
 
 @ExtendWith(SpringExtension::class)
 @IntegrationTest(1234567890L, "Firstname Lastname")
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
+@DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 class TaskControllerIntegrationTest {
 
     @Autowired
@@ -32,8 +42,28 @@ class TaskControllerIntegrationTest {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+    @TestConfiguration
+    internal class MyTestConfiguration {
+        @Bean
+        fun configBean(): DatabaseConfigBean {
+            val configBean = DatabaseConfigBean()
+            configBean.datatypeFactory = H2DataTypeFactory()
+            return configBean
+        }
+
+        @Bean(name = ["dbUnitDatabaseConnection"])
+        fun databaseDataSourceConnectionFactoryBean(
+            configBean: DatabaseConfigBean?,
+            dataSource: DataSource?
+        ): DatabaseDataSourceConnectionFactoryBean {
+            val factoryBean = DatabaseDataSourceConnectionFactoryBean()
+            factoryBean.setDatabaseConfig(configBean)
+            factoryBean.setDataSource(dataSource)
+            return factoryBean
+        }
+    }
+
     @Test
-    @Disabled
     fun create() {
         val accountId = "1234567890"
         userRepository.findByAccountId("1234567890")
@@ -53,7 +83,7 @@ class TaskControllerIntegrationTest {
         assertEquals("some task", task.name)
         assertEquals("some description", task.description)
         assertEquals(request.dueDate, task.dueDate)
-        assertNull(task.taskList)
+        assertEquals(TaskListType.INBOX, task.taskList?.type)
 
         val taskFromDb = taskRepository.findById(task.id).get()
         assertNotNull(taskFromDb.id)
@@ -63,7 +93,7 @@ class TaskControllerIntegrationTest {
         assertEquals("some task", taskFromDb.name)
         assertEquals("some description", taskFromDb.description)
         assertEquals(request.dueDate, taskFromDb.dueDate)
-        assertNull(taskFromDb.taskList)
+        assertEquals(TaskListType.INBOX, task.taskList?.type)
     }
 
     @Test
@@ -75,11 +105,10 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
-    @Disabled
     fun read() {
-        val task = controller.read(1L).body!!
+        val task = controller.read(2L).body!!
 
-        assertEquals(1L, task.id)
+        assertEquals(2L, task.id)
         assertEquals("Test task", task.name)
         assertEquals(LocalDateTime.of(2018, 8, 11,
                 19, 55, 47, 900000000), task.created)
@@ -107,15 +136,15 @@ class TaskControllerIntegrationTest {
         request.closed = true
         request.dueDate = LocalDateTime.now()
 
-        val task = controller.update(1L, request).body!!
+        val task = controller.update(2L, request).body!!
 
-        assertEquals(1L, task.id)
+        assertEquals(2L, task.id)
         assertEquals("some new name", task.name)
         assertEquals("some new description", task.description)
         assertEquals(request.closed, task.closed)
         assertEquals(request.dueDate, task.dueDate)
 
-        val taskFromDb = taskRepository.findById(1L).get()
+        val taskFromDb = taskRepository.findById(2L).get()
 
         assertEquals("some new name", taskFromDb.name)
         assertEquals("some new description", taskFromDb.description)
@@ -133,12 +162,12 @@ class TaskControllerIntegrationTest {
 
     @Test
     fun delete() {
-        val response = controller.delete(1L)
+        val response = controller.delete(2L)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
         val visible = taskRepository
-                .findById(1L)
+                .findById(2L)
                 .map { it.visible }
                 .orElseThrow { AssertionError("task should still exist, just be marked invisible") }
         assertFalse(visible)

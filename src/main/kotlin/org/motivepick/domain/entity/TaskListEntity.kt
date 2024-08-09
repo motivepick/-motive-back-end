@@ -19,7 +19,7 @@ class TaskListEntity(
         var type: TaskListType,
 
         @JdbcTypeCode(SqlTypes.JSON)
-        @Column(name = "ORDERED_TASK_IDS", nullable = false, columnDefinition = "BIGINT[]")
+        @Column(name = "ORDERED_TASK_IDS", nullable = false, columnDefinition = "BIGINT[]") // TODO: check the type
         var orderedIds: List<Long>) : AbstractEntity() {
 
     constructor() : this(UserEntity(), TaskListType.INBOX, emptyList())
