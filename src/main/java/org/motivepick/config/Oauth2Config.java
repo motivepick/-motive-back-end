@@ -2,11 +2,13 @@ package org.motivepick.config
 
 interface Oauth2Config {
 
-    val clientId: String
+    String getClientId();
 
-    val clientSecret: String
+    String getClientSecret();
 
-    val userAuthorizationUri: String
+    String getUserAuthorizationUri();
 
-    val accessTokenUri: String
+    String getAccessTokenUri();
+
+    String getUserInfoUri();
 }

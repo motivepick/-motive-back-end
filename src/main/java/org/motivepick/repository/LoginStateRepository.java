@@ -1,12 +1,13 @@
-package org.motivepick.repository
+package org.motivepick.repository;
 
-import org.motivepick.domain.entity.LoginStateEntity
-import org.springframework.data.repository.PagingAndSortingRepository
-import java.util.*
+import org.motivepick.domain.entity.LoginStateEntity;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-interface LoginStateRepository : PagingAndSortingRepository<LoginStateEntity, Long> {
+import java.util.Optional;
 
-    fun findByStateUuid(uuid: String): Optional<LoginStateEntity>
+interface LoginStateRepository extends PagingAndSortingRepository<LoginStateEntity, Long> {
 
-    fun deleteByStateUuid(uuid: String): Optional<LoginStateEntity>
+    Optional<LoginStateEntity> findByStateUuid(String uuid);
+
+    Optional<LoginStateEntity> deleteByStateUuid(String uuid);
 }

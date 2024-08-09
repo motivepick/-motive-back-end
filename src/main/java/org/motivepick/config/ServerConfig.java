@@ -1,23 +1,23 @@
-package org.motivepick.config
+package org.motivepick.config;
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+// TODO: check if works with Spring
 @Configuration
-class ServerConfig(
+class ServerConfig {
+    @Value("${enforce.https.for.oauth}")
+    boolean enforceHttpsForOauth;
 
-        @Value("\${enforce.https.for.oauth}")
-        val enforceHttpsForOauth: Boolean,
+    @Value("${authentication.success.url.web}")
+    String authenticationSuccessUrlWeb;
 
-        @Value("\${authentication.success.url.web}")
-        val authenticationSuccessUrlWeb: String,
+    @Value("${authentication.success.url.mobile}")
+    String authenticationSuccessUrlMobile;
 
-        @Value("\${authentication.success.url.mobile}")
-        val authenticationSuccessUrlMobile: String,
+    @Value("${logout.success.url}")
+    String logoutSuccessUrl;
 
-        @Value("\${logout.success.url}")
-        val logoutSuccessUrl: String,
-
-        @Value("\${cookie.domain}")
-        val cookieDomain: String
-)
+    @Value("${cookie.domain}")
+    String cookieDomain;
+}

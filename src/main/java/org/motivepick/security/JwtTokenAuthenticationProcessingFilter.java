@@ -14,7 +14,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-const val JWT_TOKEN_COOKIE = "MOTIVE_SESSION"
+
 
 class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
         private val tokenService: JwtTokenService) : AbstractAuthenticationProcessingFilter(matcher) {

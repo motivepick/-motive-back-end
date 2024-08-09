@@ -1,20 +1,29 @@
 package org.motivepick.config
 
-import org.motivepick.security.JWT_TOKEN_COOKIE
-import org.springframework.stereotype.Component
-import javax.servlet.http.Cookie
+import org.motivepick.security.Constants;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.Cookie;
 
 @Component
-class CookieFactory(private val config: ServerConfig) {
+class CookieFactory {
 
-    fun cookie(jwtToken: String): Cookie = cookie(jwtToken, 3600 * 24 * 365)
+    private final ServerConfig config;
 
-    fun cookie(jwtToken: String, age: Int): Cookie {
-        val cookie = Cookie(JWT_TOKEN_COOKIE, jwtToken)
-        cookie.domain = config.cookieDomain
-        cookie.path = "/"
-        cookie.maxAge = age
-        cookie.isHttpOnly = true
-        return cookie
+    public CookieFactory(ServerConfig config) {
+        this.config = config;
+    }
+
+    Cookie cookie(String jwtToken) {
+        return cookie(jwtToken, 3600 * 24 * 365);
+    }
+
+    Cookie cookie(String jwtToken, int age) {
+        var cookie = new Cookie(Constants.JWT_TOKEN_COOKIE, jwtToken);
+        cookie.setDomain(config.cookieDomain);
+        cookie.setPath("/");
+        cookie.setMaxAge(age);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }

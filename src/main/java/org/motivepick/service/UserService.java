@@ -1,13 +1,13 @@
-package org.motivepick.service
+package org.motivepick.service;
 
-import org.motivepick.domain.entity.UserEntity
-import org.motivepick.security.Profile
+import org.motivepick.domain.entity.UserEntity;
+import org.motivepick.security.Profile;
 
-interface UserService {
+public interface UserService {
 
-    fun readCurrentUser(): UserEntity?
+    UserEntity readCurrentUser();
 
-    fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserEntity
+    UserEntity createUserWithTasksIfNotExists(Profile profile, String language);
 
-    fun deleteTemporaryUserWithTasks(accountId: String)
+    void deleteTemporaryUserWithTasks(String accountId);
 }

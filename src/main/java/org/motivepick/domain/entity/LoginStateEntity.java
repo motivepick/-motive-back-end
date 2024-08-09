@@ -1,13 +1,14 @@
-package org.motivepick.domain.entity
+package org.motivepick.domain.entity;
 
-import javax.persistence.Column
-import javax.persistence.Entity
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 @Entity(name = "LOGIN_STATE")
-class LoginStateEntity(
+public
+class LoginStateEntity extends AbstractEntity {
     @Column(nullable = false)
-    var stateUuid: String,
+    String stateUuid;
 
     @Column(nullable = false)
-    var mobile: Boolean
-) : AbstractEntity()
+    boolean mobile;
+}
