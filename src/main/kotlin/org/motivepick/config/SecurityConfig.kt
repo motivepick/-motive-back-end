@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfiguration
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+internal class SecurityConfig {
 
     companion object {
         private val ANONYMOUS_URIS = arrayOf(

@@ -6,7 +6,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Types
 
-class JsonDataType : AbstractDataType("json", Types.OTHER, String::class.java, false) {
+internal class JsonDataType : AbstractDataType("json", Types.OTHER, String::class.java, false) {
 
     override fun typeCast(value: Any): Any {
         return value.toString()

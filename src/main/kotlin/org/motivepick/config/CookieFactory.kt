@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import jakarta.servlet.http.Cookie
 
 @Component
-class CookieFactory(private val config: ServerConfig) {
+internal class CookieFactory(private val config: ServerConfig) {
 
     fun cookie(jwtToken: String): Cookie = cookie(jwtToken, 3600 * 24 * 365)
 

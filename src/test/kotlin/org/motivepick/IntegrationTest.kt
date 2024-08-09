@@ -24,4 +24,4 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     MockitoTestExecutionListener::class,
     OAuth2TestExecutionListener::class
 )
-annotation class IntegrationTest(val userAccountId: Long, val userName: String)
+internal annotation class IntegrationTest(val userAccountId: Long, val userName: String)

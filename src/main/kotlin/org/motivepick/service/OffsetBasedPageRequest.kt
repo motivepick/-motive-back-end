@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort
 import java.io.Serializable
 import java.util.*
 
-class OffsetBasedPageRequest(offset: Long, limit: Int, sort: Sort) : Pageable, Serializable {
+internal class OffsetBasedPageRequest(offset: Long, limit: Int, sort: Sort) : Pageable, Serializable {
 
     private val limit: Int
     private val offset: Long
