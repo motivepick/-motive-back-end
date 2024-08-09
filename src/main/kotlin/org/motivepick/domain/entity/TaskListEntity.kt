@@ -1,16 +1,14 @@
 package org.motivepick.domain.entity
 
-import com.vladmihalcea.hibernate.type.array.ListArrayType
-import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType.ALL
+import jakarta.persistence.EnumType.STRING
+import jakarta.persistence.FetchType.LAZY
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import org.springframework.util.Assert.notNull
-import javax.persistence.*
-import javax.persistence.CascadeType.ALL
-import javax.persistence.EnumType.STRING
-import javax.persistence.FetchType.LAZY
 
 @Entity(name = "TASK_LIST")
-@TypeDef(name = "ListArray", typeClass = ListArrayType::class)
 class TaskListEntity(
         @ManyToOne(fetch = LAZY)
         @JoinColumn(name = "USER_ID", nullable = false)
@@ -20,9 +18,9 @@ class TaskListEntity(
         @Enumerated(STRING)
         var type: TaskListType,
 
-        @Type(type = "ListArray")
+        @JdbcTypeCode(SqlTypes.JSON)
         @Column(name = "ORDERED_TASK_IDS", nullable = false, columnDefinition = "BIGINT[]")
-        var orderedIds: List<Long?>) : AbstractEntity() {
+        var orderedIds: List<Long>) : AbstractEntity() {
 
     constructor() : this(UserEntity(), TaskListType.INBOX, emptyList())
 

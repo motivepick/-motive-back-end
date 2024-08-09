@@ -3,9 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <property name="array.type" value="BIGINT[]" dbms="postgresql"/>
-    <property name="array.type" value="ARRAY" dbms="h2"/>
-
     <changeSet id="202004092347" author="Sergey Yaskov">
         <createTable tableName="TASKS_ORDER">
             <column name="ID" autoIncrement="true" type="BIGINT">
@@ -17,7 +14,7 @@
                     references="USER_ACCOUNT(ID)"/>
             </column>
 
-            <column name="ORDERED_IDS" type="${array.type}">
+            <column name="ORDERED_IDS" type="JSONB">
                 <constraints nullable="false"/>
             </column>
         </createTable>

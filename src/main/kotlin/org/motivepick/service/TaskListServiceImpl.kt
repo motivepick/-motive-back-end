@@ -32,7 +32,7 @@ internal open class TaskListServiceImpl(private val user: CurrentUser, private v
         } else {
             val sourceList = taskListRepository.findByUserAccountIdAndType(accountId, sourceListType)!!
             val destinationList = taskListRepository.findByUserAccountIdAndType(accountId, destinationListType)!!
-            val taskId = sourceList.orderedIds[sourceIndex]
+            val taskId: Long = sourceList.orderedIds[sourceIndex]
             val sourceOrderAfterDrag = sourceList.orderedIds.filterIndexed { index, value -> index != sourceIndex }
             val destinationOrderAfterDrop = insertBefore(destinationList.orderedIds, destinationIndex, taskId)
             sourceList.orderedIds = sourceOrderAfterDrag

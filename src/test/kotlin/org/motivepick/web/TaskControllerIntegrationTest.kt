@@ -3,10 +3,10 @@ package org.motivepick.web
 import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
-import org.junit.Assert.*
-import org.junit.Ignore
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
@@ -14,10 +14,10 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @IntegrationTest(1234567890L, "Firstname Lastname")
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
@@ -33,7 +33,7 @@ class TaskControllerIntegrationTest {
     private lateinit var userRepository: UserRepository
 
     @Test
-    @Ignore
+    @Disabled
     fun create() {
         val accountId = "1234567890"
         userRepository.findByAccountId("1234567890")
@@ -55,7 +55,7 @@ class TaskControllerIntegrationTest {
         assertEquals(request.dueDate, task.dueDate)
         assertNull(task.taskList)
 
-        val taskFromDb = taskRepository.findById(task.id!!).get()
+        val taskFromDb = taskRepository.findById(task.id).get()
         assertNotNull(taskFromDb.id)
         assertNotNull(taskFromDb.created)
         assertEquals(accountId, taskFromDb.user.accountId)
@@ -75,7 +75,7 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     fun read() {
         val task = controller.read(1L).body!!
 

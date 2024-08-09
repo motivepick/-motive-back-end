@@ -1,31 +1,35 @@
 package org.motivepick.config
 
+import jakarta.servlet.http.HttpServletRequest
 import org.motivepick.security.JwtTokenAuthenticationProcessingFilter
 import org.motivepick.security.JwtTokenService
 import org.motivepick.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.OrRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
-import javax.servlet.http.HttpServletRequest
+import org.springframework.web.cors.CorsConfiguration
+
 
 @Configuration
 @EnableWebSecurity
-open class SecurityConfig : WebSecurityConfigurerAdapter() {
+open class SecurityConfig {
 
     companion object {
         private val ANONYMOUS_URIS = arrayOf(
-                "/",
-                "/oauth2/authorization/facebook",
-                "/oauth2/authorization/vk",
-                "/temporary/login",
-                "/error**")
+            "/",
+            "/oauth2/authorization/facebook",
+            "/oauth2/authorization/vk",
+            "/temporary/login",
+            "/error**"
+        )
     }
 
     @Autowired
@@ -40,17 +44,34 @@ open class SecurityConfig : WebSecurityConfigurerAdapter() {
     @Autowired
     private lateinit var config: ServerConfig
 
-    override fun configure(http: HttpSecurity) {
-        http
-                .cors()
-                .and().sessionManagement().sessionCreationPolicy(STATELESS)
-                .and().authorizeRequests()
-                .antMatchers(*ANONYMOUS_URIS).permitAll()
-                .anyRequest().authenticated()
-                .and().addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
-                .csrf().disable() // TODO implement CSRF protection
-                .logout().addLogoutHandler(CustomLogoutHandler(jwtTokenService, userService, cookieFactory)).logoutSuccessUrl(config.logoutSuccessUrl)
-    }
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain = http
+        .cors {
+            it.configurationSource {
+                val configuration = CorsConfiguration()
+                configuration.allowCredentials = true
+                configuration.allowedOriginPatterns = listOf("*")
+                configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+                configuration.allowedHeaders = listOf("*")
+                configuration
+            }
+        }
+        .sessionManagement {
+            it.sessionCreationPolicy(STATELESS)
+        }
+        .authorizeHttpRequests {
+            it.requestMatchers(*ANONYMOUS_URIS).permitAll().anyRequest().authenticated()
+        }
+        .addFilterBefore(jwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        .csrf {
+            // TODO implement CSRF protection
+            it.disable()
+        }
+        .logout {
+            it.addLogoutHandler(CustomLogoutHandler(jwtTokenService, userService, cookieFactory))
+                .logoutSuccessUrl(config.logoutSuccessUrl)
+        }
+        .build()
 
     private fun jwtTokenAuthenticationProcessingFilter(): JwtTokenAuthenticationProcessingFilter {
         val requestMatcher = object : RequestMatcher {

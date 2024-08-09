@@ -9,12 +9,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.logout.LogoutHandler
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 
 /**
  * Spring-provided logout handler that suppose to delete cookie does not delete them, so using custom one.
- * Also the custom logout handler deletes temporary user with tasks on logout.
+ * Also, the custom logout handler deletes temporary user with tasks on logout.
  */
 class CustomLogoutHandler(private val tokenService: JwtTokenService, private val userService: UserService,
         private val cookieFactory: CookieFactory) : LogoutHandler {

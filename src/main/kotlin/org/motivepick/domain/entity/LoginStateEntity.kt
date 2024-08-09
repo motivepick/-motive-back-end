@@ -1,7 +1,7 @@
 package org.motivepick.domain.entity
 
-import javax.persistence.Column
-import javax.persistence.Entity
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
 
 @Entity(name = "LOGIN_STATE")
 class LoginStateEntity(

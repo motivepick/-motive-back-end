@@ -1,3 +1,5 @@
+spring.application.name: 'motive-back-end'
+
 spring.profiles.active: 'prod'
 
 logging:

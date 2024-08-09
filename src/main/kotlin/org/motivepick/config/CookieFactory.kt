@@ -2,7 +2,7 @@ package org.motivepick.config
 
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.springframework.stereotype.Component
-import javax.servlet.http.Cookie
+import jakarta.servlet.http.Cookie
 
 @Component
 class CookieFactory(private val config: ServerConfig) {

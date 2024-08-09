@@ -2,9 +2,10 @@ package org.motivepick.repository
 
 import org.motivepick.domain.entity.TaskListEntity
 import org.motivepick.domain.entity.TaskListType
+import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.PagingAndSortingRepository
 
-interface TaskListRepository : PagingAndSortingRepository<TaskListEntity, Long> {
+interface TaskListRepository : CrudRepository<TaskListEntity, Long>, PagingAndSortingRepository<TaskListEntity, Long> {
 
     fun findAllByUserAccountId(accountId: String): List<TaskListEntity>
 

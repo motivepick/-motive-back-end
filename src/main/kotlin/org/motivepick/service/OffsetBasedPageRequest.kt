@@ -19,7 +19,11 @@ class OffsetBasedPageRequest(offset: Long, limit: Int, sort: Sort) : Pageable, S
      * @param direction  the direction of the [Sort] to be specified, can be null.
      * @param properties the properties to sort by, must not be null or empty.
      */
-    constructor(offset: Int, limit: Int, direction: Sort.Direction?, vararg properties: String?) : this(offset.toLong(), limit, Sort(direction, *properties)) {}
+    constructor(offset: Int, limit: Int, direction: Sort.Direction, vararg properties: String?) : this(
+        offset.toLong(),
+        limit,
+        Sort.by(direction, *properties)
+    )
 
     /**
      * Creates a new [OffsetBasedPageRequest] with sort parameters applied.
@@ -27,7 +31,7 @@ class OffsetBasedPageRequest(offset: Long, limit: Int, sort: Sort) : Pageable, S
      * @param offset zero-based offset.
      * @param limit  the size of the elements to be returned.
      */
-    constructor(offset: Int, limit: Int) : this(offset.toLong(), limit, Sort(Sort.Direction.ASC, "id")) {}
+    constructor(offset: Int, limit: Int) : this(offset.toLong(), limit, Sort.by(Sort.Direction.ASC, "id"))
 
     override fun getPageNumber(): Int {
         return (offset / limit).toInt()
@@ -59,6 +63,10 @@ class OffsetBasedPageRequest(offset: Long, limit: Int, sort: Sort) : Pageable, S
 
     override fun first(): Pageable {
         return OffsetBasedPageRequest(0, pageSize, getSort())
+    }
+
+    override fun withPage(pageNumber: Int): Pageable {
+        return OffsetBasedPageRequest(getOffset() + pageNumber * pageSize, pageSize, getSort())
     }
 
     override fun hasPrevious(): Boolean {

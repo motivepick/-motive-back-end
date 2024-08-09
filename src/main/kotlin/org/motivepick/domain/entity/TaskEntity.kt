@@ -3,11 +3,11 @@ package org.motivepick.domain.entity
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType.LAZY
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType.LAZY
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
 @Entity(name = "TASK")
 class TaskEntity(
