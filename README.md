@@ -2,7 +2,7 @@
 
 The service that is going to defeat the laziness.
 
-Try it out on [https://motivepick.com](https://motivepick.com).
+Try it out on [https://milestone.yaskovdev.com](https://milestone.yaskovdev.com).
 
 ## How To Run Locally
 
@@ -121,9 +121,9 @@ For Local, go to `http://localhost:8080/actuator/health`.
 
 For Prod, go to `https://motive-back-end.azurewebsites.net/actuator/health`.
 
-## How To Open Swagger
+## How To Open Swagger Locally
 
-[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+Use [this link](http://localhost:8080/swagger-ui/index.html).
 
 ## Troubleshooting
 

@@ -27,7 +27,9 @@ class SecurityConfig {
             "/oauth2/authorization/facebook",
             "/oauth2/authorization/vk",
             "/temporary/login",
-            "/error**"
+            "/error**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
         )
     }
 

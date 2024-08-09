@@ -29,3 +29,6 @@ vk:
   apiVersion: 5.87
 
 authentication.success.url.mobile: 'motive://'
+
+springdoc.packagesToScan: 'org.motivepick'
+springdoc.pathsToMatch: '/**'

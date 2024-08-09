@@ -1,23 +1,29 @@
-//package org.motivepick.config
-//
-//import org.springframework.context.annotation.Bean
-//import org.springframework.context.annotation.Configuration
-//import springfox.documentation.builders.PathSelectors
-//import springfox.documentation.builders.RequestHandlerSelectors
-//import springfox.documentation.spi.DocumentationType.SWAGGER_2
-//import springfox.documentation.spring.web.plugins.Docket
-//import springfox.documentation.swagger2.annotations.EnableSwagger2
-//
-//@Configuration
-//@EnableSwagger2
-//open class SwaggerConfig {
-//
-//    @Bean
-//    open fun api(): Docket {
-//        return Docket(SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.any())
-//                .paths(PathSelectors.any())
-//                .build()
-//    }
-//}
+package org.motivepick.config
+
+import io.swagger.v3.oas.models.ExternalDocumentation
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.info.License
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+
+@Configuration
+class SwaggerConfig {
+    @Bean
+    fun springShopOpenAPI(): OpenAPI? {
+        return OpenAPI()
+            .info(
+                Info()
+                    .title("Milestone Back End API")
+                    .description("Milestone Back End")
+                    .version("0.0.1-SNAPSHOT")
+                    .license(License().name("MIT License").url("https://github.com/motivepick/motive-back-end?tab=MIT-1-ov-file#readme"))
+            )
+            .externalDocs(
+                ExternalDocumentation()
+                    .description("Milestone Back End Wiki Documentation")
+                    .url("https://github.com/motivepick/motive-back-end/wiki")
+            )
+    }
+}
