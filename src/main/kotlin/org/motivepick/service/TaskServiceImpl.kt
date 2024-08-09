@@ -11,6 +11,8 @@ import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 internal class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, private val userRepository: UserRepository,
         private val taskRepository: TaskRepository, private val currentUser: CurrentUser,
         private val taskListRepository: TaskListRepository) : TaskService {
+
+    private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
 
     @Transactional
     override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskEntity> {
@@ -40,6 +44,7 @@ internal class TaskServiceImpl(private val tasksFactory: InitialTasksFactory, pr
         val taskList = taskListRepository.findByUserAccountIdAndType(user.accountId, INBOX)!!
         taskList.addTask(task)
         taskListRepository.save(taskList)
+        logger.info("Created a task with ID {}", task.id)
         return task
     }
 

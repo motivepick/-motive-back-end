@@ -8,6 +8,8 @@ import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.service.Lists.insertBefore
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,8 +18,13 @@ import java.util.*
 import java.util.Optional.empty
 
 @Service
-internal class TaskListServiceImpl(private val user: CurrentUser, private val taskRepository: TaskRepository,
-        private val taskListRepository: TaskListRepository) : TaskListService {
+internal class TaskListServiceImpl(
+    private val user: CurrentUser,
+    private val taskRepository: TaskRepository,
+    private val taskListRepository: TaskListRepository
+) : TaskListService {
+
+    private val logger: Logger = LoggerFactory.getLogger(TaskListServiceImpl::class.java)
 
     @Transactional
     override fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int) {
@@ -54,6 +61,7 @@ internal class TaskListServiceImpl(private val user: CurrentUser, private val ta
             moveTask(sourceListType, sourceIndex, CLOSED, 0)
             task.closed = true
             task.closingDate = LocalDateTime.now()
+            logger.info("Closed task with ID {}", task.id)
             Optional.of(taskRepository.save(task))
         } else {
             empty()
@@ -70,6 +78,7 @@ internal class TaskListServiceImpl(private val user: CurrentUser, private val ta
             moveTask(sourceListType, sourceIndex, INBOX, 0)
             task.closed = false
             task.created = LocalDateTime.now()
+            logger.info("Reopened task with ID {}", task.id)
             Optional.of(taskRepository.save(task))
         } else {
             empty()

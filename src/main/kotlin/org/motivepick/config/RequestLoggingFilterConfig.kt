@@ -1,4 +1,4 @@
-package org.motivepick.filter
+package org.motivepick.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -4,7 +4,8 @@ import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
-import org.junit.jupiter.api.Assertions.*
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
-
 
 @ExtendWith(SpringExtension::class)
 @IntegrationTest(1234567890L, "Firstname Lastname")
@@ -45,59 +45,55 @@ class TaskControllerIntegrationTest {
         request.dueDate = LocalDateTime.now()
         val response = controller.create(request)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertThat(response.statusCode, equalTo(HttpStatus.CREATED))
 
         val task = response.body!!
-        assertNotNull(task.id)
-        assertNotNull(task.created)
-        assertEquals(accountId, task.user.accountId)
-        assertEquals(false, task.closed)
-        assertEquals("some task", task.name)
-        assertEquals("some description", task.description)
-        assertEquals(request.dueDate, task.dueDate)
-        assertEquals(TaskListType.INBOX, task.taskList?.type)
+        assertThat(task.id, notNullValue())
+        assertThat(task.created, notNullValue())
+        assertThat(task.user.accountId, equalTo(accountId))
+        assertThat(task.closed, equalTo(false))
+        assertThat(task.name, equalTo("some task"))
+        assertThat(task.description, equalTo("some description"))
+        assertThat(task.dueDate, equalTo(request.dueDate))
+        assertThat(task.taskList?.type, equalTo(TaskListType.INBOX))
 
         val taskFromDb = taskRepository.findById(task.id).get()
-        assertNotNull(taskFromDb.id)
-        assertNotNull(taskFromDb.created)
-        assertEquals(accountId, taskFromDb.user.accountId)
-        assertEquals(false, taskFromDb.closed)
-        assertEquals("some task", taskFromDb.name)
-        assertEquals("some description", taskFromDb.description)
-        assertEquals(request.dueDate, taskFromDb.dueDate)
-        assertEquals(TaskListType.INBOX, task.taskList?.type)
+        assertThat(taskFromDb.id, notNullValue())
+        assertThat(taskFromDb.created, notNullValue())
+        assertThat(taskFromDb.user.accountId, equalTo(accountId))
+        assertThat(taskFromDb.closed, equalTo(false))
+        assertThat(taskFromDb.name, equalTo("some task"))
+        assertThat(taskFromDb.description, equalTo("some description"))
+        assertThat(taskFromDb.dueDate, equalTo(request.dueDate))
+        assertThat(taskFromDb.taskList?.type, equalTo(TaskListType.INBOX))
     }
 
     @Test
     fun readNotFound() {
         val response = controller.read(1000L)
-
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        assertNull(response.body)
+        assertThat(response.statusCode, equalTo(HttpStatus.NOT_FOUND))
+        assertThat(response.body, nullValue())
     }
 
     @Test
     fun read() {
         val task = controller.read(2L).body!!
-
-        assertEquals(2L, task.id)
-        assertEquals("Test task", task.name)
-        assertEquals(LocalDateTime.of(2018, 8, 11,
-                19, 55, 47, 900000000), task.created)
-        assertEquals("Test Description", task.description)
-        assertEquals(false, task.closed)
-        assertEquals(LocalDateTime.of(2019, 1, 2,
-                0, 0, 0, 0), task.dueDate)
-        assertEquals(1L, task.user.id)
-        assertEquals(1L, task.taskList!!.id)
+        assertThat(task.id, equalTo(2L))
+        assertThat(task.name, equalTo("Test task"))
+        assertThat(task.created, equalTo(LocalDateTime.of(2018, 8, 11, 19, 55, 47, 900000000)))
+        assertThat(task.description, equalTo("Test Description"))
+        assertThat(task.closed, equalTo(false))
+        assertThat(task.dueDate, equalTo(LocalDateTime.of(2019, 1, 2, 0, 0, 0, 0)))
+        assertThat(task.user.id, equalTo(1L))
+        assertThat(task.taskList!!.id, equalTo(1L))
     }
 
     @Test
     fun updateTaskNotFound() {
         val response = controller.update(100L, UpdateTaskRequest())
 
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        assertNull(response.body)
+        assertThat(response.statusCode, equalTo(HttpStatus.NOT_FOUND))
+        assertThat(response.body, nullValue())
     }
 
     @Test
@@ -110,38 +106,38 @@ class TaskControllerIntegrationTest {
 
         val task = controller.update(2L, request).body!!
 
-        assertEquals(2L, task.id)
-        assertEquals("some new name", task.name)
-        assertEquals("some new description", task.description)
-        assertEquals(request.closed, task.closed)
-        assertEquals(request.dueDate, task.dueDate)
+        assertThat(task.id, equalTo(2L))
+        assertThat(task.name, equalTo("some new name"))
+        assertThat(task.description, equalTo("some new description"))
+        assertThat(task.closed, equalTo(request.closed))
+        assertThat(task.dueDate, equalTo(request.dueDate))
 
         val taskFromDb = taskRepository.findById(2L).get()
 
-        assertEquals("some new name", taskFromDb.name)
-        assertEquals("some new description", taskFromDb.description)
-        assertEquals(request.closed, taskFromDb.closed)
-        assertEquals(request.dueDate, taskFromDb.dueDate)
+        assertThat(taskFromDb.name, equalTo("some new name"))
+        assertThat(taskFromDb.description, equalTo("some new description"))
+        assertThat(taskFromDb.closed, equalTo(request.closed))
+        assertThat(taskFromDb.dueDate, equalTo(request.dueDate))
     }
 
     @Test
     fun deleteNotFound() {
         val response = controller.delete(100L)
 
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        assertNull(response.body)
+        assertThat(response.statusCode, equalTo(HttpStatus.NOT_FOUND))
+        assertThat(response.body, nullValue())
     }
 
     @Test
     fun delete() {
         val response = controller.delete(2L)
 
-        assertEquals(HttpStatus.OK, response.statusCode)
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
         val visible = taskRepository
-                .findById(2L)
-                .map { it.visible }
-                .orElseThrow { AssertionError("task should still exist, just be marked invisible") }
-        assertFalse(visible)
+            .findById(2L)
+            .map { it.visible }
+            .orElseThrow { AssertionError("task should still exist, just be marked invisible") }
+        assertThat(visible, equalTo(false))
     }
 }

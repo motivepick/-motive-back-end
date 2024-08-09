@@ -7,13 +7,12 @@ logging:
     com: INFO
     root: INFO
     springframework.security: INFO
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    org.springframework.web.filter.CommonsRequestLoggingFilter: INFO
 
 management.endpoints.web.exposure.include: info,health,httptrace
 
-# Fixes Caused by: java.sql.SQLFeatureNotSupportedException:
-# Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
+spring.jpa.show-sql: false
+spring.jpa.properties.hibernate.format_sql: false
 
 spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
 
