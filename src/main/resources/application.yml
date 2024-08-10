@@ -1,4 +1,4 @@
-spring.application.name: 'motive-back-end'
+spring.application.name: 'Milestone Back End'
 
 spring.profiles.active: 'prod'
 
