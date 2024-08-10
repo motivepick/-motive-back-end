@@ -80,16 +80,25 @@ It is useful if you want to, say, debug a mobile client against the back end tha
 
 ## How To Deploy To Prod
 
-### Deploy The Back End To Azure App Service
+### Manually Deploy The Back End To Azure App Service
 
 Based
 on [this guide](https://learn.microsoft.com/en-us/azure/app-service/quickstart-java?tabs=springboot&pivots=java-javase).
 
 Make sure that `subscriptionId` in `pom.xml` is your active Azure subscription.
 
-Make sure to have `application-prod.yml` next to `application.yml`.
+Make sure that in Azure Portal "Settings" -> "Environment variables" -> "App settings" has the next entries properly
+configured:
 
-Run the next commands:
+1. `SPRING_DATASOURCE_PASSWORD`
+2. `SPRING_DATASOURCE_USERNAME`
+3. `JWT_TOKEN_SIGNING_KEY`
+4. `FACEBOOK_CLIENT_SECRET`
+5. `VK_CLIENT_SECRET`
+
+And "Connection strings" has the next entry properly configured: `milestone`.
+
+Then run the next commands:
 
 ```powershell
 mvn clean package

@@ -1,0 +1,22 @@
+spring.datasource:
+  url: ${POSTGRESQLCONNSTR_milestone}
+  username: ${SPRING_DATASOURCE_USERNAME}
+  password: ${SPRING_DATASOURCE_PASSWORD}
+
+enforce.https.for.oauth: true
+
+facebook:
+  clientId: 2066377776913735
+  clientSecret: ${FACEBOOK_CLIENT_SECRET}
+
+vk:
+  clientId: 52094527
+  clientSecret: ${VK_CLIENT_SECRET}
+
+authentication.success.url.web: https://milestone.yaskovdev.com
+logout.success.url: https://milestone.yaskovdev.com/login
+cookie.domain: milestone.yaskovdev.com
+
+jwt.token:
+  issuer: motive-local
+  signing.key: ${JWT_TOKEN_SIGNING_KEY}
