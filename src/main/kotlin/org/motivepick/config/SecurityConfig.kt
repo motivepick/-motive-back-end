@@ -53,9 +53,9 @@ internal class SecurityConfig {
             it.configurationSource {
                 val configuration = CorsConfiguration()
                 configuration.allowCredentials = true
-                configuration.allowedOriginPatterns = listOf("*")
+                configuration.allowedOriginPatterns = listOf(config.corsAllowedOriginPattern)
                 configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
-                configuration.allowedHeaders = listOf("*")
+                configuration.allowedHeaders = listOf("Content-Type")
                 configuration
             }
         }

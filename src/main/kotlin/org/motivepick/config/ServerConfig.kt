@@ -19,5 +19,8 @@ class ServerConfig(
         val logoutSuccessUrl: String,
 
         @Value("\${cookie.domain}")
-        val cookieDomain: String
+        val cookieDomain: String,
+
+        @Value("\${cors.allowedOriginPattern}")
+        val corsAllowedOriginPattern: String
 )

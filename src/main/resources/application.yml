@@ -31,3 +31,6 @@ authentication.success.url.mobile: 'motive://'
 
 springdoc.packagesToScan: 'org.motivepick'
 springdoc.pathsToMatch: '/**'
+
+# This is normally the origin of the Web app or * (if not Prod)
+cors.allowedOriginPattern: '*'

@@ -20,3 +20,5 @@ cookie.domain: milestone.yaskovdev.com
 jwt.token:
   issuer: https://api.milestone.yaskovdev.com
   signing.key: ${JWT_TOKEN_SIGNING_KEY}
+
+cors.allowedOriginPattern: 'https://milestone.yaskovdev.com'
