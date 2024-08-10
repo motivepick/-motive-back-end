@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 internal class SwaggerConfig {
 
     @Bean
-    fun springShopOpenAPI(): OpenAPI? {
+    fun openApi(): OpenAPI {
         return OpenAPI()
             .info(
                 Info()

@@ -24,8 +24,8 @@ internal class CustomLogoutHandler(private val tokenService: JwtTokenService, pr
     override fun logout(request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication?) {
         try {
             val token = tokenService.lookupToken(request!!)
-            if (token == null) {
-                logger.warn("Cannot delete temporary user since token is null, the user will not be deleted")
+            if (token.isBlank()) {
+                logger.warn("Cannot delete temporary user since cannot find the JWT token, the user will not be deleted")
             } else {
                 val claims: Jws<Claims> = tokenService.extractClaims(token)
                 val accountId = claims.body.subject

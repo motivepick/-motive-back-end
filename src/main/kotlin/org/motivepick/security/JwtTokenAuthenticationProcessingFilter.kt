@@ -3,16 +3,17 @@ package org.motivepick.security
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.MalformedJwtException
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationServiceException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
-import jakarta.servlet.FilterChain
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 
 const val JWT_TOKEN_COOKIE = "MOTIVE_SESSION"
 
@@ -21,8 +22,8 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         val token = tokenService.lookupToken(request)
-        return if (token == null) {
-            UsernamePasswordAuthenticationToken(null, null, emptyList())
+        return if (token.isBlank()) {
+            throw BadCredentialsException("There is no JWT token in the request")
         } else {
             val claims: Jws<Claims>
             try {
