@@ -113,10 +113,6 @@ Use [this guide](https://learn.microsoft.com/en-gb/azure/app-service/app-service
 
 Use [this guide](https://learn.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-data-jdbc-with-azure-postgresql).
 
-## Short Note About Deployment To LIVE
-
-When deploy to LIVE make sure to replace `application.yml` with one for LIVE.
-
 ## Build Docker Image
 
 ```shell
@@ -128,11 +124,13 @@ docker image push yaskovdev/motive-back-end
 
 For Local, go to `http://localhost:8080/actuator/health`.
 
-For Prod, go to `https://motive-back-end.azurewebsites.net/actuator/health`.
+For Prod, go to `https://api.milestone.yaskovdev.com/actuator/health`.
 
 ## How To Open Swagger Locally
 
-Use [this link](http://localhost:8080/swagger-ui/index.html).
+For Local, use [this link](http://localhost:8080/swagger-ui/index.html).
+
+For Prod, use [this link](https://api.milestone.yaskovdev.com/swagger-ui/index.html).
 
 ## Troubleshooting
 

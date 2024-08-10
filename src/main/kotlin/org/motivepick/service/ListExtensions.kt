@@ -3,6 +3,7 @@ package org.motivepick.service
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import kotlin.math.min
 
 internal object ListExtensions {
 
@@ -14,7 +15,7 @@ internal object ListExtensions {
 
     internal fun <T> List<T>.withPageable(pageable: Pageable): Page<T> {
         val start = pageable.offset.toInt()
-        val end = if (start + pageable.pageSize > this.size) this.size else start + pageable.pageSize
+        val end = min(start + pageable.pageSize, this.size)
         return PageImpl(this.subList(start, end), pageable, this.size.toLong())
     }
 }
