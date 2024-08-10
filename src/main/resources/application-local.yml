@@ -18,5 +18,5 @@ logout.success.url: http://localhost:3000/login
 cookie.domain: localhost
 
 jwt.token:
-  issuer: motive-local
+  issuer: http://localhost:8080
   signing.key: someVerySecureKey

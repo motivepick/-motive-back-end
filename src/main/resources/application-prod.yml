@@ -18,5 +18,5 @@ logout.success.url: https://milestone.yaskovdev.com/login
 cookie.domain: milestone.yaskovdev.com
 
 jwt.token:
-  issuer: motive-local
+  issuer: https://api.milestone.yaskovdev.com
   signing.key: ${JWT_TOKEN_SIGNING_KEY}
