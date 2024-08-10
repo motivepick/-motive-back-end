@@ -7,7 +7,7 @@ import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
-import org.motivepick.service.Lists.insertBefore
+import org.motivepick.service.ListExtensions.add
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
@@ -33,7 +33,7 @@ internal class TaskListServiceImpl(
             val list = taskListRepository.findByUserAccountIdAndType(accountId, sourceListType)!!
             val taskId = list.orderedIds[sourceIndex]
             val orderAfterDrag = list.orderedIds.filterIndexed { index, value -> index != sourceIndex }
-            val orderAfterDrop = insertBefore(orderAfterDrag, destinationIndex, taskId)
+            val orderAfterDrop = orderAfterDrag.add(destinationIndex, taskId)
             list.orderedIds = orderAfterDrop
             taskListRepository.save(list)
         } else {
@@ -41,7 +41,7 @@ internal class TaskListServiceImpl(
             val destinationList = taskListRepository.findByUserAccountIdAndType(accountId, destinationListType)!!
             val taskId: Long = sourceList.orderedIds[sourceIndex]
             val sourceOrderAfterDrag = sourceList.orderedIds.filterIndexed { index, value -> index != sourceIndex }
-            val destinationOrderAfterDrop = insertBefore(destinationList.orderedIds, destinationIndex, taskId)
+            val destinationOrderAfterDrop = destinationList.orderedIds.add(destinationIndex, taskId)
             sourceList.orderedIds = sourceOrderAfterDrag
             destinationList.orderedIds = destinationOrderAfterDrop
             taskListRepository.saveAll(listOf(sourceList, destinationList))

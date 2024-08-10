@@ -6,6 +6,7 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.model.Schedule
 import org.motivepick.domain.ui.task.CreateTaskRequest
 import org.motivepick.domain.ui.task.UpdateTaskRequest
 import org.motivepick.repository.TaskListRepository
@@ -13,6 +14,7 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.UserNotAuthorizedException
+import org.motivepick.service.ListExtensions.withPageable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -28,7 +30,8 @@ internal class TaskServiceImpl(
     private val userRepository: UserRepository,
     private val taskRepository: TaskRepository,
     private val currentUser: CurrentUser,
-    private val taskListRepository: TaskListRepository
+    private val taskListRepository: TaskListRepository,
+    private val scheduleFactory: ScheduleFactory
 ) : TaskService {
 
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
@@ -81,10 +84,16 @@ internal class TaskServiceImpl(
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
-        val taskIdsPage = Lists.withPageable(taskList!!.orderedIds, pageable)
+        val taskIdsPage = taskList!!.orderedIds.withPageable(pageable)
         val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content)
         val taskToId: Map<Long?, TaskEntity> = tasks.associateBy { it.id }
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
+    }
+
+    @Transactional
+    override fun findScheduleForCurrentUser(): Schedule {
+        val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
+        return scheduleFactory.scheduleFor(tasks)
     }
 
     @Transactional
