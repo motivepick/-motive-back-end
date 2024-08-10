@@ -35,7 +35,10 @@ createdb motive --encoding='utf-8' --template='template0;'
 
 ### Start The Back End
 
-In the project root run `./mvnw spring-boot:run -D spring.profiles.active=local`.
+In the project root run `./mvnw spring-boot:run -D"spring-boot.run.profiles=local"`.
+
+This works in PowerShell. If that does not work in your command line, try removing the double quotes. If still does not
+work, try removing the quotes and adding a space after `-D`.
 
 Or, if you are using IntelliJ IDEA, make sure that "Active profiles" is set to `local` and run from the IDE.
 
