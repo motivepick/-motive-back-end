@@ -1,6 +1,6 @@
 package org.motivepick.web
 
-import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.view.UserView
 import org.motivepick.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RestController
 internal class UserController(private val userService: UserService) {
 
     @GetMapping("/user")
-    fun read(): ResponseEntity<UserEntity> = userService.readCurrentUser()?.let { ok(it) } ?: notFound().build()
+    fun read(): ResponseEntity<UserView> = userService.readCurrentUser()?.let { ok(it) } ?: notFound().build()
 }

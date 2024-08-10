@@ -23,7 +23,6 @@ internal class SecurityConfig {
 
     companion object {
         private val ANONYMOUS_URIS = arrayOf(
-            "/",
             "/actuator/health",
             "/oauth2/authorization/facebook",
             "/oauth2/authorization/facebook/callback",

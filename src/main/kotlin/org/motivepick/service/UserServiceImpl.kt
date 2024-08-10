@@ -1,10 +1,12 @@
 package org.motivepick.service
 
 import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.view.UserView
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.Profile
+import org.motivepick.service.UserEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -17,10 +19,10 @@ internal class UserServiceImpl(private val user: CurrentUser, private val reposi
     private val logger: Logger = getLogger(UserServiceImpl::class.java)
 
     @Transactional
-    override fun readCurrentUser(): UserEntity? = repository.findByAccountId(user.getAccountId())
+    override fun readCurrentUser(): UserView? = repository.findByAccountId(user.getAccountId())?.view()
 
     @Transactional
-    override fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserEntity {
+    override fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserView {
         return try {
             val temporaryAccountId = user.getAccountId()
             val temporaryUser = repository.findByAccountId(temporaryAccountId)
@@ -33,19 +35,19 @@ internal class UserServiceImpl(private val user: CurrentUser, private val reposi
                     temporaryUser.accountId = profile.id
                     temporaryUser.temporary = false
                     temporaryUser.name = profile.name
-                    repository.save(temporaryUser)
+                    repository.save(temporaryUser).view()
                 } else {
                     if (isIndeedTemporary(temporaryUser)) {
                         taskService.migrateTasks(temporaryAccountId, profile.id)
                     } else {
                         logger.warn("User $temporaryAccountId is not temporary. Check that the $JWT_TOKEN_COOKIE cookie gets removed")
                     }
-                    existingUser
+                    existingUser.view()
                 }
             }
         } catch (e: UsernameNotFoundException) {
-            repository.findByAccountId(profile.id)
-                    ?: newUserWithTasks(profile.id, profile.name, profile.temporary, language)
+            val entity = repository.findByAccountId(profile.id) ?: newUserWithTasks(profile.id, profile.name, profile.temporary, language)
+            entity.view()
         }
     }
 

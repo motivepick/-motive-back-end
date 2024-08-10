@@ -1,4 +1,4 @@
-package org.motivepick.domain.ui.task
+package org.motivepick.domain.view
 
 import java.time.LocalDateTime
 

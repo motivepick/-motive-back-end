@@ -1,13 +1,14 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
+import org.motivepick.domain.view.TaskView
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.service.ListExtensions.add
+import org.motivepick.service.TaskEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
@@ -52,7 +53,7 @@ internal class TaskListServiceImpl(
     }
 
     @Transactional
-    override fun closeTask(taskId: Long): Optional<TaskEntity> {
+    override fun closeTask(taskId: Long): Optional<TaskView> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()
@@ -62,14 +63,14 @@ internal class TaskListServiceImpl(
             task.closed = true
             task.closingDate = LocalDateTime.now()
             logger.info("Closed task with ID {}", task.id)
-            Optional.of(taskRepository.save(task))
+            Optional.of(taskRepository.save(task).view())
         } else {
             empty()
         }
     }
 
     @Transactional
-    override fun undoCloseTask(taskId: Long): Optional<TaskEntity> {
+    override fun undoCloseTask(taskId: Long): Optional<TaskView> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()
@@ -79,7 +80,7 @@ internal class TaskListServiceImpl(
             task.closed = false
             task.created = LocalDateTime.now()
             logger.info("Reopened task with ID {}", task.id)
-            Optional.of(taskRepository.save(task))
+            Optional.of(taskRepository.save(task).view())
         } else {
             empty()
         }

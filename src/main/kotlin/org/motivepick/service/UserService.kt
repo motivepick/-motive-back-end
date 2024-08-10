@@ -1,13 +1,13 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.view.UserView
 import org.motivepick.security.Profile
 
 interface UserService {
 
-    fun readCurrentUser(): UserEntity?
+    fun readCurrentUser(): UserView?
 
-    fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserEntity
+    fun createUserWithTasksIfNotExists(profile: Profile, language: String): UserView
 
     fun deleteTemporaryUserWithTasks(accountId: String)
 }

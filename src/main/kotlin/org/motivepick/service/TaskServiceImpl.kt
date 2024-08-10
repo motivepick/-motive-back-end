@@ -6,15 +6,17 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.domain.entity.UserEntity
-import org.motivepick.domain.model.Schedule
-import org.motivepick.domain.ui.task.CreateTaskRequest
-import org.motivepick.domain.ui.task.UpdateTaskRequest
+import org.motivepick.domain.view.ScheduleView
+import org.motivepick.domain.view.CreateTaskRequest
+import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.domain.view.TaskView
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.UserNotAuthorizedException
 import org.motivepick.service.ListExtensions.withPageable
+import org.motivepick.service.TaskEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -37,18 +39,18 @@ internal class TaskServiceImpl(
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
 
     @Transactional
-    override fun findTaskById(taskId: Long): TaskEntity? {
+    override fun findTaskById(taskId: Long): TaskView? {
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
         } else if (currentUserOwns(task)) {
-            return task
+            return task.view()
         }
         throw UserNotAuthorizedException("The user does not own the task")
     }
 
     @Transactional
-    override fun updateTaskById(taskId: Long, request: UpdateTaskRequest): TaskEntity? {
+    override fun updateTaskById(taskId: Long, request: UpdateTaskRequest): TaskView? {
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
@@ -62,49 +64,50 @@ internal class TaskServiceImpl(
             if (request.deleteDueDate) {
                 task.dueDate = null
             }
-            return taskRepository.save(task)
+            return taskRepository.save(task).view()
         }
         throw UserNotAuthorizedException("The user does not own the task")
     }
 
     @Transactional
-    override fun softDeleteTaskById(taskId: Long): TaskEntity? {
+    override fun softDeleteTaskById(taskId: Long): TaskView? {
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
         } else if (currentUserOwns(task)) {
             task.visible = false
-            return taskRepository.save(task)
+            return taskRepository.save(task).view()
         }
         throw UserNotAuthorizedException("The user does not own the task")
     }
 
     @Transactional
-    override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskEntity> {
+    override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskView> {
         val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
         val taskIdsPage = taskList!!.orderedIds.withPageable(pageable)
-        val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content)
-        val taskToId: Map<Long?, TaskEntity> = tasks.associateBy { it.id }
+        val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content).map { it.view() }
+        val taskToId: Map<Long?, TaskView> = tasks.associateBy { it.id }
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(): Schedule {
+    override fun findScheduleForCurrentUser(): ScheduleView {
         val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
+            .map { it.view() }
         return scheduleFactory.scheduleFor(tasks)
     }
 
     @Transactional
-    override fun createTask(request: CreateTaskRequest): TaskEntity {
+    override fun createTask(request: CreateTaskRequest): TaskView {
         val user = userRepository.findByAccountId(currentUser.getAccountId())!!
         val task = taskRepository.save(taskFromRequest(user, request))
         val taskList = taskListRepository.findByUserAccountIdAndType(user.accountId, INBOX)!!
         taskList.addTask(task)
         taskListRepository.save(taskList)
         logger.info("Created a task with ID {}", task.id)
-        return task
+        return task.view()
     }
 
     @Transactional

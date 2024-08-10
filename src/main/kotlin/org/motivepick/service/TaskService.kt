@@ -1,26 +1,26 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.UserEntity
-import org.motivepick.domain.model.Schedule
-import org.motivepick.domain.ui.task.CreateTaskRequest
-import org.motivepick.domain.ui.task.UpdateTaskRequest
+import org.motivepick.domain.view.ScheduleView
+import org.motivepick.domain.view.CreateTaskRequest
+import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.domain.view.TaskView
 import org.springframework.data.domain.Page
 
 interface TaskService {
 
-    fun findTaskById(taskId: Long): TaskEntity?
+    fun findTaskById(taskId: Long): TaskView?
 
-    fun updateTaskById(taskId: Long, request: UpdateTaskRequest): TaskEntity?
+    fun updateTaskById(taskId: Long, request: UpdateTaskRequest): TaskView?
 
-    fun softDeleteTaskById(taskId: Long): TaskEntity?
+    fun softDeleteTaskById(taskId: Long): TaskView?
 
-    fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskEntity>
+    fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskView>
 
-    fun findScheduleForCurrentUser(): Schedule
+    fun findScheduleForCurrentUser(): ScheduleView
 
-    fun createTask(request: CreateTaskRequest): TaskEntity
+    fun createTask(request: CreateTaskRequest): TaskView
 
     fun createInitialTasks(tasksOwner: UserEntity, language: String)
 

@@ -1,4 +1,4 @@
-package org.motivepick.domain.ui.task
+package org.motivepick.domain.view
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import java.time.LocalDateTime

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
 import org.motivepick.domain.entity.TaskListType
-import org.motivepick.domain.ui.task.CreateTaskRequest
-import org.motivepick.domain.ui.task.UpdateTaskRequest
+import org.motivepick.domain.view.CreateTaskRequest
+import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,13 +49,10 @@ class TaskControllerIntegrationTest {
 
         val task = response.body!!
         assertThat(task.id, notNullValue())
-        assertThat(task.created, notNullValue())
-        assertThat(task.user.accountId, equalTo(accountId))
         assertThat(task.closed, equalTo(false))
         assertThat(task.name, equalTo("some task"))
         assertThat(task.description, equalTo("some description"))
         assertThat(task.dueDate, equalTo(request.dueDate))
-        assertThat(task.taskList?.type, equalTo(TaskListType.INBOX))
 
         val taskFromDb = taskRepository.findById(task.id).get()
         assertThat(taskFromDb.id, notNullValue())
@@ -80,12 +77,9 @@ class TaskControllerIntegrationTest {
         val task = controller.read(2L).body!!
         assertThat(task.id, equalTo(2L))
         assertThat(task.name, equalTo("Test task"))
-        assertThat(task.created, equalTo(LocalDateTime.of(2018, 8, 11, 19, 55, 47, 900000000)))
         assertThat(task.description, equalTo("Test Description"))
         assertThat(task.closed, equalTo(false))
         assertThat(task.dueDate, equalTo(LocalDateTime.of(2019, 1, 2, 0, 0, 0, 0)))
-        assertThat(task.user.id, equalTo(1L))
-        assertThat(task.taskList!!.id, equalTo(1L))
     }
 
     @Test

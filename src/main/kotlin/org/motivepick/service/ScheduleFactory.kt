@@ -1,7 +1,7 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.TaskEntity
-import org.motivepick.domain.model.Schedule
+import org.motivepick.domain.view.ScheduleView
+import org.motivepick.domain.view.TaskView
 import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.LocalDate
@@ -13,8 +13,8 @@ import kotlin.collections.set
 @Component
 class ScheduleFactory(private val clock: Clock) {
 
-    fun scheduleFor(tasksWithDueDate: List<TaskEntity>): Schedule {
-        val week: MutableMap<LocalDateTime, List<TaskEntity>> = week()
+    fun scheduleFor(tasksWithDueDate: List<TaskView>): ScheduleView {
+        val week: MutableMap<LocalDateTime, List<TaskView>> = week()
         for (dayOfWeek in week.keys) {
             val tasksOfTheDay = tasksWithDueDate.filter { areTheSameDay(dayOfWeek, it.dueDate!!) }
             week[dayOfWeek] = tasksOfTheDay
@@ -30,10 +30,10 @@ class ScheduleFactory(private val clock: Clock) {
                 .firstOrNull()
 
         return if (firstFutureTaskOrNull == null) {
-            Schedule(week, overdue, listOf())
+            ScheduleView(week, overdue, listOf())
         } else {
             val futureTasks = tasksWithDueDate.filter { areTheSameDay(firstFutureTaskOrNull.dueDate!!, it.dueDate!!) }
-            Schedule(week, overdue, futureTasks)
+            ScheduleView(week, overdue, futureTasks)
         }
     }
 
@@ -42,8 +42,8 @@ class ScheduleFactory(private val clock: Clock) {
         return day.format(formatter) == dueDate.format(formatter)
     }
 
-    private fun week(): MutableMap<LocalDateTime, List<TaskEntity>> {
-        val schedule: MutableMap<LocalDateTime, List<TaskEntity>> = LinkedHashMap()
+    private fun week(): MutableMap<LocalDateTime, List<TaskView>> {
+        val schedule: MutableMap<LocalDateTime, List<TaskView>> = LinkedHashMap()
         val endOfToday = LocalDate.now(clock).atTime(MAX)
         for (i in 0..6) {
             schedule[endOfToday.plusDays(i.toLong())] = ArrayList()
