@@ -6,7 +6,7 @@ import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.Profile
-import org.motivepick.service.UserEntityExtensions.view
+import org.motivepick.extensions.UserEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.security.core.userdetails.UsernameNotFoundException

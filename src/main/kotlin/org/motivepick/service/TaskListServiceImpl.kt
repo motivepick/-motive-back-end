@@ -7,8 +7,8 @@ import org.motivepick.domain.view.TaskView
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.security.CurrentUser
-import org.motivepick.service.ListExtensions.add
-import org.motivepick.service.TaskEntityExtensions.view
+import org.motivepick.extensions.ListExtensions.add
+import org.motivepick.extensions.TaskEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull

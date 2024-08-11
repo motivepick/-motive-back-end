@@ -1,9 +1,9 @@
-package org.motivepick.service
+package org.motivepick.extensions
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import org.motivepick.service.ListExtensions.add
+import org.motivepick.extensions.ListExtensions.add
 
 class ListExtensionsUnitTest {
 

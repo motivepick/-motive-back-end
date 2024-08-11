@@ -15,8 +15,8 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.UserNotAuthorizedException
-import org.motivepick.service.ListExtensions.withPageable
-import org.motivepick.service.TaskEntityExtensions.view
+import org.motivepick.extensions.ListExtensions.withPageable
+import org.motivepick.extensions.TaskEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page

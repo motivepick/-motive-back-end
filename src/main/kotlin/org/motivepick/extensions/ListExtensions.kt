@@ -1,4 +1,4 @@
-package org.motivepick.service
+package org.motivepick.extensions
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
