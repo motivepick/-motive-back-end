@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 internal class TaskListController(private val taskService: TaskService, private val taskListService: TaskListService) {
 
     @GetMapping("/task-lists/{type}")
-    fun read(@PathVariable("type") listType: TaskListType, offset: Int, limit: Int): ResponseEntity<Page<TaskView>> =
+    fun read(@PathVariable("type") listType: TaskListType, offset: Long, limit: Int): ResponseEntity<Page<TaskView>> =
         ok(taskService.findForCurrentUser(listType, offset, limit))
 
     @PostMapping("/orders")

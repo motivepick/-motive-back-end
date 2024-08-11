@@ -16,7 +16,7 @@ interface TaskService {
 
     fun softDeleteTaskById(taskId: Long): TaskView?
 
-    fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskView>
+    fun findForCurrentUser(listType: TaskListType, offset: Long, limit: Int): Page<TaskView>
 
     fun findScheduleForCurrentUser(): ScheduleView
 

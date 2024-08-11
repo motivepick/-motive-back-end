@@ -1,8 +1,8 @@
 package org.motivepick.web
 
 import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.domain.view.TaskView
+import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.service.TaskListService
 import org.motivepick.service.TaskService
 import org.springframework.http.HttpStatus.CREATED
@@ -19,16 +19,12 @@ internal class TaskController(private val taskService: TaskService, private val 
         ResponseEntity(taskService.createTask(request), CREATED)
 
     @GetMapping("/tasks/{id}")
-    fun read(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> {
-        val task = taskService.findTaskById(taskId)
-        return if (task == null) notFound().build() else ok(task)
-    }
+    fun read(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
+        taskService.findTaskById(taskId)?.let(::ok) ?: notFound().build()
 
     @PutMapping("/tasks/{id}")
-    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<TaskView> {
-        val updatedTask = taskService.updateTaskById(taskId, request)
-        return if (updatedTask == null) notFound().build() else ok(updatedTask)
-    }
+    fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<TaskView> =
+        taskService.updateTaskById(taskId, request)?.let(::ok) ?: notFound().build()
 
     @PutMapping("/tasks/{id}/closing")
     fun close(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
@@ -43,8 +39,6 @@ internal class TaskController(private val taskService: TaskService, private val 
             .orElse(notFound().build())
 
     @DeleteMapping("/tasks/{id}")
-    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> {
-        val deletedTask = taskService.softDeleteTaskById(taskId)
-        return if (deletedTask == null) notFound().build() else ok(deletedTask)
-    }
+    fun delete(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
+        taskService.softDeleteTaskById(taskId)?.let(::ok) ?: notFound().build()
 }

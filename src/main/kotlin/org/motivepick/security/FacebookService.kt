@@ -12,14 +12,14 @@ import org.springframework.web.util.UriComponentsBuilder
 class FacebookService(userService: UserService, tokenService: JwtTokenService, private val config: FacebookConfig,
         private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, tokenService, config, httpClient) {
 
-    override fun requestProfile(accessToken: TokenResponse): Profile {
-        val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
-                .queryParam("access_token", accessToken.token)
-                .build().toUri()
-        val response = httpClient.getForObject(uri, FacebookProfile::class.java)
-                ?: throw AuthenticationServiceException("Could not retrieve profile")
-        return Profile(response.id, response.name, false)
-    }
+    override fun requestProfile(accessToken: TokenResponse): Profile =
+        UriComponentsBuilder.fromUriString(config.userInfoUri)
+            .queryParam("access_token", accessToken.token)
+            .build()
+            .toUri()
+            .let { httpClient.getForObject(it, FacebookProfile::class.java) }
+            ?.let { Profile(it.id, it.name, false) }
+            ?: throw AuthenticationServiceException("Could not retrieve profile")
 
     internal data class FacebookProfile(
 

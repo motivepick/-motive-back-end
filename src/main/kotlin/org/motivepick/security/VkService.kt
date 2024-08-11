@@ -12,17 +12,17 @@ import org.springframework.web.util.UriComponentsBuilder
 class VkService(userService: UserService, jwtTokenService: JwtTokenService, private val config: VkConfig,
         private val httpClient: RestTemplate) : AbstractTokenGenerator(userService, jwtTokenService, config, httpClient) {
 
-    override fun requestProfile(accessToken: TokenResponse): Profile {
-        val uri = UriComponentsBuilder.fromUriString(config.userInfoUri)
-                .queryParam("access_token", accessToken.token)
-                .queryParam("user_ids", accessToken.id)
-                .queryParam("v", config.apiVersion)
-                .build().toUri()
-        val response = httpClient.getForObject(uri, VkProfileResponse::class.java)
-                ?: throw AuthenticationServiceException("Could not retrieve profile")
-        val profile = response.profiles[0]
-        return Profile(accessToken.id!!, profile.firstName + " " + profile.lastName, false)
-    }
+    override fun requestProfile(accessToken: TokenResponse): Profile =
+        UriComponentsBuilder.fromUriString(config.userInfoUri)
+            .queryParam("access_token", accessToken.token)
+            .queryParam("user_ids", accessToken.id)
+            .queryParam("v", config.apiVersion)
+            .build()
+            .toUri()
+            .let { httpClient.getForObject(it, VkProfileResponse::class.java) }
+            ?.let { it.profiles[0] }
+            ?.let { Profile(accessToken.id!!, it.firstName + " " + it.lastName, false) }
+            ?: throw AuthenticationServiceException("Could not retrieve profile")
 
     internal data class VkProfileResponse(
 

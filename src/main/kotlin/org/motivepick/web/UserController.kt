@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RestController
 internal class UserController(private val userService: UserService) {
 
     @GetMapping("/user")
-    fun read(): ResponseEntity<UserView> = userService.readCurrentUser()?.let { ok(it) } ?: notFound().build()
+    fun read(): ResponseEntity<UserView> = userService.readCurrentUser()?.let(::ok) ?: notFound().build()
 }

@@ -81,9 +81,7 @@ internal class SecurityConfig {
             val matchers: OrRequestMatcher = OrRequestMatcher(ANONYMOUS_URIS.map { AntPathRequestMatcher(it) })
             val processingMatcher: RequestMatcher = AntPathRequestMatcher("/**")
 
-            override fun matches(request: HttpServletRequest): Boolean {
-                return !matchers.matches(request) && processingMatcher.matches(request)
-            }
+            override fun matches(request: HttpServletRequest): Boolean = !matchers.matches(request) && processingMatcher.matches(request)
         }
         return JwtTokenAuthenticationProcessingFilter(requestMatcher, jwtTokenService)
     }

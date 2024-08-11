@@ -82,8 +82,8 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findForCurrentUser(listType: TaskListType, offset: Int, limit: Int): Page<TaskView> {
-        val pageable: Pageable = OffsetBasedPageRequest(offset, limit)
+    override fun findForCurrentUser(listType: TaskListType, offset: Long, limit: Int): Page<TaskView> {
+        val pageable = OffsetBasedPageable(offset, limit)
         val accountId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
         val taskIdsPage = taskList!!.orderedIds.withPageable(pageable)
@@ -93,11 +93,10 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(): ScheduleView {
-        val tasks = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
+    override fun findScheduleForCurrentUser(): ScheduleView =
+        taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
             .map { it.view() }
-        return scheduleFactory.scheduleFor(tasks)
-    }
+            .let(scheduleFactory::scheduleFor)
 
     @Transactional
     override fun createTask(request: CreateTaskRequest): TaskView {
