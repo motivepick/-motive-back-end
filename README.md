@@ -141,4 +141,4 @@ For Prod, use [this link](https://api.milestone.yaskovdev.com/swagger-ui/index.h
    address is added to the "Firewall rule name" in the "Networking" page in the "Azure Database for PostgreSQL flexible
    server".
 2. If you press "Try Without Login" in the UI and get redirected back to the login page, make sure that
-   the `MOTIVE_SESSION` cookie is set (most likely it isn't, therefore you get redirected back to the login).
+   the `Authorization` cookie is set (most likely it isn't, therefore you get redirected back to the login).

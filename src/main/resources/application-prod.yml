@@ -16,6 +16,7 @@ vk:
 authentication.success.url.web: https://milestone.yaskovdev.com
 logout.success.url: https://milestone.yaskovdev.com/login
 cookie.domain: milestone.yaskovdev.com
+cookie.secure: true
 
 jwt.token:
   issuer: https://api.milestone.yaskovdev.com

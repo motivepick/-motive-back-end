@@ -15,7 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
 
-const val JWT_TOKEN_COOKIE = "MOTIVE_SESSION"
+const val JWT_TOKEN_COOKIE = "Authorization"
+const val AUTHENTICATION_SCHEME = "Bearer"
 
 class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
         private val tokenService: JwtTokenService) : AbstractAuthenticationProcessingFilter(matcher) {

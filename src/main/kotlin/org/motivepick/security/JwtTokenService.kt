@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.net.URLDecoder
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
@@ -19,6 +20,7 @@ class JwtTokenService(
     @Value("\${jwt.token.signing.key}")
     private val tokenSigningKey: String
 ) {
+    private val jwtTokenRegex = "$AUTHENTICATION_SCHEME\\s+(?<token>.*)".toRegex()
 
     fun createAccessJwtToken(accountId: String): String {
         val claims = Jwts.claims().setSubject(accountId)
@@ -34,5 +36,8 @@ class JwtTokenService(
 
     fun extractClaims(token: String): Jws<Claims> = Jwts.parser().setSigningKey(tokenSigningKey).parseClaimsJws(token)
 
-    fun lookupToken(request: HttpServletRequest): String = request.cookies?.find { it.name == JWT_TOKEN_COOKIE }?.value ?: ""
+    fun lookupToken(request: HttpServletRequest): String {
+        val value = URLDecoder.decode(request.cookies?.find { it.name == JWT_TOKEN_COOKIE }?.value ?: "", "UTF-8")
+        return jwtTokenRegex.find(value)?.groups?.get("token")?.value ?: ""
+    }
 }

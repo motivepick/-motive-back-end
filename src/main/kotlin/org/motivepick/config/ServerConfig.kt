@@ -6,21 +6,24 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ServerConfig(
 
-        @Value("\${enforce.https.for.oauth}")
-        val enforceHttpsForOauth: Boolean,
+    @Value("\${enforce.https.for.oauth}")
+    val enforceHttpsForOauth: Boolean,
 
-        @Value("\${authentication.success.url.web}")
-        val authenticationSuccessUrlWeb: String,
+    @Value("\${authentication.success.url.web}")
+    val authenticationSuccessUrlWeb: String,
 
-        @Value("\${authentication.success.url.mobile}")
-        val authenticationSuccessUrlMobile: String,
+    @Value("\${authentication.success.url.mobile}")
+    val authenticationSuccessUrlMobile: String,
 
-        @Value("\${logout.success.url}")
-        val logoutSuccessUrl: String,
+    @Value("\${logout.success.url}")
+    val logoutSuccessUrl: String,
 
-        @Value("\${cookie.domain}")
-        val cookieDomain: String,
+    @Value("\${cookie.domain}")
+    val cookieDomain: String,
 
-        @Value("\${cors.allowedOriginPattern}")
-        val corsAllowedOriginPattern: String
+    @Value("\${cookie.secure}")
+    val cookieSecure: Boolean,
+
+    @Value("\${cors.allowedOriginPattern}")
+    val corsAllowedOriginPattern: String
 )
