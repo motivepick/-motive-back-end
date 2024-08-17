@@ -96,7 +96,7 @@ configured:
 1. `SPRING_DATASOURCE_PASSWORD`
 2. `SPRING_DATASOURCE_USERNAME`
 3. `JWT_TOKEN_SIGNING_KEY`
-4. `FACEBOOK_CLIENT_SECRET`
+4. `GITHUB_CLIENT_SECRET`
 5. `VK_CLIENT_SECRET`
 
 And "Connection strings" has the next entry properly configured: `milestone`.

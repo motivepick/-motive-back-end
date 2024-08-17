@@ -4,20 +4,20 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class FacebookConfig(
+class GitHubConfig(
 
-    @Value("\${facebook.clientId}")
+    @Value("\${github.clientId}")
     override val clientId: String,
 
-    @Value("\${facebook.clientSecret}")
+    @Value("\${github.clientSecret}")
     override val clientSecret: String,
 
-    @Value("\${facebook.userAuthorizationUri}")
+    @Value("\${github.userAuthorizationUri}")
     override val userAuthorizationUri: String,
 
-    @Value("\${facebook.accessTokenUri}")
+    @Value("\${github.accessTokenUri}")
     override val accessTokenUri: String,
 
-    @Value("\${facebook.userInfoUri}")
+    @Value("\${github.userInfoUri}")
     val userInfoUri: String
 ) : Oauth2Config

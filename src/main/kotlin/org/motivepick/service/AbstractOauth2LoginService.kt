@@ -14,9 +14,9 @@ import java.util.*
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 
-internal abstract class AbstractOauth2LoginService(
+internal abstract class AbstractOauth2LoginService<T>(
     private val config: Oauth2Config,
-    private val tokenGenerator: AbstractTokenGenerator,
+    private val tokenGenerator: AbstractTokenGenerator<T>,
     private val serverConfig: ServerConfig,
     private val cookieFactory: CookieFactory,
     private val loginStateRepository: LoginStateRepository

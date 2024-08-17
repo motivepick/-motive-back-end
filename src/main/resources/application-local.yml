@@ -5,9 +5,9 @@ spring.datasource:
 
 enforce.https.for.oauth: false
 
-facebook:
-  clientId: 2126656117583758
-  clientSecret: 16d922eb48ba0d30f0d9feee7c1acbec
+github:
+  clientId: Ov23liyzNkFyK7z81NLq
+  clientSecret: secret
 
 vk:
   clientId: 6752973

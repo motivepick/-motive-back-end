@@ -16,10 +16,10 @@ spring.jpa.properties.hibernate.format_sql: false
 
 spring.liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
 
-facebook:
-  userAuthorizationUri: https://www.facebook.com/dialog/oauth
-  accessTokenUri: https://graph.facebook.com/oauth/access_token
-  userInfoUri: https://graph.facebook.com/me
+github:
+  userAuthorizationUri: https://github.com/login/oauth/authorize
+  accessTokenUri: https://github.com/login/oauth/access_token
+  userInfoUri: https://api.github.com/user
 
 vk:
   userAuthorizationUri: https://oauth.vk.com/authorize

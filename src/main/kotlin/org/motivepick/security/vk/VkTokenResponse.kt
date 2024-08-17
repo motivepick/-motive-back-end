@@ -1,8 +1,9 @@
-package org.motivepick.security
+package org.motivepick.security.vk
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class TokenResponse(
+class VkTokenResponse(
+
     @JsonProperty("access_token")
     val token: String,
 

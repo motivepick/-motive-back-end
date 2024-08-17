@@ -23,7 +23,7 @@ vk:
   clientId: testClientId
   clientSecret: testClientSecret
 
-facebook:
+github:
   clientId: testClientId
   clientSecret: testClientSecret
 
