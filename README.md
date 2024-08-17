@@ -125,9 +125,9 @@ docker image push yaskovdev/motive-back-end
 
 ## How To Check The Status Of The Back End
 
-For Local, go to `http://localhost:8080/actuator/health`.
+For Local, go to http://localhost:8080/actuator/health.
 
-For Prod, go to `https://api.milestone.yaskovdev.com/actuator/health`.
+For Prod, go to https://api.milestone.yaskovdev.com/actuator/health.
 
 ## How To Open Swagger Locally
 

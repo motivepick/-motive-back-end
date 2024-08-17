@@ -21,7 +21,9 @@ class VkService(
             .queryParam("client_id", config.clientId)
             .queryParam("client_secret", config.clientSecret)
             .queryParam("code", code)
-            .queryParam("redirect_uri", redirectUri).build().toUri()
+            .queryParam("redirect_uri", redirectUri)
+            .build()
+            .toUri()
         return httpClient.getForObject(uri, VkTokenResponse::class.java)
             ?: throw AuthenticationServiceException("Could not retrieve access token")
     }
