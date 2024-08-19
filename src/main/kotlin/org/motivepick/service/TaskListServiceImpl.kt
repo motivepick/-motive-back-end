@@ -70,7 +70,7 @@ internal class TaskListServiceImpl(
     }
 
     @Transactional
-    override fun undoCloseTask(taskId: Long): Optional<TaskView> {
+    override fun reopenTask(taskId: Long): Optional<TaskView> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()

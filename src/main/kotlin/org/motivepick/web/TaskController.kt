@@ -32,9 +32,9 @@ internal class TaskController(private val taskService: TaskService, private val 
             .map { ok(it) }
             .orElse(notFound().build())
 
-    @PutMapping("/tasks/{id}/undo-closing")
-    fun undoClose(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
-        taskListService.undoCloseTask(taskId)
+    @PutMapping("/tasks/{id}/undo-closing", "/tasks/{id}/reopen")
+    fun reopen(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
+        taskListService.reopenTask(taskId)
             .map { ok(it) }
             .orElse(notFound().build())
 

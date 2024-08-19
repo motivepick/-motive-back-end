@@ -10,5 +10,5 @@ interface TaskListService {
 
     fun closeTask(taskId: Long): Optional<TaskView>
 
-    fun undoCloseTask(taskId: Long): Optional<TaskView>
+    fun reopenTask(taskId: Long): Optional<TaskView>
 }
