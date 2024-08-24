@@ -22,7 +22,10 @@ internal class TaskController(private val taskService: TaskService, private val 
     fun read(@PathVariable("id") taskId: Long): ResponseEntity<TaskView> =
         taskService.findTaskById(taskId)?.let(::ok) ?: notFound().build()
 
-    @PutMapping("/tasks/{id}")
+    /**
+     * Supports a POST method as well to allow updating description via `navigator.sendBeacon` at the client side.
+     */
+    @RequestMapping("/tasks/{id}", method = [RequestMethod.PUT, RequestMethod.POST])
     fun update(@PathVariable("id") taskId: Long, @RequestBody request: UpdateTaskRequest): ResponseEntity<TaskView> =
         taskService.updateTaskById(taskId, request)?.let(::ok) ?: notFound().build()
 
