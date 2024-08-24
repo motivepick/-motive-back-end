@@ -6,17 +6,19 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.domain.entity.UserEntity
-import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.TaskView
+import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.extensions.ListExtensions.withPageable
+import org.motivepick.extensions.ScheduleExtensions.view
+import org.motivepick.extensions.TaskEntityExtensions.model
+import org.motivepick.extensions.TaskEntityExtensions.view
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.UserNotAuthorizedException
-import org.motivepick.extensions.ListExtensions.withPageable
-import org.motivepick.extensions.TaskEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -94,8 +96,9 @@ internal class TaskServiceImpl(
     @Transactional
     override fun findScheduleForCurrentUser(): ScheduleView =
         taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
-            .map { it.view() }
+            .map { it.model() }
             .let(scheduleFactory::scheduleFor)
+            .view()
 
     @Transactional
     override fun createTask(request: CreateTaskRequest): TaskView {

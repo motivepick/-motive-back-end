@@ -1,5 +1,5 @@
 package org.motivepick.domain.view
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
-data class TaskView(val id: Long, val name: String, val description: String, val dueDate: LocalDateTime?, val closed: Boolean)
+data class TaskView(val id: Long, val name: String, val description: String, val dueDate: OffsetDateTime?, val closed: Boolean)

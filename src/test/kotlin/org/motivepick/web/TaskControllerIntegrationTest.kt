@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(SpringExtension::class)
 @IntegrationTest(1234567890L)
@@ -42,7 +43,8 @@ class TaskControllerIntegrationTest {
 
         val request = CreateTaskRequest("\n some task")
         request.description = "  some description "
-        request.dueDate = LocalDateTime.now()
+        val now = LocalDateTime.now()
+        request.dueDate = now
         val response = controller.create(request)
 
         assertThat(response.statusCode, equalTo(HttpStatus.CREATED))
@@ -52,7 +54,7 @@ class TaskControllerIntegrationTest {
         assertThat(task.closed, equalTo(false))
         assertThat(task.name, equalTo("some task"))
         assertThat(task.description, equalTo("some description"))
-        assertThat(task.dueDate, equalTo(request.dueDate))
+        assertThat(task.dueDate, equalTo(now.atOffset(ZoneOffset.UTC)))
 
         val taskFromDb = taskRepository.findById(task.id).get()
         assertThat(taskFromDb.id, notNullValue())
@@ -79,7 +81,7 @@ class TaskControllerIntegrationTest {
         assertThat(task.name, equalTo("Test task"))
         assertThat(task.description, equalTo("Test Description"))
         assertThat(task.closed, equalTo(false))
-        assertThat(task.dueDate, equalTo(LocalDateTime.of(2019, 1, 2, 0, 0, 0, 0)))
+        assertThat(task.dueDate, equalTo(LocalDateTime.of(2019, 1, 2, 0, 0, 0, 0).atOffset(ZoneOffset.UTC)))
     }
 
     @Test
@@ -96,7 +98,8 @@ class TaskControllerIntegrationTest {
         request.name = " some new name\n\t "
         request.description = "  some new description"
         request.closed = true
-        request.dueDate = LocalDateTime.now()
+        val now = LocalDateTime.now()
+        request.dueDate = now
 
         val task = controller.update(2L, request).body!!
 
@@ -104,7 +107,7 @@ class TaskControllerIntegrationTest {
         assertThat(task.name, equalTo("some new name"))
         assertThat(task.description, equalTo("some new description"))
         assertThat(task.closed, equalTo(request.closed))
-        assertThat(task.dueDate, equalTo(request.dueDate))
+        assertThat(task.dueDate, equalTo(now.atOffset(ZoneOffset.UTC)))
 
         val taskFromDb = taskRepository.findById(2L).get()
 
