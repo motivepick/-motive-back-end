@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.motivepick</groupId>
     <artifactId>motive-back-end</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>motive-back-end</name>
     <description>MotivePick Spring Boot Application</description>
     <url/>

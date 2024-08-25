@@ -17,7 +17,7 @@ internal class SwaggerConfig {
                 Info()
                     .title("Milestone Back End API")
                     .description("Milestone Back End")
-                    .version("0.0.1-SNAPSHOT")
+                    .version("0.0.2-SNAPSHOT")
                     .license(License().name("MIT License").url("https://github.com/motivepick/motive-back-end?tab=MIT-1-ov-file#readme"))
             )
             .externalDocs(
