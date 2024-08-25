@@ -1,5 +1,5 @@
 package org.motivepick.domain.model
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
-data class Schedule(val week: Map<LocalDateTime, List<Task>>, val overdue: List<Task>, val future: List<Task>)
+data class Schedule(val week: Map<ZonedDateTime, List<ScheduledTask>>, val overdue: List<ScheduledTask>, val future: List<ScheduledTask>)

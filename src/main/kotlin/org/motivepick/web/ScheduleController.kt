@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.ZoneId
 
 @RestController
 internal class ScheduleController(private val taskService: TaskService) {
 
     @GetMapping("/schedule")
-    fun schedule(): ResponseEntity<ScheduleView> = ok(taskService.findScheduleForCurrentUser())
+    fun schedule(timeZone: ZoneId?): ResponseEntity<ScheduleView> = ok(taskService.findScheduleForCurrentUser(timeZone ?: ZoneId.of("UTC")))
 }

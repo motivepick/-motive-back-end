@@ -1,47 +1,35 @@
 package org.motivepick.service
 
 import org.motivepick.domain.model.Schedule
-import org.motivepick.domain.model.Task
-import org.motivepick.extensions.LocalDateTimeExtensions.isSameDayAs
+import org.motivepick.domain.model.ScheduledTask
+import org.motivepick.extensions.ClockExtensions.endOfToday
 import org.springframework.stereotype.Component
 import java.time.Clock
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime.MAX
-import kotlin.collections.set
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.DAYS
 
 @Component
-class ScheduleFactory(private val clock: Clock) {
+class ScheduleFactory {
 
-    fun scheduleFor(tasksWithDueDate: List<Task>): Schedule {
-        val week: MutableMap<LocalDateTime, List<Task>> = week()
-        for (dayOfWeek in week.keys) {
-            val tasksOfTheDay = tasksWithDueDate.filter { dayOfWeek.isSameDayAs(it.dueDate!!) }
-            week[dayOfWeek] = tasksOfTheDay
-        }
-        val startOfToday = LocalDate.now(clock).atStartOfDay()
-        val overdue = tasksWithDueDate.filter { it.dueDate!!.isBefore(startOfToday) }
-
-        val startOfFuture = startOfToday.plusDays(7)
-
-        return tasksWithDueDate.asSequence()
-            .filter { it.dueDate!!.isAfter(startOfFuture) }
-            .sortedBy { it.dueDate }
-            .firstOrNull()
-            ?.let { task -> tasksWithDueDate.filter { task.dueDate!!.isSameDayAs(it.dueDate!!) } }
-            ?.let { Schedule(week, overdue, it) }
-            ?: Schedule(week, overdue, listOf())
+    fun scheduleFor(tasksWithDueDate: List<ScheduledTask>, timeZone: ZoneId): Schedule {
+        val endOfToday = Clock.system(timeZone).endOfToday()
+        val week: Map<ZonedDateTime, List<ScheduledTask>> = weekDays(endOfToday)
+            .associateWith { endOfDay -> tasksWithDueDate.filter { it.dueDate.atZone(timeZone) in startOfDayFrom(endOfDay)..endOfDay } }
+        val startOfToday = startOfDayFrom(endOfToday)
+        val overdue = tasksWithDueDate.filter { it.dueDate.atZone(timeZone).isBefore(startOfToday) }
+        val endOfWeek = endOfToday.plusDays(6)
+        val futureTasks = tasksWithDueDate.filter { it.dueDate.atZone(timeZone).isAfter(endOfWeek) }.sortedBy { it.dueDate }
+        return Schedule(week, overdue, futureTasks)
     }
 
-    private fun week(): MutableMap<LocalDateTime, List<Task>> =
-        LocalDate
-            .now(clock)
-            .atTime(MAX)
-            .let { endOfToday ->
+    private fun weekDays(endOfToday: ZonedDateTime): List<ZonedDateTime> =
+        endOfToday
+            .let { value ->
                 (0..6)
                     .map { it.toLong() }
-                    .map { endOfToday.plusDays(it) }
-                    .associateBy({ it }, { ArrayList<Task>() })
-                    .toMutableMap()
+                    .map { value.plusDays(it) }
             }
+
+    private fun startOfDayFrom(dateTime: ZonedDateTime): ZonedDateTime = dateTime.truncatedTo(DAYS)
 }

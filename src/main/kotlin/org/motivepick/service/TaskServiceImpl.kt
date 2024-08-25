@@ -6,13 +6,13 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
 import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.model.ScheduledTask
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.TaskView
 import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.extensions.ListExtensions.withPageable
 import org.motivepick.extensions.ScheduleExtensions.view
-import org.motivepick.extensions.TaskEntityExtensions.model
 import org.motivepick.extensions.TaskEntityExtensions.view
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneId
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -94,10 +95,10 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(): ScheduleView =
+    override fun findScheduleForCurrentUser(timeZone: ZoneId): ScheduleView =
         taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
-            .map { it.model() }
-            .let(scheduleFactory::scheduleFor)
+            .map { ScheduledTask.from(it) }
+            .let { scheduleFactory.scheduleFor(it, timeZone) }
             .view()
 
     @Transactional

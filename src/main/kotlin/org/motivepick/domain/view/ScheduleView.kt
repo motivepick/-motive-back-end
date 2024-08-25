@@ -1,5 +1,5 @@
 package org.motivepick.domain.view
 
-import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 
-data class ScheduleView(val week: Map<OffsetDateTime, List<TaskView>>, val overdue: List<TaskView>, val future: List<TaskView>)
+data class ScheduleView(val week: Map<ZonedDateTime, List<ScheduledTaskView>>, val overdue: List<ScheduledTaskView>, val future: List<ScheduledTaskView>)
