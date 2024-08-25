@@ -4,7 +4,7 @@ import java.time.Clock
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.DAYS
 
-object ClockExtensions {
+internal object ClockExtensions {
 
     fun Clock.endOfToday(): ZonedDateTime = ZonedDateTime.now(this).truncatedTo(DAYS).plusDays(1).minusNanos(1)
 }
