@@ -23,13 +23,9 @@ class ScheduleFactory {
         return Schedule(week, overdue, futureTasks)
     }
 
-    private fun weekDays(endOfToday: ZonedDateTime): List<ZonedDateTime> =
-        endOfToday
-            .let { value ->
-                (0..6)
-                    .map { it.toLong() }
-                    .map { value.plusDays(it) }
-            }
+    private fun weekDays(endOfToday: ZonedDateTime): List<ZonedDateTime> = (0..6)
+        .map { it.toLong() }
+        .map { endOfToday.plusDays(it) }
 
     private fun startOfDayFrom(dateTime: ZonedDateTime): ZonedDateTime = dateTime.truncatedTo(DAYS)
 }
