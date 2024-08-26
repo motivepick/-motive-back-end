@@ -1,14 +1,19 @@
 package org.motivepick.service
 
+import org.motivepick.domain.entity.TaskListEntity
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.CLOSED
 import org.motivepick.domain.entity.TaskListType.INBOX
+import org.motivepick.domain.model.TaskList
 import org.motivepick.domain.view.TaskView
-import org.motivepick.repository.TaskListRepository
-import org.motivepick.repository.TaskRepository
-import org.motivepick.security.CurrentUser
+import org.motivepick.exception.ResourceNotFoundException
 import org.motivepick.extensions.ListExtensions.add
 import org.motivepick.extensions.TaskEntityExtensions.view
+import org.motivepick.extensions.TaskListEntityExtensions.model
+import org.motivepick.repository.TaskListRepository
+import org.motivepick.repository.TaskRepository
+import org.motivepick.repository.UserRepository
+import org.motivepick.security.CurrentUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
@@ -21,11 +26,19 @@ import java.util.Optional.empty
 @Service
 internal class TaskListServiceImpl(
     private val user: CurrentUser,
+    private val userRepository: UserRepository,
     private val taskRepository: TaskRepository,
     private val taskListRepository: TaskListRepository
 ) : TaskListService {
 
     private val logger: Logger = LoggerFactory.getLogger(TaskListServiceImpl::class.java)
+
+    @Transactional
+    override fun createTaskList(): TaskList {
+        val accountId = user.getAccountId()
+        val user = userRepository.findByAccountId(accountId) ?: throw ResourceNotFoundException("User does not exist, it was deleted or blocked")
+        return taskListRepository.save(TaskListEntity(user, TaskListType.CUSTOM, listOf())).model()
+    }
 
     @Transactional
     override fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int) {

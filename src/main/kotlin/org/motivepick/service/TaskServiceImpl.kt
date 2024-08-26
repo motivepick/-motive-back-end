@@ -3,14 +3,15 @@ package org.motivepick.service
 import org.motivepick.domain.entity.TaskEntity
 import org.motivepick.domain.entity.TaskListEntity
 import org.motivepick.domain.entity.TaskListType
-import org.motivepick.domain.entity.TaskListType.CLOSED
-import org.motivepick.domain.entity.TaskListType.INBOX
+import org.motivepick.domain.entity.TaskListType.*
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.model.ScheduledTask
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.TaskView
 import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.exception.ClientErrorException
+import org.motivepick.exception.ResourceNotFoundException
 import org.motivepick.extensions.ListExtensions.withPageable
 import org.motivepick.extensions.ScheduleExtensions.view
 import org.motivepick.extensions.TaskEntityExtensions.view
@@ -39,6 +40,8 @@ internal class TaskServiceImpl(
 ) : TaskService {
 
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
+
+    private val predefinedTaskListTypes = listOf(INBOX, CLOSED, SCHEDULE_SECTION, DELETED)
 
     @Transactional
     override fun findTaskById(taskId: Long): TaskView? {
@@ -84,11 +87,11 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findForCurrentUser(listType: TaskListType, offset: Long, limit: Int): Page<TaskView> {
+    override fun findForCurrentUser(listId: String, offset: Long, limit: Int): Page<TaskView> {
         val pageable = OffsetBasedPageable(offset, limit)
         val accountId = currentUser.getAccountId()
-        val taskList = taskListRepository.findByUserAccountIdAndType(accountId, listType)
-        val taskIdsPage = taskList!!.orderedIds.withPageable(pageable)
+        val taskList = findTaskList(accountId, listId) ?: throw ResourceNotFoundException("Task list with ID or type $listId not found for user $accountId")
+        val taskIdsPage = taskList.orderedIds.withPageable(pageable)
         val tasks = taskRepository.findAllByIdInAndVisibleTrue(taskIdsPage.content).map { it.view() }
         val taskToId: Map<Long?, TaskView> = tasks.associateBy { it.id }
         return PageImpl(taskIdsPage.mapNotNull { taskToId[it] }, pageable, taskIdsPage.totalElements)
@@ -164,4 +167,20 @@ internal class TaskServiceImpl(
     }
 
     private fun currentUserOwns(task: TaskEntity) = task.user.accountId == currentUser.getAccountId()
+
+    private fun findTaskList(accountId: String, listId: String): TaskListEntity? {
+        try {
+            val listType = TaskListType.valueOf(listId)
+            if (predefinedTaskListTypes.contains(listType)) {
+                return taskListRepository.findByUserAccountIdAndType(accountId, listType)
+            }
+            throw ClientErrorException("Invalid task list ID: $listId, must be one of $predefinedTaskListTypes")
+        } catch (e: IllegalArgumentException) {
+            try {
+                return taskListRepository.findByUserAccountIdAndId(accountId, listId.toLong())
+            } catch (e: NumberFormatException) {
+                throw ClientErrorException("Invalid task list ID: $listId, must be a number or one of ${TaskListType.entries.toTypedArray()}")
+            }
+        }
+    }
 }

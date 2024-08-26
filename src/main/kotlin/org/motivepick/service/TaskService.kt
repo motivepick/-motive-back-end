@@ -1,6 +1,5 @@
 package org.motivepick.service
 
-import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.ScheduleView
@@ -17,7 +16,7 @@ interface TaskService {
 
     fun softDeleteTaskById(taskId: Long): TaskView?
 
-    fun findForCurrentUser(listType: TaskListType, offset: Long, limit: Int): Page<TaskView>
+    fun findForCurrentUser(listId: String, offset: Long, limit: Int): Page<TaskView>
 
     fun findScheduleForCurrentUser(timeZone: ZoneId): ScheduleView
 

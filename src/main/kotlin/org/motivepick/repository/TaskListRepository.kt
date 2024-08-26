@@ -11,6 +11,8 @@ interface TaskListRepository : CrudRepository<TaskListEntity, Long>, PagingAndSo
 
     fun findByUserAccountIdAndType(accountId: String, type: TaskListType): TaskListEntity?
 
+    fun findByUserAccountIdAndId(accountId: String, id: Long): TaskListEntity?
+
     fun deleteByUserAccountId(accountId: String)
 
     fun deleteByIdIn(ids: List<Long>)

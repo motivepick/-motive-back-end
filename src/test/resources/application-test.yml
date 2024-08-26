@@ -28,5 +28,5 @@ github:
   clientSecret: testClientSecret
 
 jwt.token:
-  issuer: motive-test
-  signing.key: testSigningKey
+  issuer: http://localhost:8080
+  signing.key: someVerySecureKey
