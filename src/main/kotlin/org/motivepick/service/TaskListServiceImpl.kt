@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.*
 import java.util.Optional.empty
+import java.util.concurrent.CountDownLatch
 
 @Service
 internal class TaskListServiceImpl(
@@ -40,8 +41,9 @@ internal class TaskListServiceImpl(
         return taskListRepository.save(TaskListEntity(user, TaskListType.CUSTOM, listOf())).model()
     }
 
+    // TODO: this method is not idempotent, as a result closeTask and reopenTask are not idempotent
     @Transactional
-    override fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int) {
+    override fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int, threadId: Long) {
         val accountId = user.getAccountId()
         if (sourceListType == destinationListType) {
             val list = taskListRepository.findByUserAccountIdAndType(accountId, sourceListType)!!
@@ -52,6 +54,9 @@ internal class TaskListServiceImpl(
             taskListRepository.save(list)
         } else {
             val sourceList = taskListRepository.findByUserAccountIdAndType(accountId, sourceListType)!!
+            if (threadId == 1L) {
+                Thread.sleep(2000)
+            }
             val destinationList = taskListRepository.findByUserAccountIdAndType(accountId, destinationListType)!!
             val taskId: Long = sourceList.orderedIds[sourceIndex]
             val sourceOrderAfterDrag = sourceList.orderedIds.filterIndexed { index, value -> index != sourceIndex }
@@ -66,13 +71,13 @@ internal class TaskListServiceImpl(
     }
 
     @Transactional
-    override fun closeTask(taskId: Long): Optional<TaskView> {
+    override fun closeTask(taskId: Long, threadId: Long): Optional<TaskView> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()
             val sourceListType = task.taskList!!.type
             val sourceIndex = task.taskList!!.orderedIds.indexOf(task.id)
-            moveTask(sourceListType, sourceIndex, CLOSED, 0)
+            moveTask(sourceListType, sourceIndex, CLOSED, 0, threadId)
             task.closed = true
             task.closingDate = LocalDateTime.now()
             logger.info("Closed task with ID {}", task.id)
