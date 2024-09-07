@@ -4,6 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
@@ -30,20 +31,21 @@ class TaskListServiceImplIntegrationTest {
     private lateinit var instanceUnderTest: TaskListService
 
     @Test
-    fun move() {
+    fun `should close be idempotent`() {
         val mainThreadSecurityContext = SecurityContextHolder.getContext()
-        val latch = CountDownLatch(2)
+        val latch = CountDownLatch(1)
+        val thread0 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.closeTask(2, 0, latch)
+            latch.countDown()
+        }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.closeTask(2, 0)
+            instanceUnderTest.closeTask(2, 1, latch)
         }
-        val thread2 = thread {
-            SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.closeTask(2, 1)
-        }
+        thread0.join()
         thread1.join()
-        thread2.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.CLOSED)!!.orderedIds
-        assert(orderedIds.size == 2)
+        assertThat(orderedIds).isEqualTo(listOf(2L, 3L))
     }
 }

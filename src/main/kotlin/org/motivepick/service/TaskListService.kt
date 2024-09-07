@@ -10,9 +10,9 @@ interface TaskListService {
 
     fun createTaskList(): TaskList
 
-    fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int, threadId: Long = 0)
+    fun moveTask(sourceListType: TaskListType, sourceIndex: Int, destinationListType: TaskListType, destinationIndex: Int, requestId: Long = 0, latch: CountDownLatch = CountDownLatch(0))
 
-    fun closeTask(taskId: Long, threadId: Long = 0): Optional<TaskView>
+    fun closeTask(taskId: Long, requestId: Long = 0, latch: CountDownLatch = CountDownLatch(0)): Optional<TaskView>
 
     fun reopenTask(taskId: Long): Optional<TaskView>
 }
