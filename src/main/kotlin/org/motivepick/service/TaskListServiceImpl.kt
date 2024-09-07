@@ -46,6 +46,9 @@ internal class TaskListServiceImpl(
         val accountId = user.getAccountId()
         if (sourceListType == destinationListType) {
             val list = taskListRepository.findByUserAccountIdAndType(accountId, sourceListType)!!
+            if (requestId > 0) {
+                latch.await()
+            }
             val taskId = list.orderedIds[sourceIndex]
             val orderAfterDrag = list.orderedIds.filterIndexed { index, value -> index != sourceIndex }
             val orderAfterDrop = orderAfterDrag.add(destinationIndex, taskId)

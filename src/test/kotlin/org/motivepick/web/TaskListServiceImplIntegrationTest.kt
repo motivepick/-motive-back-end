@@ -33,7 +33,26 @@ class TaskListServiceImplIntegrationTest {
     private lateinit var instanceUnderTest: TaskListService
 
     @Test
-    fun `should move task be idempotent`() {
+    fun `should move task to same list be idempotent`() {
+        val mainThreadSecurityContext = SecurityContextHolder.getContext()
+        val latch = CountDownLatch(1)
+        val thread0 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 0, TaskListType.INBOX, 0, 0, latch)
+            latch.countDown()
+        }
+        val thread1 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 0, TaskListType.INBOX, 0, 1, latch)
+        }
+        thread0.join()
+        thread1.join()
+        val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.INBOX)!!.orderedIds
+        assertThat(orderedIds).isEqualTo(listOf(2L))
+    }
+
+    @Test
+    fun `should move task to different list be idempotent`() {
         val mainThreadSecurityContext = SecurityContextHolder.getContext()
         val latch = CountDownLatch(1)
         val thread0 = thread {
