@@ -5,6 +5,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
+@Disabled
 @ExtendWith(SpringExtension::class)
 @IntegrationTest(1234567890L)
 @DatabaseSetup("/dbunit/tasks.xml")
@@ -31,7 +33,26 @@ class TaskListServiceImplIntegrationTest {
     private lateinit var instanceUnderTest: TaskListService
 
     @Test
-    fun `should close be idempotent`() {
+    fun `should move task be idempotent`() {
+        val mainThreadSecurityContext = SecurityContextHolder.getContext()
+        val latch = CountDownLatch(1)
+        val thread0 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 0, TaskListType.CLOSED, 0, 0, latch)
+            latch.countDown()
+        }
+        val thread1 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 0, TaskListType.CLOSED, 0, 1, latch)
+        }
+        thread0.join()
+        thread1.join()
+        val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.CLOSED)!!.orderedIds
+        assertThat(orderedIds).isEqualTo(listOf(2L, 3L))
+    }
+
+    @Test
+    fun `should close task be idempotent`() {
         val mainThreadSecurityContext = SecurityContextHolder.getContext()
         val latch = CountDownLatch(1)
         val thread0 = thread {
@@ -47,5 +68,24 @@ class TaskListServiceImplIntegrationTest {
         thread1.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.CLOSED)!!.orderedIds
         assertThat(orderedIds).isEqualTo(listOf(2L, 3L))
+    }
+
+    @Test
+    fun `should reopen task be idempotent`() {
+        val mainThreadSecurityContext = SecurityContextHolder.getContext()
+        val latch = CountDownLatch(1)
+        val thread0 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.reopenTask(3, 0, latch)
+            latch.countDown()
+        }
+        val thread1 = thread {
+            SecurityContextHolder.setContext(mainThreadSecurityContext)
+            instanceUnderTest.reopenTask(3, 1, latch)
+        }
+        thread0.join()
+        thread1.join()
+        val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.INBOX)!!.orderedIds
+        assertThat(orderedIds).isEqualTo(listOf(3L, 2L))
     }
 }

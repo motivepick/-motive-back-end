@@ -14,5 +14,5 @@ interface TaskListService {
 
     fun closeTask(taskId: Long, requestId: Long = 0, latch: CountDownLatch = CountDownLatch(0)): Optional<TaskView>
 
-    fun reopenTask(taskId: Long): Optional<TaskView>
+    fun reopenTask(taskId: Long, requestId: Long = 0, latch: CountDownLatch = CountDownLatch(0)): Optional<TaskView>
 }

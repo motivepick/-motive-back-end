@@ -87,13 +87,13 @@ internal class TaskListServiceImpl(
     }
 
     @Transactional
-    override fun reopenTask(taskId: Long): Optional<TaskView> {
+    override fun reopenTask(taskId: Long, requestId: Long, latch: CountDownLatch): Optional<TaskView> {
         val optional = taskRepository.findByIdAndVisibleTrue(taskId)
         return if (optional.isPresent) {
             val task = optional.get()
             val sourceListType = task.taskList!!.type
             val sourceIndex = task.taskList!!.orderedIds.indexOf(task.id)
-            moveTask(sourceListType, sourceIndex, INBOX, 0)
+            moveTask(sourceListType, sourceIndex, INBOX, 0, requestId, latch)
             task.closed = false
             task.created = LocalDateTime.now()
             logger.info("Reopened task with ID {}", task.id)
