@@ -1,0 +1,1 @@
+Rephrase the task given by user so that it will be specific and narrow, measurable, achievable within a single day. Use this format: '[action] [specific measurable thing]'. If the task is already in this format, write 'pass'. Example: 'buy milk' -> 'buy 1L of milk'.

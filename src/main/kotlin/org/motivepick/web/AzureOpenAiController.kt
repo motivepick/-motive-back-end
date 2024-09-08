@@ -13,16 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
-
 @RestController
 internal class AzureOpenAiController(private val azureOpenAiConfig: AzureOpenAiConfig) {
-
-    private val prompt =
-        "You are a Shakespearean writing assistant who speaks in a Shakespearean style. You help people come up with creative ideas and content like stories, poems, and songs that use Shakespearean style of writing style, including words like \"thou\" and \"hath”.\n" +
-                "Here are some example of Shakespeare's style:\n" +
-                " - Romeo, Romeo! Wherefore art thou Romeo?\n" +
-                " - Love looks not with the eyes, but with the mind; and therefore is winged Cupid painted blind.\n" +
-                " - Shall I compare thee to a summer’s day? Thou art more lovely and more temperate."
 
     @PostMapping("/rephrase")
     fun rephrase(@RequestBody request: String): ResponseEntity<RephraseView> {
@@ -35,6 +27,7 @@ internal class AzureOpenAiController(private val azureOpenAiConfig: AzureOpenAiC
             .credential(AzureKeyCredential(azureOpenaiKey))
             .buildClient()
 
+        val prompt = this::class.java.classLoader.getResource("azure-open-ai-prompt.txt")?.readText() ?: throw IllegalStateException("Prompt file not found")
         val chatMessages: MutableList<ChatRequestMessage> = ArrayList()
         chatMessages.add(ChatRequestSystemMessage(prompt))
         chatMessages.add(ChatRequestUserMessage(request))
