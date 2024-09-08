@@ -13,6 +13,11 @@ vk:
   clientId: 52094527
   clientSecret: ${VK_CLIENT_SECRET}
 
+azure.openai:
+  apiKey: ${AZURE_OPENAI_API_KEY}
+  endpoint: ${AZURE_OPENAI_ENDPOINT}
+  deploymentOrModelId: ${AZURE_OPENAI_DEPLOYMENT_MODEL_ID}
+
 authentication.success.url.web: https://milestone.yaskovdev.com
 logout.success.url: https://milestone.yaskovdev.com/login
 cookie.domain: milestone.yaskovdev.com

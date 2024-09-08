@@ -28,9 +28,9 @@ vk:
   apiVersion: 5.87
 
 azure.openai:
-  apiKey: ${AZURE_OPENAI_API_KEY}
-  endpoint: ${AZURE_OPENAI_ENDPOINT}
-  deploymentOrModelId: ${AZURE_OPENAI_DEPLOYMENT_MODEL_ID}
+  apiKey: ''
+  endpoint: ''
+  deploymentOrModelId: ''
 
 authentication.success.url.mobile: 'motive://'
 cookie.secure: false
