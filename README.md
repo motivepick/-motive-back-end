@@ -81,6 +81,14 @@ It is useful if you want to, say, debug a mobile client against the back end tha
 11. Make sure the Web app is running and accessible by opening http://api.milestone-local.yaskovdev.com:3000.
 12. In your phone open http://milestone-local.yaskovdev.com:3000.
 
+## How To Configure OpenAI Locally
+
+Create the next system environment variables:
+
+1. `AZURE_OPENAI_API_KEY`
+2. `AZURE_OPENAI_ENDPOINT`
+3. `AZURE_OPENAI_DEPLOYMENT_MODEL_ID`
+
 ## How To Deploy To Prod
 
 ### Manually Deploy The Back End To Azure App Service
