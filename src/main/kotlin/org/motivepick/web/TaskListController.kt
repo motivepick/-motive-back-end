@@ -23,8 +23,6 @@ internal class TaskListController(private val taskService: TaskService, private 
         ok(taskService.findForCurrentUser(listId, offset, limit))
 
     @PostMapping("/orders")
-    fun moveTask(@RequestBody request: MoveTaskRequest): ResponseEntity<Void> {
-        taskListService.moveTask(request.sourceListType!!, request.sourceIndex!!, request.destinationListType!!, request.destinationIndex!!)
-        return ok().build()
-    }
+    fun moveTask(@RequestBody request: MoveTaskRequest): ResponseEntity<TaskView> =
+        ok(taskListService.moveTask(request.sourceListType, request.taskId!!, request.destinationListType, request.destinationIndex!!))
 }

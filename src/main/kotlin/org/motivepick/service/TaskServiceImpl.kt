@@ -12,6 +12,7 @@ import org.motivepick.domain.view.TaskView
 import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.exception.ClientErrorException
 import org.motivepick.exception.ResourceNotFoundException
+import org.motivepick.extensions.CurrentUserExtensions.owns
 import org.motivepick.extensions.ListExtensions.withPageable
 import org.motivepick.extensions.ScheduleExtensions.view
 import org.motivepick.extensions.TaskEntityExtensions.view
@@ -48,7 +49,7 @@ internal class TaskServiceImpl(
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
-        } else if (currentUserOwns(task)) {
+        } else if (currentUser.owns(task)) {
             return task.view()
         }
         throw UserNotAuthorizedException("The user does not own the task")
@@ -59,7 +60,7 @@ internal class TaskServiceImpl(
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
-        } else if (currentUserOwns(task)) {
+        } else if (currentUser.owns(task)) {
             request.name?.let { task.name = it.trim() }
             request.description?.let { task.description = it.trim() }
             request.created?.let { task.created = it }
@@ -79,7 +80,7 @@ internal class TaskServiceImpl(
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull()
         if (task == null) {
             return null
-        } else if (currentUserOwns(task)) {
+        } else if (currentUser.owns(task)) {
             task.visible = false
             return taskRepository.save(task).view()
         }
@@ -165,8 +166,6 @@ internal class TaskServiceImpl(
         task.dueDate = request.dueDate
         return task
     }
-
-    private fun currentUserOwns(task: TaskEntity) = task.user.accountId == currentUser.getAccountId()
 
     private fun findTaskList(accountId: String, listId: String): TaskListEntity? {
         try {

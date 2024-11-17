@@ -61,7 +61,7 @@ as on the following screenshot:
 It is useful if you want to, say, debug a mobile client against the back end that is running on a local computer.
 
 1. Configure port forwarding for ports `3000` and `8080`. They should be forwarded to your local computer where the back
-   end and the Web app will be running. You can find the IP address of the computer using the `ipconfig` command. It
+   end and the Web app will be running. You can find the IP address of the computer using the `ipconfig` command (`ifconfig | grep inet` on macOS). It
    usually starts with `192.168`.
 2. Create a DNS `A` record for your domain (assuming your domain is `yaskovdev.com`). The record should map
    both `milestone-local.yaskovdev.com` and `api.milestone-local.yaskovdev.com` to the same IP address: a public IP
