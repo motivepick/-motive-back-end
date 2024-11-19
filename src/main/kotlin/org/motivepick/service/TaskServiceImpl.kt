@@ -6,6 +6,7 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.*
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.model.ScheduledTask
+import org.motivepick.domain.model.TaskList
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.TaskView
@@ -99,11 +100,27 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(timeZone: ZoneId): ScheduleView =
-        taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrue(currentUser.getAccountId())
+    override fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTask> {
+        val schedule = findOrCreateSchedule()
+        val taskToId = taskRepository
+            .findAllByIdInAndVisibleTrue(schedule.orderedIds)
             .map { ScheduledTask.from(it) }
-            .let { scheduleFactory.scheduleFor(it, timeZone) }
-            .view()
+            .associateBy { it.id }
+        return schedule
+            .orderedIds
+            .mapNotNull { taskToId[it] }
+    }
+
+    private fun findOrCreateSchedule(): TaskListEntity {
+        val user = userRepository.findByAccountId(currentUser.getAccountId())!!
+        val existingSchedule = taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE)
+        if (existingSchedule == null) {
+            val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(currentUser.getAccountId())
+                .map { it.id }
+            return taskListRepository.save(TaskListEntity(user, SCHEDULE, ids))
+        }
+        return existingSchedule
+    }
 
     @Transactional
     override fun createTask(request: CreateTaskRequest): TaskView {

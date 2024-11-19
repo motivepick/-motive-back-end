@@ -1,6 +1,7 @@
 package org.motivepick.service
 
 import org.motivepick.domain.entity.UserEntity
+import org.motivepick.domain.model.ScheduledTask
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.ScheduleView
 import org.motivepick.domain.view.TaskView
@@ -18,7 +19,7 @@ interface TaskService {
 
     fun findForCurrentUser(listId: String, offset: Long, limit: Int): Page<TaskView>
 
-    fun findScheduleForCurrentUser(timeZone: ZoneId): ScheduleView
+    fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTask>
 
     fun createTask(request: CreateTaskRequest): TaskView
 
