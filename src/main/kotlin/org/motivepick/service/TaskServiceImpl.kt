@@ -6,16 +6,14 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.*
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.model.ScheduledTask
-import org.motivepick.domain.model.TaskList
 import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.ScheduleView
+import org.motivepick.domain.view.RescheduleTaskRequest
 import org.motivepick.domain.view.TaskView
 import org.motivepick.domain.view.UpdateTaskRequest
 import org.motivepick.exception.ClientErrorException
 import org.motivepick.exception.ResourceNotFoundException
 import org.motivepick.extensions.CurrentUserExtensions.owns
 import org.motivepick.extensions.ListExtensions.withPageable
-import org.motivepick.extensions.ScheduleExtensions.view
 import org.motivepick.extensions.TaskEntityExtensions.view
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
@@ -28,6 +26,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.jvm.optionals.getOrNull
 
@@ -175,6 +174,11 @@ internal class TaskServiceImpl(
     override fun deleteTasksFully(userAccountId: String) {
         taskListRepository.deleteByUserAccountId(userAccountId)
         taskRepository.deleteByUserAccountId(userAccountId)
+    }
+
+    @Transactional
+    override fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTask {
+        return ScheduledTask(0L, "", "", LocalDateTime.now(), false)
     }
 
     private fun taskFromRequest(user: UserEntity, request: CreateTaskRequest): TaskEntity {

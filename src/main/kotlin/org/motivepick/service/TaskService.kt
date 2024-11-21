@@ -3,7 +3,7 @@ package org.motivepick.service
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.model.ScheduledTask
 import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.ScheduleView
+import org.motivepick.domain.view.RescheduleTaskRequest
 import org.motivepick.domain.view.TaskView
 import org.motivepick.domain.view.UpdateTaskRequest
 import org.springframework.data.domain.Page
@@ -28,4 +28,6 @@ interface TaskService {
     fun migrateTasks(fromUserAccountId: String, toUserAccountId: String)
 
     fun deleteTasksFully(userAccountId: String)
+
+    fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTask
 }
