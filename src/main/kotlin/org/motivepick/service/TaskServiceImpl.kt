@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.jvm.optionals.getOrNull
 
@@ -178,7 +177,14 @@ internal class TaskServiceImpl(
 
     @Transactional
     override fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTask {
-        return ScheduledTask(0L, "", "", LocalDateTime.now(), false)
+        val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull() ?: throw ResourceNotFoundException("Task with ID $taskId not found")
+        task.dueDate = request.dueDate
+        val userId = currentUser.getAccountId()
+        val taskList = taskListRepository.findByUserAccountIdAndType(userId, SCHEDULE)
+            ?: throw ResourceNotFoundException("Task list with type $SCHEDULE not found for user $userId")
+        taskList.orderedIds = request.taskIds
+        taskListRepository.save(taskList)
+        return ScheduledTask.from(taskRepository.save(task))
     }
 
     private fun taskFromRequest(user: UserEntity, request: CreateTaskRequest): TaskEntity {
