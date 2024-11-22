@@ -3,7 +3,6 @@ package org.motivepick.service
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.view.*
 import org.springframework.data.domain.Page
-import java.time.ZoneId
 
 interface TaskService {
 
@@ -15,7 +14,7 @@ interface TaskService {
 
     fun findForCurrentUser(listId: String, offset: Long, limit: Int): Page<TaskView>
 
-    fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTaskView>
+    fun findScheduleForCurrentUser(): List<ScheduledTaskView>
 
     fun createTask(request: CreateTaskRequest): TaskView
 

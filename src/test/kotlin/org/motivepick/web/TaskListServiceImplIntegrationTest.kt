@@ -26,11 +26,6 @@ import kotlin.concurrent.thread
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 class TaskListServiceImplIntegrationTest {
 
-    companion object {
-        const val INBOX: String = "INBOX"
-        const val CLOSED: String = "CLOSED"
-    }
-
     @Autowired
     private lateinit var taskListRepository: TaskListRepository
 
@@ -43,12 +38,12 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, INBOX, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, INBOX, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 1, latch)
         }
         thread0.join()
         thread1.join()
@@ -62,12 +57,12 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, CLOSED, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, CLOSED, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 1, latch)
         }
         thread0.join()
         thread1.join()

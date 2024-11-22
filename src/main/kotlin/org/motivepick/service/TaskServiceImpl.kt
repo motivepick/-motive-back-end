@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZoneId
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -33,8 +32,7 @@ internal class TaskServiceImpl(
     private val userRepository: UserRepository,
     private val taskRepository: TaskRepository,
     private val currentUser: CurrentUser,
-    private val taskListRepository: TaskListRepository,
-    private val scheduleFactory: ScheduleFactory
+    private val taskListRepository: TaskListRepository
 ) : TaskService {
 
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
@@ -96,7 +94,7 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTaskView> {
+    override fun findScheduleForCurrentUser(): List<ScheduledTaskView> {
         val schedule = findOrCreateSchedule()
         val taskToId = taskRepository
             .findAllByIdInAndVisibleTrue(schedule.orderedIds)
@@ -106,17 +104,6 @@ internal class TaskServiceImpl(
             .orderedIds
             .mapNotNull { taskToId[it] }
             .map { it.view() }
-    }
-
-    private fun findOrCreateSchedule(): TaskListEntity {
-        val user = userRepository.findByAccountId(currentUser.getAccountId())!!
-        val existingSchedule = taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE)
-        if (existingSchedule == null) {
-            val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(currentUser.getAccountId())
-                .map { it.id }
-            return taskListRepository.save(TaskListEntity(user, SCHEDULE, ids))
-        }
-        return existingSchedule
     }
 
     @Transactional
@@ -207,5 +194,16 @@ internal class TaskServiceImpl(
                 throw ClientErrorException("Invalid task list ID: $listId, must be a number or one of ${TaskListType.entries.toTypedArray()}")
             }
         }
+    }
+
+    private fun findOrCreateSchedule(): TaskListEntity {
+        val user = userRepository.findByAccountId(currentUser.getAccountId())!!
+        val existingSchedule = taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE)
+        if (existingSchedule == null) {
+            val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(currentUser.getAccountId())
+                .map { it.id }
+            return taskListRepository.save(TaskListEntity(user, SCHEDULE, ids))
+        }
+        return existingSchedule
     }
 }
