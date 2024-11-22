@@ -6,14 +6,12 @@ import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.entity.TaskListType.*
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.model.ScheduledTask
-import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.RescheduleTaskRequest
-import org.motivepick.domain.view.TaskView
-import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.domain.view.*
 import org.motivepick.exception.ClientErrorException
 import org.motivepick.exception.ResourceNotFoundException
 import org.motivepick.extensions.CurrentUserExtensions.owns
 import org.motivepick.extensions.ListExtensions.withPageable
+import org.motivepick.extensions.ScheduledTaskExtensions.view
 import org.motivepick.extensions.TaskEntityExtensions.view
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
@@ -98,7 +96,7 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTask> {
+    override fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTaskView> {
         val schedule = findOrCreateSchedule()
         val taskToId = taskRepository
             .findAllByIdInAndVisibleTrue(schedule.orderedIds)
@@ -107,6 +105,7 @@ internal class TaskServiceImpl(
         return schedule
             .orderedIds
             .mapNotNull { taskToId[it] }
+            .map { it.view() }
     }
 
     private fun findOrCreateSchedule(): TaskListEntity {
@@ -176,7 +175,7 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTask {
+    override fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTaskView {
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull() ?: throw ResourceNotFoundException("Task with ID $taskId not found")
         task.dueDate = request.dueDate
         val userId = currentUser.getAccountId()
@@ -184,7 +183,7 @@ internal class TaskServiceImpl(
             ?: throw ResourceNotFoundException("Task list with type $SCHEDULE not found for user $userId")
         taskList.orderedIds = request.taskIds
         taskListRepository.save(taskList)
-        return ScheduledTask.from(taskRepository.save(task))
+        return ScheduledTask.from(taskRepository.save(task)).view()
     }
 
     private fun taskFromRequest(user: UserEntity, request: CreateTaskRequest): TaskEntity {

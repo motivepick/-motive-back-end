@@ -1,11 +1,7 @@
 package org.motivepick.service
 
 import org.motivepick.domain.entity.UserEntity
-import org.motivepick.domain.model.ScheduledTask
-import org.motivepick.domain.view.CreateTaskRequest
-import org.motivepick.domain.view.RescheduleTaskRequest
-import org.motivepick.domain.view.TaskView
-import org.motivepick.domain.view.UpdateTaskRequest
+import org.motivepick.domain.view.*
 import org.springframework.data.domain.Page
 import java.time.ZoneId
 
@@ -19,7 +15,7 @@ interface TaskService {
 
     fun findForCurrentUser(listId: String, offset: Long, limit: Int): Page<TaskView>
 
-    fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTask>
+    fun findScheduleForCurrentUser(timeZone: ZoneId): List<ScheduledTaskView>
 
     fun createTask(request: CreateTaskRequest): TaskView
 
@@ -29,5 +25,5 @@ interface TaskService {
 
     fun deleteTasksFully(userAccountId: String)
 
-    fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTask
+    fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTaskView
 }
