@@ -11,7 +11,7 @@ interface TaskRepository : CrudRepository<TaskEntity, Long>, PagingAndSortingRep
 
     fun findAllByUserAccountId(userId: String): List<TaskEntity>
 
-    fun findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(userId: String): List<TaskEntity>
+    fun findAllByUserAccountIdAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(userId: String): List<TaskEntity>
 
     fun findAllByIdInAndVisibleTrue(ids: List<Long>): List<TaskEntity>
 

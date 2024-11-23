@@ -96,12 +96,13 @@ internal class TaskServiceImpl(
     @Transactional
     override fun findScheduleForCurrentUser(): List<ScheduledTaskView> {
         val schedule = findOrCreateSchedule()
+        val openTaskIds = HashSet(taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), INBOX)?.orderedIds ?: emptyList())
+        val scheduleTaskIds = schedule.orderedIds.filter { openTaskIds.contains(it) }
         val taskToId = taskRepository
-            .findAllByIdInAndVisibleTrue(schedule.orderedIds)
+            .findAllByIdInAndVisibleTrue(scheduleTaskIds)
             .map { ScheduledTask.from(it) }
             .associateBy { it.id }
-        return schedule
-            .orderedIds
+        return scheduleTaskIds
             .mapNotNull { taskToId[it] }
             .map { it.view() }
     }
@@ -200,7 +201,7 @@ internal class TaskServiceImpl(
         val user = userRepository.findByAccountId(currentUser.getAccountId())!!
         val existingSchedule = taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE)
         if (existingSchedule == null) {
-            val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(currentUser.getAccountId())
+            val ids = taskRepository.findAllByUserAccountIdAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(currentUser.getAccountId())
                 .map { it.id }
             return taskListRepository.save(TaskListEntity(user, SCHEDULE, ids))
         }
