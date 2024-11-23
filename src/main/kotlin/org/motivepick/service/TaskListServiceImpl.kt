@@ -79,6 +79,11 @@ internal class TaskListServiceImpl(
             moveTask(sourceListType, task.id, CLOSED, 0, requestId, latch)
             task.closed = true
             task.closingDate = LocalDateTime.now()
+            val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
+            if (schedule.orderedIds.contains(task.id)) {
+                schedule.removeTask(task)
+                taskListRepository.save(schedule)
+            }
             logger.info("Closed task with ID {}", task.id)
             Optional.of(taskRepository.save(task).view())
         } else {
@@ -95,6 +100,11 @@ internal class TaskListServiceImpl(
             moveTask(sourceListType, task.id, INBOX, 0, requestId, latch)
             task.closed = false
             task.created = LocalDateTime.now()
+            val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
+            if (task.dueDate != null) {
+                schedule.addTask(task)
+                taskListRepository.save(schedule)
+            }
             logger.info("Reopened task with ID {}", task.id)
             Optional.of(taskRepository.save(task).view())
         } else {

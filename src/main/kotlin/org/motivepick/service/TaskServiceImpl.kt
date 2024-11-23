@@ -218,7 +218,7 @@ internal class TaskServiceImpl(
     }
 
     private fun createSchedule(tasksOwner: UserEntity): TaskListEntity {
-        val ids = taskRepository.findAllByUserAccountIdAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(tasksOwner.accountId)
+        val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(tasksOwner.accountId)
             .map { it.id }
         return taskListRepository.save(TaskListEntity(tasksOwner, SCHEDULE, ids))
     }
