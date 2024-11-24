@@ -1,35 +1,38 @@
-package org.motivepick.web
+package org.motivepick.service
 
-import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
+import com.github.springtestdbunit.DbUnitTestExecutionListener
+import com.github.springtestdbunit.annotation.DatabaseOperation
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.motivepick.IntegrationTest
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.repository.TaskListRepository
-import org.motivepick.service.TaskListService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestExecutionListeners
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
 @Disabled
-@ExtendWith(SpringExtension::class)
-@IntegrationTest(1234567890L)
+@ActiveProfiles("test")
+@SpringBootTest
+@Transactional
+@TestExecutionListeners(
+    listeners = [DbUnitTestExecutionListener::class],
+    mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
+@WithMockUser("1234567890")
 @DatabaseSetup("/dbunit/tasks.xml")
-@DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
+@DatabaseTearDown("/dbunit/tasks.xml", type = DatabaseOperation.DELETE_ALL)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 class TaskListServiceImplIntegrationTest {
-
-    companion object {
-        const val INBOX: String = "INBOX"
-        const val CLOSED: String = "CLOSED"
-    }
 
     @Autowired
     private lateinit var taskListRepository: TaskListRepository
@@ -43,12 +46,12 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, INBOX, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, INBOX, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 1, latch)
         }
         thread0.join()
         thread1.join()
@@ -62,12 +65,12 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, CLOSED, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(INBOX, 2, CLOSED, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 1, latch)
         }
         thread0.join()
         thread1.join()

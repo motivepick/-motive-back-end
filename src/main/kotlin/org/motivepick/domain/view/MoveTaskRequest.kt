@@ -1,9 +1,11 @@
 package org.motivepick.domain.view
 
+import org.motivepick.domain.entity.TaskListType
+
 class MoveTaskRequest {
 
-    var sourceListType: String = ""
+    var sourceListId: TaskListType? = null
     var taskId: Long? = null
-    var destinationListType: String = ""
+    var destinationListId: TaskListType? = null
     var destinationIndex: Int? = null
 }
