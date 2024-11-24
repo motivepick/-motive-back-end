@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
@@ -26,7 +27,7 @@ import kotlin.concurrent.thread
 @Transactional
 @TestExecutionListeners(
     listeners = [DbUnitTestExecutionListener::class],
-    mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+    mergeMode = MERGE_WITH_DEFAULTS
 )
 @WithMockUser("1234567890")
 @DatabaseSetup("/dbunit/tasks.xml")

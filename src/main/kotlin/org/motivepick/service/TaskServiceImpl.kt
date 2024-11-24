@@ -18,6 +18,8 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.UserNotAuthorizedException
+import org.motivepick.service.Constants.EXCLUSIVE_TASK_LISTS
+import org.motivepick.service.Constants.INCLUSIVE_TASK_LISTS
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
@@ -36,13 +38,6 @@ internal class TaskServiceImpl(
 ) : TaskService {
 
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
-
-    /**
-     * A task can only belong to one of these lists at a time.
-     */
-    private val exclusiveTaskLists = listOf(INBOX, CLOSED, DELETED)
-
-    private val inclusiveTaskLists = entries.toList().minus(exclusiveTaskLists)
 
     @Transactional
     override fun findTaskById(taskId: Long): TaskView? {
@@ -163,7 +158,7 @@ internal class TaskServiceImpl(
         val srcTaskLists = taskListRepository.findAllByUserAccountId(srcUserAccountId)
 
         srcTaskLists
-            .filter { exclusiveTaskLists.contains(it.type) }
+            .filter { EXCLUSIVE_TASK_LISTS.contains(it.type) }
             .forEach { srcTaskList ->
                 val dstTaskList = findOrCreateTaskList(dstUser, srcTaskList.type)
                 srcTaskList.tasks.forEach(dstTaskList::prependTask)
@@ -172,7 +167,7 @@ internal class TaskServiceImpl(
             }
 
         srcTaskLists
-            .filter { inclusiveTaskLists.contains(it.type) }
+            .filter { INCLUSIVE_TASK_LISTS.contains(it.type) }
             .forEach { srcTaskList ->
                 val dstTaskList = findOrCreateTaskList(dstUser, srcTaskList.type)
                 val existingTaskIds = dstTaskList.orderedIds.toHashSet()

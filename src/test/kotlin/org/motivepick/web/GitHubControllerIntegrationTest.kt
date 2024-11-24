@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -41,7 +42,7 @@ import java.util.*
 @AutoConfigureMockMvc
 @TestExecutionListeners(
     listeners = [DbUnitTestExecutionListener::class],
-    mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS // To keep the listener that enables the @MockitoBean to work properly.
+    mergeMode = MERGE_WITH_DEFAULTS // To keep the listener that enables the @MockitoBean to work properly.
 )
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)

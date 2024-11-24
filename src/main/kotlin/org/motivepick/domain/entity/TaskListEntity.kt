@@ -6,7 +6,8 @@ import jakarta.persistence.EnumType.STRING
 import jakarta.persistence.FetchType.LAZY
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import org.springframework.util.Assert.notNull
+import org.motivepick.service.Constants.EXCLUSIVE_TASK_LISTS
+import org.springframework.util.Assert
 
 @Entity(name = "TASK_LIST")
 class TaskListEntity(
@@ -28,8 +29,9 @@ class TaskListEntity(
     var tasks: MutableList<TaskEntity> = ArrayList()
 
     fun prependTask(task: TaskEntity) {
-        notNull(task.id, "Task ID must be present if you want to add the task to the task list")
-        task.taskList = this // TODO: task may be part of multiple task lists (although this is probably meant to be the primary one, like INBOX or CLOSED)
+        Assert.notNull(task.id, "Task ID must be present if you want to add the task to the task list")
+        Assert.state(EXCLUSIVE_TASK_LISTS.contains(type), "${TaskListEntity::prependTask.name} is meant to be used with exclusive task lists only")
+        task.taskList = this
         if (!orderedIds.contains(task.id)) {
             tasks.add(0, task)
             orderedIds = listOf(task.id) + orderedIds

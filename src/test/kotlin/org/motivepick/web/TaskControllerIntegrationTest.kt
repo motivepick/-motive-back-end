@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -28,7 +29,7 @@ import java.time.ZoneOffset
 @Transactional
 @TestExecutionListeners(
     listeners = [DbUnitTestExecutionListener::class],
-    mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+    mergeMode = MERGE_WITH_DEFAULTS
 )
 @WithMockUser("1234567890")
 @DatabaseSetup("/dbunit/tasks.xml")
