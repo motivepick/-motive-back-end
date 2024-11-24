@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.`when`
-import org.motivepick.OAuth2TestExecutionListener
-import org.motivepick.User
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
@@ -27,6 +25,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -42,13 +41,12 @@ import java.util.*
 @SpringBootTest // @SpringBootTest and @AutoConfigureMockMvc are used in place of @WebMvcTest(GitHubController::class), see its Javadoc as for why.
 @AutoConfigureMockMvc
 @TestExecutionListeners(
-    listeners = [DbUnitTestExecutionListener::class, OAuth2TestExecutionListener::class], // OAuth2TestExecutionListener sets the account id from @User to security context
+    listeners = [DbUnitTestExecutionListener::class],
     mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS // To keep the listener that enables the @MockitoBean to work properly.
 )
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
-@User(TEMPORARY_USER_ACCOUNT_ID)
 class GitHubControllerIntegrationTest {
 
     companion object {
@@ -74,6 +72,7 @@ class GitHubControllerIntegrationTest {
     private lateinit var taskListRepository: TaskListRepository
 
     @Test
+    @WithMockUser(TEMPORARY_USER_ACCOUNT_ID)
     fun `should migrate tasks when temporary user logs in with permanent account`() {
         configureHttpClient()
 

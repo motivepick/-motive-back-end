@@ -1,27 +1,46 @@
 package org.motivepick.service
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener
 import com.github.springtestdbunit.annotation.DatabaseOperation
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.motivepick.IntegrationTest
-import org.motivepick.User
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.repository.TaskListRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.bean.override.mockito.MockitoResetTestExecutionListener
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
 @Disabled
 @ExtendWith(SpringExtension::class)
-@IntegrationTest
-@User("1234567890")
+@ActiveProfiles("test")
+@SpringBootTest
+@Transactional
+@TestExecutionListeners(
+    listeners = [
+        DbUnitTestExecutionListener::class,
+        MockitoResetTestExecutionListener::class,
+        DependencyInjectionTestExecutionListener::class,
+        DirtiesContextTestExecutionListener::class,
+        TransactionalTestExecutionListener::class],
+    mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
+@WithMockUser("1234567890")
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DatabaseOperation.DELETE_ALL)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
