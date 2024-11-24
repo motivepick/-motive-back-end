@@ -81,7 +81,7 @@ internal class TaskListServiceImpl(
             task.closingDate = LocalDateTime.now()
             val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
             if (schedule.orderedIds.contains(task.id)) {
-                schedule.removeTask(task)
+                schedule.orderedIds = schedule.orderedIds.filter { it != task.id }
                 taskListRepository.save(schedule)
             }
             logger.info("Closed task with ID {}", task.id)
@@ -102,7 +102,7 @@ internal class TaskListServiceImpl(
             task.created = LocalDateTime.now()
             val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
             if (task.dueDate != null) {
-                schedule.addTask(task)
+                schedule.orderedIds = listOf(task.id) + schedule.orderedIds
                 taskListRepository.save(schedule)
             }
             logger.info("Reopened task with ID {}", task.id)

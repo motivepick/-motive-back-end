@@ -29,17 +29,10 @@ class TaskListEntity(
 
     fun addTask(task: TaskEntity) {
         notNull(task.id, "Task ID must be present if you want to add the task to the task list")
-        task.taskList = this // TODO: task may be part of multiple task lists, same for removeTask
+        task.taskList = this // TODO: task may be part of multiple task lists (although this is probably meant to be the primary one, like INBOX or CLOSED)
         if (!orderedIds.contains(task.id)) {
             tasks.add(task)
             orderedIds = listOf(task.id) + orderedIds
         }
-    }
-
-    fun removeTask(task: TaskEntity) {
-        notNull(task.id, "Task ID must be present if you want to remove the task from the task list")
-        task.taskList = null
-        tasks.removeIf { it.id == task.id }
-        orderedIds = orderedIds.filter { it != task.id }
     }
 }

@@ -37,6 +37,13 @@ internal class TaskServiceImpl(
 
     private val logger: Logger = LoggerFactory.getLogger(TaskServiceImpl::class.java)
 
+    /**
+     * A task can only belong to one of these lists at a time.
+     */
+    private val exclusiveTaskListTypes = listOf(INBOX, CLOSED, DELETED)
+
+    private val inclusiveTaskListTypes = entries.toList().minus(exclusiveTaskListTypes)
+
     private val predefinedTaskListTypes = listOf(INBOX, CLOSED, SCHEDULE, DELETED)
 
     @Transactional
@@ -64,12 +71,12 @@ internal class TaskServiceImpl(
             if (request.deleteDueDate) {
                 task.dueDate = null
                 val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
-                schedule.removeTask(task)
+                schedule.orderedIds = schedule.orderedIds.filter { it != task.id }
                 taskListRepository.save(schedule)
             } else if (request.dueDate != null) {
                 if (task.dueDate == null) {
                     val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
-                    schedule.addTask(task)
+                    schedule.orderedIds = listOf(task.id) + schedule.orderedIds
                     taskListRepository.save(schedule)
                 }
                 task.dueDate = request.dueDate
@@ -125,7 +132,7 @@ internal class TaskServiceImpl(
         taskListRepository.save(taskList)
         if (task.dueDate != null) {
             val schedule = findOrCreateSchedule()
-            schedule.addTask(task)
+            schedule.orderedIds = listOf(task.id) + schedule.orderedIds
             taskListRepository.save(schedule)
         }
         logger.info("Created a task with ID {}", task.id)
@@ -160,11 +167,16 @@ internal class TaskServiceImpl(
         val toTaskLists = taskListRepository.findAllByUserAccountId(toUserAccountId)
         val toTaskListToType = toTaskLists.associateBy { it.type }
 
-        listOf(INBOX, CLOSED, SCHEDULE).forEach { type ->
+        exclusiveTaskListTypes.forEach { type ->
             val fromTaskList = fromTaskListToType[type]!!
             val toTaskList = toTaskListToType[type]!!
             fromTaskList.tasks.forEach(toTaskList::addTask)
             fromTaskList.tasks.removeAll { true }
+        }
+        inclusiveTaskListTypes.forEach { type ->
+            if (toTaskListToType.containsKey(type)) {
+                toTaskListToType[type]?.orderedIds = fromTaskListToType[type]?.orderedIds ?: emptyList()
+            }
         }
         taskListRepository.deleteByIdIn(fromTaskLists.map { it.id })
         taskListRepository.saveAll(toTaskLists)
