@@ -27,11 +27,11 @@ class TaskListEntity(
     @OneToMany(mappedBy = "taskList", cascade = [ALL], orphanRemoval = true, fetch = LAZY)
     var tasks: MutableList<TaskEntity> = ArrayList()
 
-    fun addTask(task: TaskEntity) {
+    fun prependTask(task: TaskEntity) {
         notNull(task.id, "Task ID must be present if you want to add the task to the task list")
         task.taskList = this // TODO: task may be part of multiple task lists (although this is probably meant to be the primary one, like INBOX or CLOSED)
         if (!orderedIds.contains(task.id)) {
-            tasks.add(task)
+            tasks.add(0, task)
             orderedIds = listOf(task.id) + orderedIds
         }
     }

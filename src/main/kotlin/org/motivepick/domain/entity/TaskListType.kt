@@ -4,7 +4,7 @@ enum class TaskListType {
 
     INBOX,
     CLOSED,
-    SCHEDULE,
     DELETED,
+    SCHEDULE,
     CUSTOM
 }

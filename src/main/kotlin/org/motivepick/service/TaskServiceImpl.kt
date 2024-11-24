@@ -40,11 +40,9 @@ internal class TaskServiceImpl(
     /**
      * A task can only belong to one of these lists at a time.
      */
-    private val exclusiveTaskListTypes = listOf(INBOX, CLOSED, DELETED)
+    private val exclusiveTaskLists = listOf(INBOX, CLOSED, DELETED)
 
-    private val inclusiveTaskListTypes = entries.toList().minus(exclusiveTaskListTypes)
-
-    private val predefinedTaskListTypes = listOf(INBOX, CLOSED, SCHEDULE, DELETED)
+    private val inclusiveTaskLists = entries.toList().minus(exclusiveTaskLists)
 
     @Transactional
     override fun findTaskById(taskId: Long): TaskView? {
@@ -128,7 +126,7 @@ internal class TaskServiceImpl(
         val user = userRepository.findByAccountId(currentUser.getAccountId())!!
         val task = taskRepository.save(taskFromRequest(user, request))
         val taskList = taskListRepository.findByUserAccountIdAndType(user.accountId, INBOX)!!
-        taskList.addTask(task)
+        taskList.prependTask(task)
         taskListRepository.save(taskList)
         if (task.dueDate != null) {
             val schedule = findOrCreateSchedule()
@@ -155,32 +153,35 @@ internal class TaskServiceImpl(
     }
 
     @Transactional
-    override fun migrateTasks(fromUserAccountId: String, toUserAccountId: String) {
-        val toUser = userRepository.findByAccountId(toUserAccountId)!!
+    override fun migrateTasks(srcUserAccountId: String, dstUserAccountId: String) {
+        val dstUser = userRepository.findByAccountId(dstUserAccountId)!!
 
-        val tasks = taskRepository.findAllByUserAccountId(fromUserAccountId)
-        tasks.forEach { it.user = toUser }
+        val tasks = taskRepository.findAllByUserAccountId(srcUserAccountId)
+        tasks.forEach { it.user = dstUser }
         taskRepository.saveAll(tasks)
 
-        val fromTaskLists = taskListRepository.findAllByUserAccountId(fromUserAccountId)
-        val fromTaskListToType = fromTaskLists.associateBy { it.type }
-        val toTaskLists = taskListRepository.findAllByUserAccountId(toUserAccountId)
-        val toTaskListToType = toTaskLists.associateBy { it.type }
+        val srcTaskLists = taskListRepository.findAllByUserAccountId(srcUserAccountId)
 
-        exclusiveTaskListTypes.forEach { type ->
-            val fromTaskList = fromTaskListToType[type]!!
-            val toTaskList = toTaskListToType[type]!!
-            fromTaskList.tasks.forEach(toTaskList::addTask)
-            fromTaskList.tasks.removeAll { true }
-        }
-        inclusiveTaskListTypes.forEach { type ->
-            if (toTaskListToType.containsKey(type)) {
-                toTaskListToType[type]?.orderedIds = fromTaskListToType[type]?.orderedIds ?: emptyList()
+        srcTaskLists
+            .filter { exclusiveTaskLists.contains(it.type) }
+            .forEach { srcTaskList ->
+                val dstTaskList = findOrCreateTaskList(dstUser, srcTaskList.type)
+                srcTaskList.tasks.forEach(dstTaskList::prependTask)
+                srcTaskList.tasks.removeAll { true }
+                taskListRepository.save(dstTaskList)
             }
-        }
-        taskListRepository.deleteByIdIn(fromTaskLists.map { it.id })
-        taskListRepository.saveAll(toTaskLists)
-        userRepository.deleteByAccountId(fromUserAccountId)
+
+        srcTaskLists
+            .filter { inclusiveTaskLists.contains(it.type) }
+            .forEach { srcTaskList ->
+                val dstTaskList = findOrCreateTaskList(dstUser, srcTaskList.type)
+                val existingTaskIds = dstTaskList.orderedIds.toHashSet()
+                dstTaskList.orderedIds = srcTaskList.orderedIds.filterNot(existingTaskIds::contains) + dstTaskList.orderedIds
+                taskListRepository.save(dstTaskList)
+            }
+
+        taskListRepository.deleteByIdIn(srcTaskLists.map { it.id })
+        userRepository.deleteByAccountId(srcUserAccountId)
     }
 
     @Transactional
@@ -201,6 +202,9 @@ internal class TaskServiceImpl(
         return ScheduledTask.from(taskRepository.save(task)).view()
     }
 
+    private fun findOrCreateTaskList(owner: UserEntity, taskListType: TaskListType) =
+        taskListRepository.findByUserAccountIdAndType(owner.accountId, taskListType) ?: taskListRepository.save(TaskListEntity(owner, taskListType, emptyList()))
+
     private fun taskFromRequest(user: UserEntity, request: CreateTaskRequest): TaskEntity {
         val task = TaskEntity(user, request.name.trim())
         task.description = request.description?.trim()
@@ -211,10 +215,10 @@ internal class TaskServiceImpl(
     private fun findTaskList(accountId: String, listId: String): TaskListEntity? {
         try {
             val listType = TaskListType.valueOf(listId)
-            if (predefinedTaskListTypes.contains(listType)) {
-                return taskListRepository.findByUserAccountIdAndType(accountId, listType)
+            if (listType == CUSTOM) {
+                throw ClientErrorException("Use specific list ID to fetch tasks from a list of type $listType")
             }
-            throw ClientErrorException("Invalid task list ID: $listId, must be one of $predefinedTaskListTypes")
+            return taskListRepository.findByUserAccountIdAndType(accountId, listType)
         } catch (e: IllegalArgumentException) {
             try {
                 return taskListRepository.findByUserAccountIdAndId(accountId, listId.toLong())

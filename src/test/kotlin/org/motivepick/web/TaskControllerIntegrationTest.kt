@@ -9,6 +9,7 @@ import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.IntegrationTest
+import org.motivepick.User
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.UpdateTaskRequest
@@ -21,7 +22,8 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 @ExtendWith(SpringExtension::class)
-@IntegrationTest(1234567890L)
+@IntegrationTest
+@User("1234567890")
 @DatabaseSetup("/dbunit/tasks.xml")
 @DatabaseTearDown("/dbunit/tasks.xml", type = DELETE_ALL)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])

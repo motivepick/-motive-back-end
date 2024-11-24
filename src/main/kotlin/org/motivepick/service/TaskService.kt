@@ -20,7 +20,7 @@ interface TaskService {
 
     fun createInitialTasks(tasksOwner: UserEntity, language: String)
 
-    fun migrateTasks(fromUserAccountId: String, toUserAccountId: String)
+    fun migrateTasks(srcUserAccountId: String, dstUserAccountId: String)
 
     fun deleteTasksFully(userAccountId: String)
 

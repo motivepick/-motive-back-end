@@ -22,4 +22,4 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener::class,
     OAuth2TestExecutionListener::class
 )
-internal annotation class IntegrationTest(val userAccountId: Long)
+internal annotation class IntegrationTest

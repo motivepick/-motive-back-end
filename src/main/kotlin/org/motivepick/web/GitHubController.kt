@@ -14,5 +14,5 @@ internal class GitHubController(private val loginService: GitHubLoginService) {
 
     @GetMapping("/oauth2/authorization/github/callback")
     fun loginCallback(request: HttpServletRequest, response: HttpServletResponse) =
-        loginService.loginCallback(request, response)
+        loginService.loginCallback(request, response) // TODO: create a test when a temporary user with INBOX, CLOSED, DELETED, SCHEDULE task lists is logging in via GitHub
 }
