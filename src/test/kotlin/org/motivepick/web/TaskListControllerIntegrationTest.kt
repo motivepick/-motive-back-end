@@ -9,18 +9,12 @@ import jakarta.servlet.http.Cookie
 import jakarta.transaction.Transactional
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.extensions.PathExtensions.readTextFromResource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
-import org.springframework.test.context.bean.override.mockito.MockitoResetTestExecutionListener
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -28,17 +22,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.io.path.Path
 
-@ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 @TestExecutionListeners(
-    listeners = [
-        DbUnitTestExecutionListener::class,
-        MockitoResetTestExecutionListener::class,
-        DependencyInjectionTestExecutionListener::class,
-        DirtiesContextTestExecutionListener::class,
-        TransactionalTestExecutionListener::class],
+    listeners = [DbUnitTestExecutionListener::class],
     mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
 @DatabaseSetup("/dbunit/tasks.xml")

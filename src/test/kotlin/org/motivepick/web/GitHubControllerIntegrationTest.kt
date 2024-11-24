@@ -17,7 +17,6 @@ import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.github.GitHubProfile
 import org.motivepick.security.github.GitHubTokenResponse
-import org.motivepick.web.GitHubControllerIntegrationTest.Companion.TEMPORARY_USER_ACCOUNT_ID
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest

@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.motivepick.domain.entity.TaskListType
 import org.motivepick.domain.view.CreateTaskRequest
 import org.motivepick.domain.view.UpdateTaskRequest
@@ -21,25 +20,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
-import org.springframework.test.context.bean.override.mockito.MockitoResetTestExecutionListener
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-@ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 @TestExecutionListeners(
-    listeners = [
-        DbUnitTestExecutionListener::class,
-        MockitoResetTestExecutionListener::class,
-        DependencyInjectionTestExecutionListener::class,
-        DirtiesContextTestExecutionListener::class,
-        TransactionalTestExecutionListener::class],
+    listeners = [DbUnitTestExecutionListener::class],
     mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
 @WithMockUser("1234567890")
