@@ -36,7 +36,12 @@ class JwtTokenAuthenticationProcessingFilter(matcher: RequestMatcher,
             val subject = claims.body.subject
             val scopes = claims.body.get("scopes", List::class.java)
             val authorities = scopes.map { SimpleGrantedAuthority(it as String) }
-            val user = User(subject, "", authorities)
+            val user = User
+                .builder()
+                .username(subject)
+                .password("")
+                .authorities(authorities)
+                .build()
             UsernamePasswordAuthenticationToken(user, null, authorities)
         }
     }

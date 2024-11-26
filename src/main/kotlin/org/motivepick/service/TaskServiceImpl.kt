@@ -188,7 +188,9 @@ internal class TaskServiceImpl(
     @Transactional
     override fun rescheduleTask(taskId: Long, request: RescheduleTaskRequest): ScheduledTaskView {
         val task = taskRepository.findByIdAndVisibleTrue(taskId).getOrNull() ?: throw ResourceNotFoundException("Task with ID $taskId not found")
-        task.dueDate = request.dueDate
+        if (request.dueDate != null) {
+            task.dueDate = request.dueDate
+        }
         val userId = currentUser.getAccountId()
         val taskList = taskListRepository.findByUserAccountIdAndType(userId, SCHEDULE)
             ?: throw ResourceNotFoundException("Task list with type $SCHEDULE not found for user $userId")
