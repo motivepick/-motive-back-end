@@ -75,6 +75,33 @@ class GitHubControllerIntegrationTest {
     private lateinit var taskListRepository: TaskListRepository
 
     @Test
+    fun `should create initial tasks when user creates new permanent account`() {
+        configureHttpClient(NEW_USER_ACCOUNT_ID)
+
+        val state = Base64.getEncoder().encodeToString(STATE_UUID.toByteArray())
+        val requestBuilder = get("/oauth2/authorization/github/callback")
+            .param("code", GITHUB_TEMPORARY_CODE)
+            .param("state", state)
+        mockMvc
+            .perform(requestBuilder)
+            .andExpect(status().isFound())
+
+        assertThat(userRepository.findByAccountId(NEW_USER_ACCOUNT_ID.toString()), notNullValue())
+
+        val expectedInitialTasks = arrayOf(
+            "Buy a birthday present for Steve",
+            "Finish the course about microservices",
+            "Finalize the blog post", "Tidy up the kitchen",
+            "Transfer money for the new illustration to Ann",
+            "Find a hotel in Sofia",
+            "Write a review for the Estonian teacher"
+        )
+        val tasks = taskRepository.findAllByUserAccountId(NEW_USER_ACCOUNT_ID.toString())
+        assertThat(tasks.map { it.name }, containsInAnyOrder(*expectedInitialTasks))
+        tasks.forEach { task -> assertThat(task.user.accountId, equalTo(NEW_USER_ACCOUNT_ID.toString())) }
+    }
+
+    @Test
     fun `should migrate tasks when temporary user that has no permanent account creates new permanent account`() {
         configureHttpClient(NEW_USER_ACCOUNT_ID)
 
