@@ -31,7 +31,8 @@ internal class SecurityConfig {
             "/temporary/login",
             "/error**",
             "/swagger-ui/**",
-            "/v3/api-docs/**"
+            "/v3/api-docs/**",
+            "/favicon.ico"
         )
     }
 

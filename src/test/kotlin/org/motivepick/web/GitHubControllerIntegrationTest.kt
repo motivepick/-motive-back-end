@@ -5,6 +5,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation.DELETE_ALL
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DatabaseTearDown
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import jakarta.servlet.http.Cookie
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
@@ -12,6 +13,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.`when`
 import org.motivepick.domain.entity.TaskListType
+import org.motivepick.extensions.PathExtensions.readTextFromResource
 import org.motivepick.repository.TaskListRepository
 import org.motivepick.repository.TaskRepository
 import org.motivepick.repository.UserRepository
@@ -24,7 +26,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
@@ -36,6 +37,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.util.*
+import kotlin.io.path.Path
 
 @ActiveProfiles("test")
 @SpringBootTest // @SpringBootTest and @AutoConfigureMockMvc are used in place of @WebMvcTest(GitHubController::class), see its Javadoc as for why.
@@ -72,12 +74,13 @@ class GitHubControllerIntegrationTest {
     private lateinit var taskListRepository: TaskListRepository
 
     @Test
-    @WithMockUser(TEMPORARY_USER_ACCOUNT_ID)
     fun `should migrate tasks when temporary user logs in with permanent account`() {
         configureHttpClient()
 
+        val temporaryUserToken = Path("token.265508a4-2c3b-4d03-8eea-c536ad2e6a72.txt").readTextFromResource()
         val state = Base64.getEncoder().encodeToString(STATE_UUID.toByteArray())
         val requestBuilder = get("/oauth2/authorization/github/callback")
+            .cookie(Cookie("Authorization", temporaryUserToken))
             .param("code", GITHUB_TEMPORARY_CODE)
             .param("state", state)
         mockMvc

@@ -1,10 +1,8 @@
 package org.motivepick.security.github
 
 import org.motivepick.config.GitHubConfig
-import org.motivepick.security.AbstractTokenGenerator
-import org.motivepick.security.JwtTokenService
-import org.motivepick.security.Profile
-import org.motivepick.service.UserService
+import org.motivepick.security.AbstractOauth2Client
+import org.motivepick.security.Oauth2Profile
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -15,10 +13,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
-class GitHubService(
-    userService: UserService, tokenService: JwtTokenService, private val config: GitHubConfig,
+class GitHubClient(
+    private val config: GitHubConfig,
     private val httpClient: RestTemplate
-) : AbstractTokenGenerator<GitHubTokenResponse>(userService, tokenService) {
+) : AbstractOauth2Client<GitHubTokenResponse>() {
 
     override fun requestAccessToken(code: String, redirectUri: String): GitHubTokenResponse {
         val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
@@ -31,12 +29,12 @@ class GitHubService(
         return fetchAccessToken(uri) ?: throw AuthenticationServiceException("Could not retrieve access token")
     }
 
-    override fun requestProfile(response: GitHubTokenResponse): Profile =
+    override fun requestProfile(response: GitHubTokenResponse): Oauth2Profile =
         UriComponentsBuilder.fromUriString(config.userInfoUri)
             .build()
             .toUri()
             .let { fetchProfile(it, response.token) }
-            ?.let { Profile(it.id.toString(), it.login, false) }
+            ?.let { Oauth2Profile(it.id.toString(), it.login) }
             ?: throw AuthenticationServiceException("Could not retrieve profile")
 
     private fun fetchAccessToken(uri: URI): GitHubTokenResponse? {

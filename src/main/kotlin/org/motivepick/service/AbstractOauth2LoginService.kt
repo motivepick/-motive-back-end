@@ -5,7 +5,7 @@ import org.motivepick.config.Oauth2Config
 import org.motivepick.config.ServerConfig
 import org.motivepick.domain.entity.LoginStateEntity
 import org.motivepick.repository.LoginStateRepository
-import org.motivepick.security.AbstractTokenGenerator
+import org.motivepick.security.AbstractOauth2Client
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -13,13 +13,16 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.motivepick.security.JwtTokenService
 
 internal abstract class AbstractOauth2LoginService<T>(
     private val config: Oauth2Config,
-    private val tokenGenerator: AbstractTokenGenerator<T>,
+    private val oauth2Client: AbstractOauth2Client<T>,
     private val serverConfig: ServerConfig,
     private val cookieFactory: CookieFactory,
-    private val loginStateRepository: LoginStateRepository
+    private val loginStateRepository: LoginStateRepository,
+    private val userService: UserService,
+    private val tokenService: JwtTokenService
 ) : Oauth2LoginService {
 
     @Transactional
@@ -54,7 +57,10 @@ internal abstract class AbstractOauth2LoginService<T>(
         val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
             .scheme(if (serverConfig.enforceHttpsForOauth) "https" else "http")
             .toUriString()
-        val jwtToken = tokenGenerator.generateJwtToken(code, redirectUrl, locale.language)
+        val oauth2Profile = oauth2Client.fetchUserProfile(code, redirectUrl)
+        val currentAccountId = extractCurrentAccountId(request)
+        userService.createUserWithTasksIfNotExists(currentAccountId, oauth2Profile, locale.language)
+        val jwtToken = tokenService.createAccessJwtToken(oauth2Profile.id)
 
         if (state.mobile) {
             response.sendRedirect(serverConfig.authenticationSuccessUrlMobile + jwtToken)
@@ -64,5 +70,14 @@ internal abstract class AbstractOauth2LoginService<T>(
         }
 
         loginStateRepository.deleteByStateUuid(stateUuid)
+    }
+
+    private fun extractCurrentAccountId(request: HttpServletRequest): String {
+        val token = tokenService.lookupToken(request)
+        if (token.isNotBlank()) {
+            val claims = tokenService.extractClaims(token)
+            return claims.body.subject ?: ""
+        }
+        return ""
     }
 }

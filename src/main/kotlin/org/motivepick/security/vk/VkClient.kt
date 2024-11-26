@@ -1,20 +1,18 @@
 package org.motivepick.security.vk
 
 import org.motivepick.config.VkConfig
-import org.motivepick.security.AbstractTokenGenerator
-import org.motivepick.security.JwtTokenService
-import org.motivepick.security.Profile
-import org.motivepick.service.UserService
+import org.motivepick.security.AbstractOauth2Client
+import org.motivepick.security.Oauth2Profile
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Service
-class VkService(
-    userService: UserService, jwtTokenService: JwtTokenService, private val config: VkConfig,
+class VkClient(
+    private val config: VkConfig,
     private val httpClient: RestTemplate
-) : AbstractTokenGenerator<VkTokenResponse>(userService, jwtTokenService) {
+) : AbstractOauth2Client<VkTokenResponse>() {
 
     override fun requestAccessToken(code: String, redirectUri: String): VkTokenResponse {
         val uri = UriComponentsBuilder.fromUriString(config.accessTokenUri)
@@ -28,7 +26,7 @@ class VkService(
             ?: throw AuthenticationServiceException("Could not retrieve access token")
     }
 
-    override fun requestProfile(response: VkTokenResponse): Profile =
+    override fun requestProfile(response: VkTokenResponse): Oauth2Profile =
         UriComponentsBuilder.fromUriString(config.userInfoUri)
             .queryParam("access_token", response.token)
             .queryParam("user_ids", response.id)
@@ -37,6 +35,6 @@ class VkService(
             .toUri()
             .let { httpClient.getForObject(it, VkProfileResponse::class.java) }
             ?.let { it.profiles[0] }
-            ?.let { Profile(response.id!!, it.firstName + " " + it.lastName, false) }
+            ?.let { Oauth2Profile(response.id!!, it.firstName + " " + it.lastName) }
             ?: throw AuthenticationServiceException("Could not retrieve profile")
 }

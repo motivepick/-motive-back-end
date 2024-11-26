@@ -3,7 +3,7 @@ package org.motivepick.web
 import org.motivepick.config.CookieFactory
 import org.motivepick.config.ServerConfig
 import org.motivepick.security.JwtTokenService
-import org.motivepick.security.Profile
+import org.motivepick.security.Oauth2Profile
 import org.motivepick.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -19,7 +19,7 @@ internal class TemporaryAccountController(private val config: ServerConfig, priv
     fun login(request: HttpServletRequest, response: HttpServletResponse) {
         val locale = request.locale
         val temporaryAccountId = UUID.randomUUID().toString()
-        userService.createUserWithTasksIfNotExists(Profile(temporaryAccountId, "", true), locale.language)
+        userService.createUserWithTasksIfNotExists(temporaryAccountId, Oauth2Profile.empty(), locale.language)
         val token = tokenService.createAccessJwtToken(temporaryAccountId)
         if (request.getParameter("mobile") == null) {
             response.addCookie(cookieFactory.cookie(token))
