@@ -47,17 +47,17 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 1002, TaskListType.INBOX, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.INBOX, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 1002, TaskListType.INBOX, 0, 1, latch)
         }
         thread0.join()
         thread1.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.INBOX)!!.orderedIds
-        assertThat(orderedIds).isEqualTo(listOf(2L))
+        assertThat(orderedIds).isEqualTo(listOf(1002L))
     }
 
     @Test
@@ -66,17 +66,17 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 0, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 1002, TaskListType.CLOSED, 0, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.moveTask(TaskListType.INBOX, 2, TaskListType.CLOSED, 0, 1, latch)
+            instanceUnderTest.moveTask(TaskListType.INBOX, 1002, TaskListType.CLOSED, 0, 1, latch)
         }
         thread0.join()
         thread1.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.CLOSED)!!.orderedIds
-        assertThat(orderedIds).isEqualTo(listOf(2L, 3L))
+        assertThat(orderedIds).isEqualTo(listOf(1002L, 1003L))
     }
 
     @Test
@@ -85,17 +85,17 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.closeTask(2, 0, latch)
+            instanceUnderTest.closeTask(1002, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.closeTask(2, 1, latch)
+            instanceUnderTest.closeTask(1002, 1, latch)
         }
         thread0.join()
         thread1.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.CLOSED)!!.orderedIds
-        assertThat(orderedIds).isEqualTo(listOf(2L, 3L))
+        assertThat(orderedIds).isEqualTo(listOf(1002L, 1003L))
     }
 
     @Test
@@ -104,16 +104,16 @@ class TaskListServiceImplIntegrationTest {
         val latch = CountDownLatch(1)
         val thread0 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.reopenTask(3, 0, latch)
+            instanceUnderTest.reopenTask(1003, 0, latch)
             latch.countDown()
         }
         val thread1 = thread {
             SecurityContextHolder.setContext(mainThreadSecurityContext)
-            instanceUnderTest.reopenTask(3, 1, latch)
+            instanceUnderTest.reopenTask(1003, 1, latch)
         }
         thread0.join()
         thread1.join()
         val orderedIds = taskListRepository.findByUserAccountIdAndType(1234567890L.toString(), TaskListType.INBOX)!!.orderedIds
-        assertThat(orderedIds).isEqualTo(listOf(3L, 2L))
+        assertThat(orderedIds).isEqualTo(listOf(1003L, 1002L))
     }
 }

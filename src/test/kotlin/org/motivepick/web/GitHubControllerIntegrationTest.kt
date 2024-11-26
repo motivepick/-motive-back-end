@@ -54,6 +54,7 @@ class GitHubControllerIntegrationTest {
     companion object {
         const val GITHUB_TEMPORARY_CODE = "123"
         const val STATE_UUID = "47443547-d27e-4913-9b14-0bf19bfffd51"
+        const val NEW_USER_ACCOUNT_ID = 311348659
         const val EXISTING_USER_ACCOUNT_ID = 1234567890
         const val TEMPORARY_USER_ACCOUNT_ID = "265508a4-2c3b-4d03-8eea-c536ad2e6a72"
     }
@@ -74,10 +75,36 @@ class GitHubControllerIntegrationTest {
     private lateinit var taskListRepository: TaskListRepository
 
     @Test
-    fun `should migrate tasks when temporary user logs in with permanent account`() {
-        configureHttpClient()
+    fun `should migrate tasks when temporary user that has no permanent account creates new permanent account`() {
+        configureHttpClient(NEW_USER_ACCOUNT_ID)
 
-        val temporaryUserToken = Path("token.265508a4-2c3b-4d03-8eea-c536ad2e6a72.txt").readTextFromResource()
+        val temporaryUserToken = Path("token.$TEMPORARY_USER_ACCOUNT_ID.txt").readTextFromResource()
+        val state = Base64.getEncoder().encodeToString(STATE_UUID.toByteArray())
+        val requestBuilder = get("/oauth2/authorization/github/callback")
+            .cookie(Cookie("Authorization", temporaryUserToken))
+            .param("code", GITHUB_TEMPORARY_CODE)
+            .param("state", state)
+        mockMvc
+            .perform(requestBuilder)
+            .andExpect(status().isFound())
+
+        assertThat(userRepository.findByAccountId(TEMPORARY_USER_ACCOUNT_ID), nullValue())
+        assertThat(userRepository.findByAccountId(NEW_USER_ACCOUNT_ID.toString()), notNullValue())
+
+        val tasks = taskRepository.findAllByUserAccountId(NEW_USER_ACCOUNT_ID.toString())
+        assertThat(tasks.map { it.id }, containsInAnyOrder(1005L, 1006L))
+        tasks.forEach { task -> assertThat(task.user.accountId, equalTo(NEW_USER_ACCOUNT_ID.toString())) }
+
+        assertThat(taskListRepository.findByUserAccountIdAndType(NEW_USER_ACCOUNT_ID.toString(), TaskListType.INBOX)?.orderedIds, contains(1005L))
+        assertThat(taskListRepository.findByUserAccountIdAndType(NEW_USER_ACCOUNT_ID.toString(), TaskListType.CLOSED)?.orderedIds, contains(1006L))
+        assertThat(taskListRepository.findByUserAccountIdAndType(NEW_USER_ACCOUNT_ID.toString(), TaskListType.SCHEDULE)?.orderedIds, contains(1005L))
+    }
+
+    @Test
+    fun `should migrate tasks when temporary user that has permanent account logs in with permanent account`() {
+        configureHttpClient(EXISTING_USER_ACCOUNT_ID)
+
+        val temporaryUserToken = Path("token.$TEMPORARY_USER_ACCOUNT_ID.txt").readTextFromResource()
         val state = Base64.getEncoder().encodeToString(STATE_UUID.toByteArray())
         val requestBuilder = get("/oauth2/authorization/github/callback")
             .cookie(Cookie("Authorization", temporaryUserToken))
@@ -91,15 +118,15 @@ class GitHubControllerIntegrationTest {
         assertThat(userRepository.findByAccountId(EXISTING_USER_ACCOUNT_ID.toString()), notNullValue())
 
         val tasks = taskRepository.findAllByUserAccountId(EXISTING_USER_ACCOUNT_ID.toString())
-        assertThat(tasks.map { it.id }, containsInAnyOrder(2L, 3L, 5L, 6L))
+        assertThat(tasks.map { it.id }, containsInAnyOrder(1002L, 1003L, 1005L, 1006L))
         tasks.forEach { task -> assertThat(task.user.accountId, equalTo(EXISTING_USER_ACCOUNT_ID.toString())) }
 
-        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.INBOX)?.orderedIds, contains(5L, 2L))
-        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.CLOSED)?.orderedIds, contains(6L, 3L))
-        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.SCHEDULE)?.orderedIds, contains(5L, 2L))
+        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.INBOX)?.orderedIds, contains(1005L, 1002L))
+        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.CLOSED)?.orderedIds, contains(1006L, 1003L))
+        assertThat(taskListRepository.findByUserAccountIdAndType(EXISTING_USER_ACCOUNT_ID.toString(), TaskListType.SCHEDULE)?.orderedIds, contains(1005L, 1002L))
     }
 
-    private fun configureHttpClient() {
+    private fun configureHttpClient(persistentAccountId: Int) {
         val fetchTokenUri: URI = UriComponentsBuilder.fromUriString("https://github.com/login/oauth/access_token")
             .queryParam("client_id", "testClientId")
             .queryParam("client_secret", "testClientSecret")
@@ -113,6 +140,6 @@ class GitHubControllerIntegrationTest {
         `when`(httpClient.exchange(eq(fetchTokenUri), any(HttpMethod::class.java), any(HttpEntity::class.java), any(GitHubTokenResponse::class.java::class.java)))
             .thenReturn(ResponseEntity(GitHubTokenResponse("abc"), HttpStatus.OK))
         `when`(httpClient.exchange(eq(fetchProfileUri), any(HttpMethod::class.java), any(HttpEntity::class.java), any(GitHubProfile::class.java::class.java)))
-            .thenReturn(ResponseEntity(GitHubProfile(EXISTING_USER_ACCOUNT_ID, "yaskovdev"), HttpStatus.OK))
+            .thenReturn(ResponseEntity(GitHubProfile(persistentAccountId, "yaskovdev"), HttpStatus.OK))
     }
 }

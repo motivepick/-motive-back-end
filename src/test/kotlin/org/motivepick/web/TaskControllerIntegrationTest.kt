@@ -86,8 +86,8 @@ class TaskControllerIntegrationTest {
 
     @Test
     fun read() {
-        val task = controller.read(2L).body!!
-        assertThat(task.id, equalTo(2L))
+        val task = controller.read(1002L).body!!
+        assertThat(task.id, equalTo(1002L))
         assertThat(task.name, equalTo("Test task"))
         assertThat(task.description, equalTo("Test Description"))
         assertThat(task.closed, equalTo(false))
@@ -111,15 +111,15 @@ class TaskControllerIntegrationTest {
         val now = LocalDateTime.now()
         request.dueDate = now
 
-        val task = controller.update(2L, request).body!!
+        val task = controller.update(1002L, request).body!!
 
-        assertThat(task.id, equalTo(2L))
+        assertThat(task.id, equalTo(1002L))
         assertThat(task.name, equalTo("some new name"))
         assertThat(task.description, equalTo("some new description"))
         assertThat(task.closed, equalTo(request.closed))
         assertThat(task.dueDate, equalTo(now.atOffset(ZoneOffset.UTC)))
 
-        val taskFromDb = taskRepository.findById(2L).get()
+        val taskFromDb = taskRepository.findById(1002L).get()
 
         assertThat(taskFromDb.name, equalTo("some new name"))
         assertThat(taskFromDb.description, equalTo("some new description"))
@@ -137,12 +137,12 @@ class TaskControllerIntegrationTest {
 
     @Test
     fun delete() {
-        val response = controller.delete(2L)
+        val response = controller.delete(1002L)
 
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
         val visible = taskRepository
-            .findById(2L)
+            .findById(1002L)
             .map { it.visible }
             .orElseThrow { AssertionError("task should still exist, just be marked invisible") }
         assertThat(visible, equalTo(false))

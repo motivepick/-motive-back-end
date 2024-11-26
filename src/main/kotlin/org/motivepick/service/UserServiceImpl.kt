@@ -3,11 +3,11 @@ package org.motivepick.service
 import io.jsonwebtoken.lang.Assert
 import org.motivepick.domain.entity.UserEntity
 import org.motivepick.domain.view.UserView
+import org.motivepick.extensions.UserEntityExtensions.view
 import org.motivepick.repository.UserRepository
 import org.motivepick.security.CurrentUser
 import org.motivepick.security.JWT_TOKEN_COOKIE
 import org.motivepick.security.Oauth2Profile
-import org.motivepick.extensions.UserEntityExtensions.view
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
@@ -32,32 +32,35 @@ internal class UserServiceImpl(private val user: CurrentUser, private val reposi
     override fun createUserWithTasksIfNotExists(temporaryAccountId: String, oauth2Profile: Oauth2Profile, language: String): UserView {
         Assert.isTrue(temporaryAccountId.isNotBlank() || oauth2Profile.id.isNotBlank(), "Both temporaryAccountId and oauth2Profile.id are blank")
         if (temporaryAccountId.isBlank()) {
-            return findOrCreateUser(oauth2Profile.id, oauth2Profile.name, false, language).view()
+            return findOrCreateUserWithTasks(oauth2Profile.id, oauth2Profile.name, false, language).view()
         } else {
-            val temporaryUser = findOrCreateUser(temporaryAccountId, "", true, language)
+            val temporaryUser = findOrCreateUserWithTasks(temporaryAccountId, "", true, language)
             if (oauth2Profile.id.isBlank()) {
                 return temporaryUser.view()
             }
 
-            val permanentUser = findOrCreateUser(oauth2Profile.id, "", false, language)
             if (isIndeedTemporary(temporaryUser)) {
+                val permanentUser = findOrCreatePermanentUserWithoutTasks(oauth2Profile.id, oauth2Profile.name)
                 taskService.migrateTasks(temporaryAccountId, permanentUser.accountId)
+                return permanentUser.view()
             } else {
                 logger.warn("User $temporaryAccountId is not temporary. Check that the $JWT_TOKEN_COOKIE cookie gets removed")
+                return findOrCreateUserWithTasks(oauth2Profile.id, oauth2Profile.name, false, language).view()
             }
-            return permanentUser.view()
         }
     }
 
-    private fun findOrCreateUser(accountId: String, name: String, temporary: Boolean, language: String) =
+    private fun findOrCreatePermanentUserWithoutTasks(accountId: String, name: String): UserEntity =
+        repository.findByAccountId(accountId) ?: newUserWithoutTasks(accountId, name, false)
+
+    private fun findOrCreateUserWithTasks(accountId: String, name: String, temporary: Boolean, language: String): UserEntity =
         repository.findByAccountId(accountId) ?: newUserWithTasks(accountId, name, temporary, language)
 
     @Transactional
     override fun deleteTemporaryUserWithTasks(accountId: String) {
         val user = repository.findByAccountId(accountId)
         if (user == null) {
-            throw RuntimeException("Unexpected situation: user with ID "
-                    + accountId + " should be in the database, but one is absent")
+            throw RuntimeException("Unexpected situation: user with ID $accountId should be in the database, but one is absent")
         } else if (isIndeedTemporary(user)) {
             logger.info("Going to delete temporary user {} with their tasks", accountId)
             taskService.deleteTasksFully(accountId)
@@ -73,8 +76,11 @@ internal class UserServiceImpl(private val user: CurrentUser, private val reposi
      */
     private fun isIndeedTemporary(user: UserEntity) = user.temporary
 
+    private fun newUserWithoutTasks(accountId: String, name: String, temporary: Boolean): UserEntity =
+        repository.save(UserEntity(accountId, name, temporary))
+
     private fun newUserWithTasks(accountId: String, name: String, temporary: Boolean, language: String): UserEntity {
-        val user = repository.save(UserEntity(accountId, name, temporary))
+        val user = newUserWithoutTasks(accountId, name, temporary)
         taskService.createInitialTasks(user, language)
         return user
     }

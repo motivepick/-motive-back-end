@@ -60,9 +60,9 @@ class TaskListControllerIntegrationTest {
     fun `should read tasks by task list ID`() {
         val token = Path("token.aae47dd3-32f1-415d-8bd8-4dc1086a6d10.txt").readTextFromResource()
         mockMvc
-            .perform(get("/task-lists/5").param("offset", "0").param("limit", "1").cookie(Cookie("Authorization", token)))
+            .perform(get("/task-lists/1005").param("offset", "0").param("limit", "1").cookie(Cookie("Authorization", token)))
             .andExpect(status().isOk())
-            .andExpect(content().string(equalTo("{\"content\":[{\"id\":4,\"name\":\"Test task 3\",\"description\":\"\",\"dueDate\":null,\"closed\":false}],\"page\":{\"size\":1,\"number\":0,\"totalElements\":1,\"totalPages\":1}}")))
+            .andExpect(content().string(equalTo("{\"content\":[{\"id\":1004,\"name\":\"Test task 3\",\"description\":\"\",\"dueDate\":null,\"closed\":false}],\"page\":{\"size\":1,\"number\":0,\"totalElements\":1,\"totalPages\":1}}")))
     }
 
     @Test
@@ -71,7 +71,7 @@ class TaskListControllerIntegrationTest {
         mockMvc
             .perform(get("/task-lists/INBOX").param("offset", "0").param("limit", "1").cookie(Cookie("Authorization", token)))
             .andExpect(status().isOk())
-            .andExpect(content().string(equalTo("{\"content\":[{\"id\":4,\"name\":\"Test task 3\",\"description\":\"\",\"dueDate\":null,\"closed\":false}],\"page\":{\"size\":1,\"number\":0,\"totalElements\":1,\"totalPages\":1}}")))
+            .andExpect(content().string(equalTo("{\"content\":[{\"id\":1004,\"name\":\"Test task 3\",\"description\":\"\",\"dueDate\":null,\"closed\":false}],\"page\":{\"size\":1,\"number\":0,\"totalElements\":1,\"totalPages\":1}}")))
     }
 
     @Test
