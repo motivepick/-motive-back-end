@@ -104,7 +104,7 @@ internal class TaskServiceImpl(
 
     @Transactional
     override fun findScheduleForCurrentUser(): List<ScheduledTaskView> {
-        val schedule = findOrCreateSchedule()
+        val schedule = taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), SCHEDULE)!!
         val openTaskIds = HashSet(taskListRepository.findByUserAccountIdAndType(currentUser.getAccountId(), INBOX)?.orderedIds ?: emptyList())
         val scheduleTaskIds = schedule.orderedIds.filter { openTaskIds.contains(it) }
         val taskToId = taskRepository
@@ -124,7 +124,7 @@ internal class TaskServiceImpl(
         taskList.prependTask(task)
         taskListRepository.save(taskList)
         if (task.dueDate != null) {
-            val schedule = findOrCreateSchedule()
+            val schedule = taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE)!!
             schedule.orderedIds = listOf(task.id) + schedule.orderedIds
             taskListRepository.save(schedule)
         }
@@ -135,8 +135,8 @@ internal class TaskServiceImpl(
     @Transactional
     override fun createInitialTasks(tasksOwner: UserEntity, language: String) {
         val tasks = tasksFactory.createInitialTasks(tasksOwner, language)
-        val inbox = taskListRepository.save(TaskListEntity(tasksOwner, INBOX, listOf()))
-        val closed = taskListRepository.save(TaskListEntity(tasksOwner, CLOSED, listOf()))
+        val inbox = createTaskList(tasksOwner, INBOX, emptyList())
+        val closed = createTaskList(tasksOwner, CLOSED, emptyList())
         tasks[INBOX]!!.forEach { it.taskList = inbox }
         tasks[CLOSED]!!.forEach { it.taskList = closed }
         val savedInboxTasks = taskRepository.saveAll(tasks[INBOX]!!)
@@ -144,7 +144,10 @@ internal class TaskServiceImpl(
         inbox.orderedIds = savedInboxTasks.mapNotNull { it.id }
         closed.orderedIds = savedClosedTasks.mapNotNull { it.id }
         taskListRepository.saveAll(listOf(inbox, closed))
-        createSchedule(tasksOwner)
+        val scheduledTaskIds = taskRepository
+            .findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(tasksOwner.accountId)
+            .map { it.id }
+        createTaskList(tasksOwner, SCHEDULE, scheduledTaskIds)
     }
 
     @Transactional
@@ -225,14 +228,6 @@ internal class TaskServiceImpl(
         }
     }
 
-    private fun findOrCreateSchedule(): TaskListEntity {
-        val user = userRepository.findByAccountId(currentUser.getAccountId())!!
-        return taskListRepository.findByUserAccountIdAndType(user.accountId, SCHEDULE) ?: createSchedule(user)
-    }
-
-    private fun createSchedule(tasksOwner: UserEntity): TaskListEntity {
-        val ids = taskRepository.findAllByUserAccountIdAndClosedFalseAndDueDateNotNullAndVisibleTrueOrderByDueDateAsc(tasksOwner.accountId)
-            .map { it.id }
-        return taskListRepository.save(TaskListEntity(tasksOwner, SCHEDULE, ids))
-    }
+    private fun createTaskList(tasksOwner: UserEntity, taskListType: TaskListType, ids: List<Long>): TaskListEntity =
+        taskListRepository.save(TaskListEntity(tasksOwner, taskListType, ids))
 }
