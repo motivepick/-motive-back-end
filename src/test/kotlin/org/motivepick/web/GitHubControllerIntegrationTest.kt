@@ -52,7 +52,7 @@ import kotlin.io.path.Path
 class GitHubControllerIntegrationTest {
 
     companion object {
-        const val GITHUB_TEMPORARY_CODE = "123"
+        const val GITHUB_TEMPORARY_CODE = "fe6c0fbf37ba7131524a"
         const val STATE_UUID = "47443547-d27e-4913-9b14-0bf19bfffd51"
         const val NEW_USER_ACCOUNT_ID = 311348659
         const val EXISTING_USER_ACCOUNT_ID = 1234567890
@@ -91,7 +91,8 @@ class GitHubControllerIntegrationTest {
         val expectedInitialTasks = arrayOf(
             "Buy a birthday present for Steve",
             "Finish the course about microservices",
-            "Finalize the blog post", "Tidy up the kitchen",
+            "Finalize the blog post",
+            "Tidy up the kitchen",
             "Transfer money for the new illustration to Ann",
             "Find a hotel in Sofia",
             "Write a review for the Estonian teacher"
@@ -165,7 +166,7 @@ class GitHubControllerIntegrationTest {
             .build()
             .toUri()
         `when`(httpClient.exchange(eq(fetchTokenUri), any(HttpMethod::class.java), any(HttpEntity::class.java), any(GitHubTokenResponse::class.java::class.java)))
-            .thenReturn(ResponseEntity(GitHubTokenResponse("abc"), HttpStatus.OK))
+            .thenReturn(ResponseEntity(GitHubTokenResponse("secret"), HttpStatus.OK))
         `when`(httpClient.exchange(eq(fetchProfileUri), any(HttpMethod::class.java), any(HttpEntity::class.java), any(GitHubProfile::class.java::class.java)))
             .thenReturn(ResponseEntity(GitHubProfile(persistentAccountId, "yaskovdev"), HttpStatus.OK))
     }

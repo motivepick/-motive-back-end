@@ -2,7 +2,7 @@ package org.motivepick.security.github
 
 import org.motivepick.config.GitHubConfig
 import org.motivepick.security.AbstractOauth2Client
-import org.motivepick.security.Oauth2Profile
+import org.motivepick.security.OAuth2Profile
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -29,12 +29,12 @@ class GitHubClient(
         return fetchAccessToken(uri) ?: throw AuthenticationServiceException("Could not retrieve access token")
     }
 
-    override fun requestProfile(response: GitHubTokenResponse): Oauth2Profile =
+    override fun requestProfile(response: GitHubTokenResponse): OAuth2Profile =
         UriComponentsBuilder.fromUriString(config.userInfoUri)
             .build()
             .toUri()
             .let { fetchProfile(it, response.token) }
-            ?.let { Oauth2Profile(it.id.toString(), it.login) }
+            ?.let { OAuth2Profile(it.id.toString(), it.login) }
             ?: throw AuthenticationServiceException("Could not retrieve profile")
 
     private fun fetchAccessToken(uri: URI): GitHubTokenResponse? {

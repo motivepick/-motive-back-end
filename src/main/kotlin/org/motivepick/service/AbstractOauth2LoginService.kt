@@ -57,10 +57,10 @@ internal abstract class AbstractOauth2LoginService<T>(
         val redirectUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
             .scheme(if (serverConfig.enforceHttpsForOauth) "https" else "http")
             .toUriString()
-        val oauth2Profile = oauth2Client.fetchUserProfile(code, redirectUrl)
+        val oAuth2Profile = oauth2Client.fetchUserProfile(code, redirectUrl)
         val currentAccountId = extractCurrentAccountId(request)
-        userService.createUserWithTasksIfNotExists(currentAccountId, oauth2Profile, locale.language)
-        val jwtToken = tokenService.createAccessJwtToken(oauth2Profile.id)
+        userService.createUserWithTasksIfNotExists(currentAccountId, oAuth2Profile, locale.language)
+        val jwtToken = tokenService.createAccessJwtToken(oAuth2Profile.id)
 
         if (state.mobile) {
             response.sendRedirect(serverConfig.authenticationSuccessUrlMobile + jwtToken)
